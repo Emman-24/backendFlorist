@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="form(formObject, formActionUrl)" id="addCategoryModal" class="w3-modal" style="display:none">
+    <div class="w3-modal-content w3-animate-top w3-card-4" style="max-width:500px">
+        <header class="w3-container w3-teal">
+            <span onclick="document.getElementById('addCategoryModal').style.display='none'"
+                  class="w3-button w3-display-topright" title="Close">&times;</span>
+            <h3 class="w3-margin-0">Add Category</h3>
+        </header>
+        <div class="w3-container">
+            <form id="addCategoryForm" th:action="${formActionUrl}" th:object="${formObject}" class="w3-padding-16" method="POST">
+
+                <label class="w3-text-grey">Name</label>
+                <input id="catName" th:field="${text}" type="text" class="w3-input w3-border w3-round" placeholder="e.g. Roses">
+
+                <div class="w3-margin-top">
+                    <label class="w3-text-grey">Route</label>
+                    <input id="catRoute" th:field="${route}" class="w3-input w3-border w3-round" type="text" placeholder="e.g. /roses">
+                </div>
+
+                <div class="w3-margin-top">
+                    <label class="w3-check">
+                        <input id="catStatus" th:field="${status}" class="w3-check" type="checkbox">
+                        <span class="w3-text-grey">Active</span>
+                    </label>
+                </div>
+
+                <div class="w3-margin-top" style="text-align:right; gap:8px; display:flex; justify-content:flex-end">
+                    <button type="button" class="w3-button w3-white w3-border w3-round" onclick="document.getElementById('addCategoryModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="w3-button w3-teal w3-round">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -11,38 +11,9 @@
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-    <changeSet id="1" author="emman">
-        <createTable tableName="users">
-            <column name="username" type="varchar(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="password" type="varchar(500)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="enabled" type="boolean">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <include file="db/changelog/changes/create-user-authorities-table.xml"/>
+    <include file="db/changelog/changes/create-table-categories.xml"/>
+    <include file="db/changelog/changes/create-table-subcategories.xml"/>
+    <include file="db/changelog/changes/create-table-products.xml"/>
 
-        <createTable tableName="authorities">
-            <column name="username" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="authority" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint
-                baseTableName="authorities"
-                baseColumnNames="username"
-                constraintName="fk_authorities_users"
-                referencedTableName="users"
-                referencedColumnNames="username"/>
-
-        <createIndex indexName="ix_auth_username" tableName="authorities" unique="true">
-            <column name="username"/>
-            <column name="authority"/>
-        </createIndex>
-    </changeSet>
 </databaseChangeLog>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="add_modal"
+     id="addCategoryModal"
+     class="w3-modal">
+
+    <div class="w3-modal-content w3-card-4 w3-animate-top">
+        <header class="w3-container w3-teal">
+      <span onclick="document.getElementById('addCategoryModal').style.display='block'"
+            class="w3-button w3-display-topright w3-large">&times;</span>
+            <h2>Add New Category</h2>
+        </header>
+
+        <div th:replace="~{pages/categories/fragments/_form :: form_fields(
+          '/categories'
+        )}">
+        </div>
+
+        <footer class="w3-container w3-padding">
+            <button type="button"
+                    onclick="document.getElementById('addCategoryModal').style.display='none'"
+                    class="w3-button w3-light-grey w3-round">Cancel</button>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

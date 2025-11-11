@@ -7,15 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping
 @Controller
 class DashboardController {
 
-//    @GetMapping("/")
-//    fun redirectToDashboard(): String {
-//        return "redirect:/dashboard"
-//    }
-
     @GetMapping("/")
     fun getDashboard(model: Model): String {
         model.addAttribute("pageTitle", "Dashboard Home")
-        return "pages/dashboard"
+        return "pages/home"
     }
 
     @GetMapping("/users")

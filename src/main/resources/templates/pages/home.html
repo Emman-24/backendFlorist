@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/index :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title th:text="${pageTitle}">Home</title>
+</head>
+
+<body>
+<section>
+    <h1 th:text="${pageTitle}">Home</h1>
+    <p>Welcome to the main dashboard page.</p>
+</section>
+</body>
+
+</html>

@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CategoryRepository : JpaRepository<Category, Long> {
+    fun existsByText(name: String): Boolean
+    fun existsByRoute(route: String): Boolean
+    fun findByRoute(route: String): Category?
 }

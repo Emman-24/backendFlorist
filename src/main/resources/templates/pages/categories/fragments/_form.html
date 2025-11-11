@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="form_fields(formActionUrl)">
+
+    <form th:action="${formActionUrl}"
+          th:object="${categoryRequest}"
+          method="post" class="w3-container">
+
+        <div classs="w3-margin-top">
+            <label for="text"><b>Category Name</b></label>
+            <input type="text" id="text" th:field="*{text}" class="w3-input w3-border w3-round"/>
+        </div>
+
+        <div class="w3-margin-top">
+            <label for="route"><b>Category Route</b></label>
+            <input type="text" id="route" th:field="*{route}" class="w3-input w3-border w3-round"/>
+        </div>
+
+        <div class="w3-margin-top w3-margin-bottom">
+            <input type="checkbox" id="status" th:field="*{status}" class="w3-check"/>
+            <label for="status"> Active</label>
+        </div>
+        <hr/>
+        <button type="submit" class="w3-button w3-teal w3-round w3-right">Save Category</button>
+
+    </form>
+</div>
+
+</body>
+</html>

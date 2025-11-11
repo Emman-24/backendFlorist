@@ -1,15 +1,16 @@
 package com.floristeriaakasia.backend.controller
 
-import com.floristeriaakasia.backend.repository.CategoryRepository
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import com.floristeriaakasia.backend.model.Category
+import com.floristeriaakasia.backend.service.CategoryService
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/categories")
-class CategoryController(private val categoryRepository: CategoryRepository) {
+class CategoryController(
+    private val categoryService: CategoryService
+) {
 
-    @GetMapping
-    fun getAllCategories() = categoryRepository.findAll()
 
 }
