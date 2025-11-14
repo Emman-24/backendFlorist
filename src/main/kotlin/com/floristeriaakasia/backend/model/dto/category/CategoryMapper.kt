@@ -1,16 +1,20 @@
 package com.floristeriaakasia.backend.model.dto.category
 
 import com.floristeriaakasia.backend.model.Category
+import com.floristeriaakasia.backend.model.dto.subcategory.SubcategoryMapper
 import org.springframework.stereotype.Component
 
 @Component
-class CategoryMapper {
+class CategoryMapper(
+    val subcategoryMapper: SubcategoryMapper
+) {
     fun toResponse(category: Category): CategoryResponse {
         return CategoryResponse(
             id = category.id!!,
             text = category.text,
             route = category.route,
             status = category.status,
+            subCategories = category.subCategories.map(subcategoryMapper::toResponse),
             createdAt = category.createdAt
         )
     }

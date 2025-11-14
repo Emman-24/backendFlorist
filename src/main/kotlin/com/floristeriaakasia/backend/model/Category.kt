@@ -3,6 +3,7 @@ package com.floristeriaakasia.backend.model
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -23,7 +24,12 @@ class Category(
     @OneToMany(mappedBy = "category", cascade = [], orphanRemoval = false)
     var products: MutableList<Product> = mutableListOf(),
 
-    @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(
+        mappedBy = "category",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
     var subCategories: MutableList<SubCategory> = mutableListOf(),
 
     @field:NotBlank(message = "Category name is required")
