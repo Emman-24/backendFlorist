@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/index :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Category</title>
+</head>
+<body>
+<section>
+    <div class="w3-container">
+        <h2>Edit Subcategory</h2>
+    </div>
+
+    <div class="w3-card w3-white w3-margin-top">
+        <header class="w3-container w3-teal">
+            <h3>Subcategory Form</h3>
+        </header>
+
+        <div th:replace="~{pages/subcategories/fragments/_form :: form_fields(@{|/subcategories/update/${categoryId}|})}"></div>
+
+        <footer class="w3-container w3-padding">
+            <a th:href="@{/subcategories}" class="w3-button w3-light-grey w3-round">Cancel</a>
+        </footer>
+    </div>
+</section>
+</body>
+</html>

@@ -9,7 +9,7 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="sub_category" type="VARCHAR(255)">
+            <column name="text" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="category_id" type="BIGINT">
