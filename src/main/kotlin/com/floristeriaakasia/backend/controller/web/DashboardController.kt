@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.controller
+package com.floristeriaakasia.backend.controller.web
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
