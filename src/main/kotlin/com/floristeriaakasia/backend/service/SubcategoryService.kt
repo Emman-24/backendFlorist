@@ -3,7 +3,6 @@ package com.floristeriaakasia.backend.service
 import com.floristeriaakasia.backend.exception.ResourceNotFoundException
 import com.floristeriaakasia.backend.model.dto.subcategory.SubCategoryCreateRequest
 import com.floristeriaakasia.backend.model.dto.subcategory.SubcategoryMapper
-import com.floristeriaakasia.backend.model.dto.subcategory.SubcategoryRequest
 import com.floristeriaakasia.backend.model.dto.subcategory.SubcategoryResponse
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import com.floristeriaakasia.backend.repository.SubcategoryRepository
@@ -30,24 +29,26 @@ class SubcategoryService(
     }
 
     @Transactional(readOnly = true)
-    fun findRequestById(id: Long): SubcategoryRequest {
-        return subcategoryRepository.findByIdOrNull(id)
-            ?.let {
-                SubcategoryRequest(text = it.text, route = it.route, status = it.status)
-            } ?: throw ResourceNotFoundException("Subcategory with id $id not found")
+    fun findRequestById(id: Long): SubCategoryCreateRequest {
+        val entity = subcategoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Subcategory with id $id not found")
+        return mapper.toCreateRequest(entity)
     }
 
-    fun update(id: Long, request: SubcategoryRequest): SubcategoryResponse {
-        val existingCategory = subcategoryRepository.findByIdOrNull(id)
-            ?: throw ResourceNotFoundException("Category with id $id not found")
-        mapper.updateEntityFromRequest(request, existingCategory)
-        val updatedCategory = subcategoryRepository.save(existingCategory)
-        return mapper.toResponse(updatedCategory)
+    fun update(id: Long, request: SubCategoryCreateRequest): SubcategoryResponse {
+        val existingSubcategory = subcategoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Subcategory with id $id not found")
+
+        existingSubcategory.text = request.text
+        existingSubcategory.route = request.route
+        existingSubcategory.status = request.status
+
+
+        val updated = subcategoryRepository.save(existingSubcategory)
+        return mapper.toResponse(updated)
     }
 
     fun deleteById(id: Long) {
         if (!subcategoryRepository.existsById(id)) {
-            throw ResourceNotFoundException("Category with $id not found")
+            throw ResourceNotFoundException("Subcategory with $id not found")
         }
         subcategoryRepository.deleteById(id)
     }

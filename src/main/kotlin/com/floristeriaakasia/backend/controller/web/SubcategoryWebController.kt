@@ -51,12 +51,27 @@ class SubcategoryWebController(
         model: Model
     ): String {
         model.addAttribute("subCategoryCreateRequest", subcategoryService.findRequestById(id))
-        /**
-         * Category id is not an argument in subCategoryCreateRequest
-         */
-        model.addAttribute("categoryId")
+        model.addAttribute("id", id)
         model.addAttribute("categoriesForDropdown", categoryService.findAll())
         return "pages/subcategories/edit"
+    }
+
+    @PostMapping("/update/{id}")
+    fun updateSubcategory(
+        @PathVariable id: Long,
+        @Valid @ModelAttribute("subCategoryCreateRequest") request: SubCategoryCreateRequest,
+        bindingResult: BindingResult,
+        model: Model
+    ): String {
+        return try {
+            subcategoryService.update(id, request)
+            "redirect:/subcategories"
+        } catch (_: DataIntegrityViolationException) {
+            bindingResult.rejectValue("text", "error.subcategory", "Name or Route already exists.")
+            model.addAttribute("id", id)
+            model.addAttribute("categoriesForDropdown", categoryService.findAll())
+            "pages/subcategories/edit"
+        }
     }
 
     @PostMapping("/delete/{id}")

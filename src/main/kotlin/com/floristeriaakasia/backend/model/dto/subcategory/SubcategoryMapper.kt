@@ -34,6 +34,15 @@ class SubcategoryMapper {
         )
     }
 
+    fun toCreateRequest(subCategory: SubCategory): SubCategoryCreateRequest {
+        return SubCategoryCreateRequest(
+            text = subCategory.text,
+            route = subCategory.route,
+            status = subCategory.status,
+            categoryId = subCategory.category.id!!
+        )
+    }
+
     fun updateEntityFromRequest(request: SubcategoryRequest, subCategory: SubCategory) {
         subCategory.text = request.text
         subCategory.route = request.route

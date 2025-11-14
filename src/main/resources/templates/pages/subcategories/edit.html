@@ -14,7 +14,7 @@
             <h3>Subcategory Form</h3>
         </header>
 
-        <div th:replace="~{pages/subcategories/fragments/_form :: form_fields(@{|/subcategories/update/${categoryId}|})}"></div>
+        <div th:replace="~{pages/subcategories/fragments/_form :: form_fields(@{|/subcategories/update/${id}|})}"></div>
 
         <footer class="w3-container w3-padding">
             <a th:href="@{/subcategories}" class="w3-button w3-light-grey w3-round">Cancel</a>
