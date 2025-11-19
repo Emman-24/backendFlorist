@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="add_modal"
+     id="addProductModal"
+     class="w3-modal">
+
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:800px">
+
+        <header class="w3-container w3-teal">
+            <span onclick="document.getElementById('addProductModal').style.display='block'"
+                  class="w3-button w3-display-topright w3-large">&times;</span>
+            <h2>Add New Product</h2>
+        </header>
+
+        <div th:replace="~{pages/products/fragments/_form :: form_fields(
+        '/products'
+        )}"></div>
+
+        <footer class="w3-container w3-padding">
+            <button type="button"
+                    onclick="document.getElementById('addProductModal').style.display='none'"
+                    class="w3-button w3-light-grey w3-round">Cancel
+            </button>
+        </footer>
+    </div>
+
+</div>
+
+</body>
+</html>

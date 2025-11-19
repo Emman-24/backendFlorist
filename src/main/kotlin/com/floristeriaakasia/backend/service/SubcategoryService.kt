@@ -30,12 +30,14 @@ class SubcategoryService(
 
     @Transactional(readOnly = true)
     fun findRequestById(id: Long): SubCategoryCreateRequest {
-        val entity = subcategoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Subcategory with id $id not found")
+        val entity = subcategoryRepository.findByIdOrNull(id)
+            ?: throw ResourceNotFoundException("Subcategory with id $id not found")
         return mapper.toCreateRequest(entity)
     }
 
     fun update(id: Long, request: SubCategoryCreateRequest): SubcategoryResponse {
-        val existingSubcategory = subcategoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Subcategory with id $id not found")
+        val existingSubcategory = subcategoryRepository.findByIdOrNull(id)
+            ?: throw ResourceNotFoundException("Subcategory with id $id not found")
 
         existingSubcategory.text = request.text
         existingSubcategory.route = request.route

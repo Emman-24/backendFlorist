@@ -1,0 +1,74 @@
+package com.floristeriaakasia.backend.model.dto.product
+
+import com.floristeriaakasia.backend.model.Category
+import com.floristeriaakasia.backend.model.Product
+import com.floristeriaakasia.backend.model.SubCategory
+import org.springframework.stereotype.Component
+import org.springframework.web.multipart.MultipartFile
+
+@Component
+class ProductMapper {
+
+    fun toResponse(product: Product): ProductResponse {
+        return ProductResponse(
+            id = product.id!!,
+            text = product.title,
+            categoryName = product.category.text,
+            subcategoryName = product.subCategory.text,
+            price = product.price.toInt(),
+            status = product.status,
+            imageUrl = product.storedName,
+            createdAt = product.createdAt.toString()
+        )
+
+    }
+
+    fun toCreateRequest(product: Product): ProductCreateRequest {
+        return ProductCreateRequest(
+            text = product.title,
+            route = product.route,
+            status = product.status,
+            categoryId = product.category.id!!,
+            subCategoryId = product.subCategory.id!!,
+            price = product.price,
+            description = product.description?.joinToString("\n") ?: "",
+            facebookUrl = product.facebookUrl,
+            instagramUrl = product.instagramUrl
+        )
+    }
+
+    fun toEntity(
+        request: ProductCreateRequest,
+        parentCategory: Category,
+        parentSubcategory: SubCategory,
+        file: MultipartFile,
+        storagePath: String
+    ): Product {
+
+        // Map single textarea description to a list of paragraphs
+        val paragraphs: MutableList<String>? = request.description
+            .lines()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .toMutableList()
+            .let { if (it.isEmpty()) null else it }
+
+        return Product(
+            category = parentCategory,
+            subCategory = parentSubcategory,
+            route = request.route,
+            status = request.status ?: true,
+            title = request.text,
+            description = paragraphs,
+            price = request.price!!,
+            originalName = file.originalFilename ?: "",
+            storedName = storagePath,
+            mimeType = file.contentType ?: "application/octet-stream",
+            size = file.size,
+            facebookUrl = request.facebookUrl,
+            instagramUrl = request.instagramUrl
+        )
+    }
+
+
+}

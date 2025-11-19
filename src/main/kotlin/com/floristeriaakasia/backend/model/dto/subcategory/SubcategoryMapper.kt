@@ -42,10 +42,4 @@ class SubcategoryMapper {
             categoryId = subCategory.category.id!!
         )
     }
-
-    fun updateEntityFromRequest(request: SubcategoryRequest, subCategory: SubCategory) {
-        subCategory.text = request.text
-        subCategory.route = request.route
-        subCategory.status = request.status
-    }
 }

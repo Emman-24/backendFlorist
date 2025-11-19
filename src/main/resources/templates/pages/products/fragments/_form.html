@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="form_fields(formActionUrl)">
+
+    <form class="w3-container w3-padding"
+          method="POST"
+          th:action="${formActionUrl}"
+          th:object="${productCreateRequest}"
+          enctype="multipart/form-data">
+
+        <div class="w3-row-padding">
+            <div class="w3-half w3-margin-bottom">
+                <label for="title"><b>Title</b></label>
+                <input class="w3-input w3-border w3-round" id="title" th:field="*{text}" type="text">
+            </div>
+            <div class="w3-half w3-margin-bottom">
+                <label for="route"><b>Product Route</b></label>
+                <input class="w3-input w3-border w3-round" id="route" th:field="*{route}" type="text">
+            </div>
+        </div>
+
+        <div class="w3-row-padding">
+            <div class="w3-half w3-margin-bottom">
+                <label for="category"><b>Category</b></label>
+
+                <select  id="category" th:field="*{categoryId}" class="w3-select w3-border w3-round">
+                    <option value="1" disabled selected>Select a category</option>
+                    <option th:each="cat:${categoriesForDropdown}"
+                            th:value="${cat.id}"
+                            th:text="${cat.text}">
+                        Category Name
+                    </option>
+                </select>
+            </div>
+
+            <div class="w3-half w3-margin-bottom">
+                <label for="subCategory"><b>SubCategory</b></label>
+                <select  id="subCategory" th:field="*{subCategoryId}" class="w3-select w3-border w3-round">
+                    <option value="1" disabled selected>Select a category</option>
+                    <option th:each="cat:${subcategoriesForDropdown}"
+                            th:value="${cat.id}"
+                            th:text="${cat.text}">
+                        Category Name
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="w3-row-padding">
+            <div class="w3-half w3-margin-bottom">
+                <label for="price"><b>Price</b></label>
+                <input class="w3-input w3-border w3-round" id="price" type="number" th:field="*{price}" step="0.01" min="0">
+            </div>
+            <div class="w3-half w3-margin-bottom">
+                <label for="myfile"><b>Image</b></label>
+                <input class="w3-input w3-border w3-round"
+                       id="myfile"
+                       type="file"
+                       name="file"
+                       accept="image/png, image/jpeg, image/jpg, image/webp, image/avif">
+            </div>
+        </div>
+
+        <div class="w3-section w3-margin-bottom">
+            <label for="description"><b>Description</b></label>
+            <textarea class="w3-input w3-border w3-round" id="description"
+                      rows="4"
+                      th:field="*{description}"
+                      placeholder="Enter product description. Each new line will be saved as a separate paragraph.">
+            </textarea>
+
+        </div>
+
+        <div class="w3-row-padding">
+            <div class="w3-half w3-margin-bottom">
+                <label for="facebookUrl"><b>Facebook URL</b> (Optional)</label>
+                <input class="w3-input w3-border w3-round"
+                       id="facebookUrl"
+                       type="url"
+                       th:field="*{facebookUrl}"
+                       placeholder="https://facebook.com/...">
+            </div>
+            <div class="w3-half w3-margin-bottom">
+                <label for="instagramUrl"><b>Instagram URL</b> (Optional)</label>
+                <input class="w3-input w3-border w3-round"
+                       id="instagramUrl"
+                       type="url"
+                       th:field="*{instagramUrl}"
+                       placeholder="https://instagram.com/...">
+            </div>
+        </div>
+
+        <div class="w3-margin-top w3-margin-bottom">
+            <input type="checkbox"
+                   id="status"
+                   th:field="*{status}"
+                   class="w3-check"/>
+            <label for="status"> Active</label>
+        </div>
+
+        <button type="submit" class="w3-button w3-round w3-teal w3-right">
+            Save Product
+        </button>
+
+    </form>
+</div>
+
+</body>
+</html>
