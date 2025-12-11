@@ -5,6 +5,7 @@ import com.floristeriaakasia.backend.model.Product
 import com.floristeriaakasia.backend.model.SubCategory
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import java.text.Normalizer
 
 @Component
 class ProductMapper {
@@ -56,7 +57,7 @@ class ProductMapper {
         return Product(
             category = parentCategory,
             subCategory = parentSubcategory,
-            route = request.route,
+            route = slugify(request.route),
             status = request.status ?: true,
             title = request.text,
             description = paragraphs,
@@ -68,6 +69,16 @@ class ProductMapper {
             facebookUrl = request.facebookUrl,
             instagramUrl = request.instagramUrl
         )
+    }
+
+    private fun slugify(input: String): String {
+        val normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+        return normalized
+            .lowercase()
+            .replace("[^a-z0-9]+".toRegex(), "-")
+            .replace("-+".toRegex(), "-")
+            .trim('-')
     }
 
 

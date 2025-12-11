@@ -1,24 +1,21 @@
 package com.floristeriaakasia.backend.controller.api
 
+import com.floristeriaakasia.backend.model.dto.product.ProductResponse
+import com.floristeriaakasia.backend.service.ProductService
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/products")
 class ProductController(
+    private val productService: ProductService
 ) {
 
-//    @PostMapping("/upload")
-//    fun uploadImage(
-//        @RequestParam("file") file: MultipartFile
-//    ): ResponseEntity<*> {
-//        return try {
-//            ResponseEntity.ok(imageService.create(file))
-//        } catch (e: IOException) {
-//            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
-//        } catch (e: IllegalArgumentException) {
-//            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
-//        }
-//    }
+    @GetMapping
+    fun getAllActiveProducts(): List<ProductResponse> {
+        return productService.findByStatus(true)
+    }
+
 
 }

@@ -12,6 +12,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.transaction.annotation.Transactional
+import java.text.Normalizer
 
 @Service
 class ProductService(
@@ -26,6 +27,10 @@ class ProductService(
     @Transactional(readOnly = true)
     fun findAll(): List<ProductResponse> {
         return repository.findAll().map(mapper::toResponse)
+    }
+
+    fun findByStatus(status: Boolean): List<ProductResponse> {
+        return repository.findByStatus(status).map(mapper::toResponse)
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +59,7 @@ class ProductService(
         existingProduct.apply {
             category = parentCategory
             subCategory = parentSubcategory
-            route = request.route
+            route = slugify(request.route)
             status = request.status ?: true
             title = request.text
 
@@ -144,7 +149,8 @@ class ProductService(
 
 
     fun deleteById(id: Long) {
-        val product: Product = repository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Product with id $id not found")
+        val product: Product =
+            repository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Product with id $id not found")
         val storedName = product.storedName
         repository.deleteById(id)
         if (storedName.isNotBlank()) {
@@ -161,5 +167,15 @@ class ProductService(
         if (mimeType == null || !properties.allowedMimeTypes.contains(mimeType)) {
             throw IllegalArgumentException("Invalid mime type")
         }
+    }
+
+    private fun slugify(input: String): String {
+        val normalized = Normalizer.normalize(input, Normalizer.Form.NFD)
+            .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+        return normalized
+            .lowercase()
+            .replace("[^a-z0-9]+".toRegex(), "-")
+            .replace("-+".toRegex(), "-")
+            .trim('-')
     }
 }
