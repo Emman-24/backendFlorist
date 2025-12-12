@@ -8,6 +8,8 @@ import com.floristeriaakasia.backend.model.dto.product.ProductResponse
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import com.floristeriaakasia.backend.repository.ProductRepository
 import com.floristeriaakasia.backend.repository.SubcategoryRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -29,8 +31,10 @@ class ProductService(
         return repository.findAll().map(mapper::toResponse)
     }
 
-    fun findByStatus(status: Boolean): List<ProductResponse> {
-        return repository.findByStatus(status).map(mapper::toResponse)
+    @Transactional(readOnly = true)
+    fun findByStatus(status: Boolean, page: Int, size: Int): Page<ProductResponse> {
+        val pageable = PageRequest.of(page, size)
+        return repository.findByStatus(status, pageable).map(mapper::toResponse)
     }
 
     @Transactional(readOnly = true)
