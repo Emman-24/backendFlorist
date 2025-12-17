@@ -7,6 +7,7 @@ import com.floristeriaakasia.backend.model.dto.product.ProductMapper
 import com.floristeriaakasia.backend.model.dto.product.ProductResponse
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import com.floristeriaakasia.backend.repository.ProductRepository
+import com.floristeriaakasia.backend.repository.TagRepository
 import com.floristeriaakasia.backend.repository.SubcategoryRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -23,6 +24,7 @@ class ProductService(
     private val storageService: LocalImageStorageService,
     private val categoryRepository: CategoryRepository,
     private val subcategoryRepository: SubcategoryRepository,
+    private val tagRepository: TagRepository,
     private val mapper: ProductMapper
 ) {
 
@@ -79,6 +81,10 @@ class ProductService(
             facebookUrl = request.facebookUrl
             instagramUrl = request.instagramUrl
         }
+
+        // Update tags
+        val tags = if (request.tagIds.isNotEmpty()) tagRepository.findAllById(request.tagIds) else emptyList()
+        existingProduct.tags = tags.toMutableList()
 
 
         if (!file.isEmpty) {
@@ -147,6 +153,10 @@ class ProductService(
             parentSubcategory,
             file, storagePath
         )
+
+        // Set tags for new product
+        val tags = if (request.tagIds.isNotEmpty()) tagRepository.findAllById(request.tagIds) else emptyList()
+        product.tags = tags.toMutableList()
 
         return repository.save(product)
     }

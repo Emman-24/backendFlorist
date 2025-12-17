@@ -50,6 +50,20 @@
         </div>
 
         <div class="row g-3 mt-1">
+            <div class="col-md-12">
+                <label for="tags" class="form-label">Tags</label>
+                <select id="tags" th:field="*{tagIds}" class="form-select" multiple>
+                    <option th:each="tag : ${tagsForDropdown}"
+                            th:value="${tag.id}"
+                            th:text="${tag.text}">
+                        Tag Name
+                    </option>
+                </select>
+                <div class="form-text">Hold Ctrl/Command to select multiple tags.</div>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-1">
             <div class="col-md-6">
                 <label for="price" class="form-label">Price</label>
                 <input class="form-control" id="price" type="number" th:field="*{price}" step="0.01" min="0">

@@ -34,7 +34,8 @@ class ProductMapper {
             price = product.price,
             description = product.description?.joinToString("\n") ?: "",
             facebookUrl = product.facebookUrl,
-            instagramUrl = product.instagramUrl
+            instagramUrl = product.instagramUrl,
+            tagIds = product.tags.mapNotNull { it.id }.toMutableList()
         )
     }
 

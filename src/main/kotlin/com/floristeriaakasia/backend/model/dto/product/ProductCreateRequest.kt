@@ -33,4 +33,6 @@ class ProductCreateRequest(
     val facebookUrl: String? = null,
 
     val instagramUrl: String? = null,
+    // IDs of selected tags for this product (optional)
+    var tagIds: MutableList<Long> = mutableListOf()
 )

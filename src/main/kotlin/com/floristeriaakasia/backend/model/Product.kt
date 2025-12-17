@@ -20,6 +20,14 @@ class Product(
     @JoinColumn(name = "subcategory_id", nullable = false)
     var subCategory: SubCategory,
 
+    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @JoinTable(
+        name = "product_tags",
+        joinColumns = [JoinColumn(name = "product_id")],
+        inverseJoinColumns = [JoinColumn(name = "tag_id")]
+    )
+    var tags: MutableList<Tag> = mutableListOf(),
+
     @Column(nullable = false, length = 255)
     var route: String,
 

@@ -4,6 +4,7 @@ import com.floristeriaakasia.backend.model.dto.product.ProductCreateRequest
 import com.floristeriaakasia.backend.service.CategoryService
 import com.floristeriaakasia.backend.service.ProductService
 import com.floristeriaakasia.backend.service.SubcategoryService
+import com.floristeriaakasia.backend.service.TagService
 import jakarta.validation.Valid
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -21,13 +22,15 @@ import org.springframework.web.multipart.MultipartFile
 class ProductsWebController(
     private val categoryService: CategoryService,
     private val subcategoryService: SubcategoryService,
-    private val productService: ProductService
+    private val productService: ProductService,
+    private val tagService: TagService
 ) {
     @GetMapping
     fun showProductList(model: Model): String {
         val categories = categoryService.findAll()
         model.addAttribute("categoriesForDropdown", categories)
         model.addAttribute("subcategoriesForDropdown", subcategoryService.findAll())
+        model.addAttribute("tagsForDropdown", tagService.findActiveStatus())
         model.addAttribute(
             "productCreateRequest",
             ProductCreateRequest(
@@ -39,7 +42,8 @@ class ProductsWebController(
                 description = "",
                 price = null,
                 facebookUrl = "",
-                instagramUrl = ""
+                instagramUrl = "",
+                tagIds = mutableListOf()
             )
         )
         model.addAttribute("products", productService.findAll())
@@ -55,6 +59,7 @@ class ProductsWebController(
         model.addAttribute("id", id)
         model.addAttribute("categoriesForDropdown", categoryService.findAll())
         model.addAttribute("subcategoriesForDropdown", subcategoryService.findAll())
+        model.addAttribute("tagsForDropdown", tagService.findActiveStatus())
 
         return "pages/products/edit"
     }
