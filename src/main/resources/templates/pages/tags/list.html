@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/index :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section>
+    <div class="container-fluid py-3">
+        <div class="row align-items-center mb-3">
+            <div class="col-md-6">
+                <h2 class="mb-0">Tags</h2>
+                <div class="text-muted small">Create, view, edit, and delete Tags</div>
+            </div>
+            <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTagModal">
+                    Add Tags
+                </button>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body d-flex gap-2 flex-wrap align-items-center table-tools">
+                <label for="statusFilter"></label><select id="statusFilter" class="form-select"
+                                                          style="max-width: 200px;">
+                <option value="">All statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+                <div class="ms-auto muted">
+                    <span>0</span> total
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>Tag Name</th>
+                    <th>Route</th>
+                    <th>Products</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tag : ${tags}">
+                    <td><span class="badge text-dark tag-badge" th:text="${tag.text}">Name</span></td>
+                    <td><code th:text="${tag.route}">route</code></td>
+                    <td th:text="${tag.products.size()}">142</td>
+                    <td>
+                        <span th:if="${tag.status}" class="badge text-bg-success">Active</span>
+                        <span th:unless="${tag.status}" class="badge text-bg-secondary">Inactive</span>
+                    </td>
+                    <td class="p-0">
+                        <div class="d-flex align-items-center gap-2 text-nowrap h-100 px-3">
+                            <a class="btn btn-sm btn-warning" th:href="@{/tags/edit/{id}(id=${tag.id})}">Edit</a>
+                            <form th:action="@{/tags/delete/{id}(id=${tag.id})}" method="post">
+                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i>Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(tags)}">
+                    <td colspan="6" class="text-center p-3">No Tags found.</td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="~{pages/tags/fragments/_add_modal :: add_modal}"></div>
+
+
+</section>
+
+</body>
+</html>

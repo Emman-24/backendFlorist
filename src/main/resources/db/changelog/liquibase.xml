@@ -15,5 +15,7 @@
     <include file="db/changelog/changes/create-table-categories.xml"/>
     <include file="db/changelog/changes/create-table-subcategories.xml"/>
     <include file="db/changelog/changes/create-table-products.xml"/>
+    <include file="db/changelog/changes/create-table-tags.xml"/>
+    <include file="db/changelog/changes/create-table-product-tags.xml"/>
 
 </databaseChangeLog>
