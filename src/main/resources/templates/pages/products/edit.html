@@ -5,20 +5,20 @@
 </head>
 <body>
 <section>
-    <div class="w3-container">
-        <h2>Edit Product</h2>
-    </div>
+    <div class="container-fluid">
+        <h2 class="mt-2">Edit Product</h2>
 
-    <div class="w3-card w3-white w3-margin-top">
-        <header class="w3-container w3-teal">
-            <h3>Product Form</h3>
-        </header>
+        <div class="card mt-3">
+            <div class="card-header bg-primary text-white">
+                <h3 class="h5 mb-0">Product Form</h3>
+            </div>
 
-        <div th:replace="~{pages/products/fragments/_form :: form_fields(@{|/products/update/${id}|})}"></div>
+            <div th:replace="~{pages/products/fragments/_form :: form_fields(@{|/products/update/${id}|})}"></div>
 
-        <footer class="w3-container w3-padding">
-            <a th:href="@{/products}" class="w3-button w3-light-grey w3-round">Cancel</a>
-        </footer>
+            <div class="card-footer d-flex justify-content-end">
+                <a th:href="@{/products}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </div>
     </div>
 </section>
 </body>

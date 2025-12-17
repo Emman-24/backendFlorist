@@ -4,28 +4,28 @@
 
 <div th:fragment="form_fields(formActionUrl)">
 
-    <form class="w3-container w3-padding"
+    <form class="p-3"
           method="POST"
           th:action="${formActionUrl}"
           th:object="${productCreateRequest}"
           enctype="multipart/form-data">
 
-        <div class="w3-row-padding">
-            <div class="w3-half w3-margin-bottom">
-                <label for="title"><b>Title</b></label>
-                <input class="w3-input w3-border w3-round" id="title" th:field="*{text}" type="text">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="title" class="form-label">Title</label>
+                <input class="form-control" id="title" th:field="*{text}" type="text">
             </div>
-            <div class="w3-half w3-margin-bottom">
-                <label for="route"><b>Product Route</b></label>
-                <input class="w3-input w3-border w3-round" id="route" th:field="*{route}" type="text">
+            <div class="col-md-6">
+                <label for="route" class="form-label">Product Route</label>
+                <input class="form-control" id="route" th:field="*{route}" type="text">
             </div>
         </div>
 
-        <div class="w3-row-padding">
-            <div class="w3-half w3-margin-bottom">
-                <label for="category"><b>Category</b></label>
+        <div class="row g-3 mt-1">
+            <div class="col-md-6">
+                <label for="category" class="form-label">Category</label>
 
-                <select  id="category" th:field="*{categoryId}" class="w3-select w3-border w3-round">
+                <select  id="category" th:field="*{categoryId}" class="form-select">
                     <option value="1" disabled selected>Select a category</option>
                     <option th:each="cat:${categoriesForDropdown}"
                             th:value="${cat.id}"
@@ -35,9 +35,9 @@
                 </select>
             </div>
 
-            <div class="w3-half w3-margin-bottom">
-                <label for="subCategory"><b>SubCategory</b></label>
-                <select  id="subCategory" th:field="*{subCategoryId}" class="w3-select w3-border w3-round">
+            <div class="col-md-6">
+                <label for="subCategory" class="form-label">SubCategory</label>
+                <select  id="subCategory" th:field="*{subCategoryId}" class="form-select">
                     <option value="1" disabled selected>Select a category</option>
                     <option th:each="cat:${subcategoriesForDropdown}"
                             th:value="${cat.id}"
@@ -49,14 +49,14 @@
 
         </div>
 
-        <div class="w3-row-padding">
-            <div class="w3-half w3-margin-bottom">
-                <label for="price"><b>Price</b></label>
-                <input class="w3-input w3-border w3-round" id="price" type="number" th:field="*{price}" step="0.01" min="0">
+        <div class="row g-3 mt-1">
+            <div class="col-md-6">
+                <label for="price" class="form-label">Price</label>
+                <input class="form-control" id="price" type="number" th:field="*{price}" step="0.01" min="0">
             </div>
-            <div class="w3-half w3-margin-bottom">
-                <label for="myfile"><b>Image</b></label>
-                <input class="w3-input w3-border w3-round"
+            <div class="col-md-6">
+                <label for="myfile" class="form-label">Image</label>
+                <input class="form-control"
                        id="myfile"
                        type="file"
                        name="file"
@@ -64,9 +64,9 @@
             </div>
         </div>
 
-        <div class="w3-section w3-margin-bottom">
-            <label for="description"><b>Description</b></label>
-            <textarea class="w3-input w3-border w3-round" id="description"
+        <div class="mt-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description"
                       rows="4"
                       th:field="*{description}"
                       placeholder="Enter product description. Each new line will be saved as a separate paragraph.">
@@ -74,18 +74,18 @@
 
         </div>
 
-        <div class="w3-row-padding">
-            <div class="w3-half w3-margin-bottom">
-                <label for="facebookUrl"><b>Facebook URL</b> (Optional)</label>
-                <input class="w3-input w3-border w3-round"
+        <div class="row g-3 mt-1">
+            <div class="col-md-6">
+                <label for="facebookUrl" class="form-label">Facebook URL (Optional)</label>
+                <input class="form-control"
                        id="facebookUrl"
                        type="url"
                        th:field="*{facebookUrl}"
                        placeholder="https://facebook.com/...">
             </div>
-            <div class="w3-half w3-margin-bottom">
-                <label for="instagramUrl"><b>Instagram URL</b> (Optional)</label>
-                <input class="w3-input w3-border w3-round"
+            <div class="col-md-6">
+                <label for="instagramUrl" class="form-label">Instagram URL (Optional)</label>
+                <input class="form-control"
                        id="instagramUrl"
                        type="url"
                        th:field="*{instagramUrl}"
@@ -93,17 +93,19 @@
             </div>
         </div>
 
-        <div class="w3-margin-top w3-margin-bottom">
+        <div class="form-check mt-3 mb-3">
             <input type="checkbox"
                    id="status"
                    th:field="*{status}"
-                   class="w3-check"/>
-            <label for="status"> Active</label>
+                   class="form-check-input"/>
+            <label for="status" class="form-check-label"> Active</label>
         </div>
 
-        <button type="submit" class="w3-button w3-round w3-teal w3-right">
-            Save Product
-        </button>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">
+                Save Product
+            </button>
+        </div>
 
     </form>
 </div>

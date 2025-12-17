@@ -3,27 +3,27 @@
 <body>
 
 <div th:fragment="add_modal"
+     class="modal fade"
      id="addProductModal"
-     class="w3-modal">
+     tabindex="-1"
+     aria-labelledby="addProductModalLabel"
+     aria-hidden="true">
 
-    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:800px">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h2 class="modal-title h5 mb-0" id="addProductModalLabel">Add New Product</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
-        <header class="w3-container w3-teal">
-            <span onclick="document.getElementById('addProductModal').style.display='block'"
-                  class="w3-button w3-display-topright w3-large">&times;</span>
-            <h2>Add New Product</h2>
-        </header>
+            <div class="modal-body p-0">
+                <div th:replace="~{pages/products/fragments/_form :: form_fields('/products')}"></div>
+            </div>
 
-        <div th:replace="~{pages/products/fragments/_form :: form_fields(
-        '/products'
-        )}"></div>
-
-        <footer class="w3-container w3-padding">
-            <button type="button"
-                    onclick="document.getElementById('addProductModal').style.display='none'"
-                    class="w3-button w3-light-grey w3-round">Cancel
-            </button>
-        </footer>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
     </div>
 
 </div>
