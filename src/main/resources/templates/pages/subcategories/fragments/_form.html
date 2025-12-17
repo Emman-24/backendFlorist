@@ -4,40 +4,37 @@
 
 <div th:fragment="form_fields(formActionUrl)">
 
-    <form method="post" class="w3-container"
+    <form method="post"
           th:action="${formActionUrl}"
           th:object="${subCategoryCreateRequest}">
 
-
-        <div class="w3-margin-top">
-            <label for="text"><b>Name</b></label>
-            <input type="text" id="text" th:field="*{text}" class="w3-input w3-border w3-round"/>
+        <div class="mb-3">
+            <label for="text" class="form-label">Name</label>
+            <input type="text" id="text" th:field="*{text}" class="form-control"/>
         </div>
 
-        <div class="w3-margin-top">
-            <label for="route"><b>Route</b></label>
-            <input type="text" id="route" th:field="*{route}" class="w3-input w3-border w3-round"/>
+        <div class="mb-3">
+            <label for="route" class="form-label">Route</label>
+            <input type="text" id="route" th:field="*{route}" class="form-control"/>
         </div>
 
-        <div class="w3-margin-top">
-            <label for="category"><b>Category</b></label>
-
-            <select id="category" th:field="*{categoryId}" class="w3-select w3-border w3-round">
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select id="category" th:field="*{categoryId}" class="form-select">
                 <option th:each="cat : ${categoriesForDropdown}"
                         th:value="${cat.id}"
-                        th:text="${cat.text}">
-                    Category Name
-                </option>
+                        th:text="${cat.text}">Category Name</option>
             </select>
         </div>
 
-        <div class="w3-margin-top w3-margin-bottom">
-            <input type="checkbox" id="status" th:field="*{status}" class="w3-check"/>
-            <label for="status"> Active</label>
+        <div class="form-check mb-3">
+            <input type="checkbox" id="status" th:field="*{status}" class="form-check-input"/>
+            <label class="form-check-label" for="status">Active</label>
         </div>
 
-        <hr/>
-        <button type="submit" class="w3-button w3-teal w3-round w3-right">Save SubCategory</button>
+        <div class="border-top pt-3">
+            <button type="submit" class="btn btn-primary float-end">Save Subcategory</button>
+        </div>
     </form>
 </div>
 

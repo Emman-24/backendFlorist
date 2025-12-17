@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html th:replace="~{layout/index :: layout(~{::title}, ~{::section})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Category</title>
+    <title>Edit Subcategory</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
 </head>
 <body>
 <section>
-    <div class="w3-container">
-        <h2>Edit Subcategory</h2>
-    </div>
+    <div class="container-fluid py-3">
+        <h2 class="h4 mb-3">Edit Subcategory</h2>
 
-    <div class="w3-card w3-white w3-margin-top">
-        <header class="w3-container w3-teal">
-            <h3>Subcategory Form</h3>
-        </header>
-
-        <div th:replace="~{pages/subcategories/fragments/_form :: form_fields(@{|/subcategories/update/${id}|})}"></div>
-
-        <footer class="w3-container w3-padding">
-            <a th:href="@{/subcategories}" class="w3-button w3-light-grey w3-round">Cancel</a>
-        </footer>
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Subcategory Form
+            </div>
+            <div class="card-body" th:replace="~{pages/subcategories/fragments/_form :: form_fields(@{|/subcategories/update/${id}|})}"></div>
+            <div class="card-footer">
+                <a th:href="@{/subcategories}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
     </div>
 </section>
 </body>
