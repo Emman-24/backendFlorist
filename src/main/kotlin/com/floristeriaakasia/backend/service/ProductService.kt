@@ -78,8 +78,8 @@ class ProductService(
                 .let { if (it.isEmpty()) null else it }
 
             price = request.price!!
-            facebookUrl = request.facebookUrl
-            instagramUrl = request.instagramUrl
+            facebookUrl = request.facebookUrl ?: ""
+            instagramUrl = request.instagramUrl ?: ""
         }
 
         // Update tags

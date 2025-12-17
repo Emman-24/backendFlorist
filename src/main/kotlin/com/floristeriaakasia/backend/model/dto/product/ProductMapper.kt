@@ -55,21 +55,24 @@ class ProductMapper {
             .toMutableList()
             .let { if (it.isEmpty()) null else it }
 
-        return Product(
-            category = parentCategory,
-            subCategory = parentSubcategory,
+        val product = Product(
+            title = request.text,
             route = slugify(request.route),
             status = request.status ?: true,
-            title = request.text,
-            description = paragraphs,
             price = request.price!!,
             originalName = file.originalFilename ?: "",
             storedName = storagePath,
             mimeType = file.contentType ?: "application/octet-stream",
             size = file.size,
-            facebookUrl = request.facebookUrl,
-            instagramUrl = request.instagramUrl
+            facebookUrl = request.facebookUrl ?: "",
+            instagramUrl = request.instagramUrl ?: ""
         )
+
+        product.category = parentCategory
+        product.subCategory = parentSubcategory
+        product.description = paragraphs
+
+        return product
     }
 
     private fun slugify(input: String): String {

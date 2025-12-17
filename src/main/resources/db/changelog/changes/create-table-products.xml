@@ -27,10 +27,6 @@
             <column name="price" type="DECIMAL(12,2)">
                 <constraints nullable="false"/>
             </column>
-            <!--            <column name="image_path" type="VARCHAR(1024)">-->
-            <!--                <constraints nullable="false"/>-->
-            <!--            </column>-->
-
             <column name="original_name" type="varchar(1024)"/>
             <column name="stored_name" type="varchar(1024)"/>
             <column name="mime_type" type="varchar(1024)"/>
@@ -39,6 +35,9 @@
             <column name="facebook_url" type="VARCHAR(1024)"/>
             <column name="instagram_url" type="VARCHAR(1024)"/>
             <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
         </createTable>

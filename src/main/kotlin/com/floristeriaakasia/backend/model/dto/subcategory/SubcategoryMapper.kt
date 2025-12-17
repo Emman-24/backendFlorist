@@ -22,8 +22,9 @@ class SubcategoryMapper {
             text = request.text,
             route = request.route,
             status = request.status,
+        ).apply {
             category = parentCategory
-        )
+        }
     }
 
     fun toRequest(subCategory: SubCategory): SubcategoryRequest {
