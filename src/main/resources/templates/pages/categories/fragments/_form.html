@@ -6,24 +6,24 @@
 
     <form th:action="${formActionUrl}"
           th:object="${categoryRequest}"
-          method="post" class="w3-container">
+          method="post">
 
-        <div classs="w3-margin-top">
-            <label for="text"><b>Category Name</b></label>
-            <input type="text" id="text" th:field="*{text}" class="w3-input w3-border w3-round"/>
+        <div class="mb-3">
+            <label for="text" class="form-label">Category Name</label>
+            <input type="text" id="text" th:field="*{text}" class="form-control"/>
         </div>
 
-        <div class="w3-margin-top">
-            <label for="route"><b>Category Route</b></label>
-            <input type="text" id="route" th:field="*{route}" class="w3-input w3-border w3-round"/>
+        <div class="mb-3">
+            <label for="route" class="form-label">Category Route</label>
+            <input type="text" id="route" th:field="*{route}" class="form-control"/>
         </div>
 
-        <div class="w3-margin-top w3-margin-bottom">
-            <input type="checkbox" id="status" th:field="*{status}" class="w3-check"/>
-            <label for="status"> Active</label>
+        <div class="form-check mb-3">
+            <input type="checkbox" id="status" th:field="*{status}" class="form-check-input"/>
+            <label for="status" class="form-check-label">Active</label>
         </div>
         <hr/>
-        <button type="submit" class="w3-button w3-teal w3-round w3-right">Save Category</button>
+        <button type="submit" class="btn btn-primary float-end">Save Category</button>
 
     </form>
 </div>

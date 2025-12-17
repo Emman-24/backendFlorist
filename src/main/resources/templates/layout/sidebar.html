@@ -1,10 +1,30 @@
-<!DOCTYPE html>
-<div class="w3-sidebar w3-bar-block w3-border-right" th:fragment="sidebar-fragment" role="navigation" style="width:25%" xmlns:th="http://www.thymeleaf.org">
-    <h3 class="w3-bar-item">Menu</h3>
-    <a th:href="@{/}" class="w3-bar-item w3-button">Home</a>
-    <a th:href="@{/categories}" class="w3-bar-item w3-button">Category</a>
-    <a th:href="@{/subcategories}" class="w3-bar-item w3-button">Subcategory</a>
-    <a th:href="@{/products}" class="w3-bar-item w3-button">Products</a>
-    <a th:href="@{/users}" class="w3-bar-item w3-button">Users</a>
-    <a th:href="@{/settings}" class="w3-bar-item w3-button">Settings</a>
+<div th:fragment="sidebar-fragment"
+     class="d-flex flex-column flex-shrink-0 p-3 bg-light border-end"
+     style="width: 250px; min-height: 100vh;"
+     role="navigation"
+     xmlns:th="http://www.thymeleaf.org">
+    <a th:href="@{/}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+        <span class="fs-4">Menu</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a th:href="@{/}" class="nav-link link-dark">Home</a>
+        </li>
+        <li>
+            <a th:href="@{/categories}" class="nav-link link-dark">Category</a>
+        </li>
+        <li>
+            <a th:href="@{/subcategories}" class="nav-link link-dark">Subcategory</a>
+        </li>
+        <li>
+            <a th:href="@{/products}" class="nav-link link-dark">Products</a>
+        </li>
+        <li>
+            <a th:href="@{/users}" class="nav-link link-dark">Users</a>
+        </li>
+        <li>
+            <a th:href="@{/settings}" class="nav-link link-dark">Settings</a>
+        </li>
+    </ul>
 </div>
