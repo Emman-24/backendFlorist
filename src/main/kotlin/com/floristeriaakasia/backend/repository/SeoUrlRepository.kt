@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 interface SeoUrlRepository : JpaRepository<SeoUrl, Long> {
     fun findBySlug(slug: String): SeoUrl?
     fun findByFullPath(fullPath: String): SeoUrl?
-    fun findByEntityTypeAndEntityId(entityType: String, entityId: Long): SeoUrl?
+    fun findByEntityTypeAndEntityId(entityType: String, entityId: Long?): SeoUrl?
 
     @Query("""
         SELECT s FROM SeoUrl s 

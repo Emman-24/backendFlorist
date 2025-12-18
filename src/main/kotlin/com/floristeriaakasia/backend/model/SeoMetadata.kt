@@ -27,7 +27,7 @@ class SeoMetadata(
     var metaDescription: String = "",
     var ogTitle: String = "",
     var ogDescription: String = "",
-    var ogImage: String = "",
+    var ogImageUrl: String = "",
     var schemaMarkup: String = "",
     var h1Override: String = "",
     var noindex: Boolean = false,
