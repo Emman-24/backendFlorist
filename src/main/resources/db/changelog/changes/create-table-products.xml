@@ -18,6 +18,24 @@
             <column name="route" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="alt_text" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="full_route" type="VARCHAR(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="stock_status" type="VARCHAR(20)" defaultValue="available">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seasonal" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="featured" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="views" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
             <column name="status" type="BOOLEAN" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
@@ -41,6 +59,25 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+
+        <createIndex indexName="idx_products_category" tableName="products">
+            <column name="category_id"/>
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_products_subcategory" tableName="products">
+            <column name="subcategory_id"/>
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_products_route" tableName="products">
+            <column name="route"/>
+        </createIndex>
+
+        <createIndex indexName="idx_products_featured" tableName="products">
+            <column name="featured"/>
+            <column name="status"/>
+        </createIndex>
 
         <addForeignKeyConstraint
                 baseTableName="products"
@@ -76,5 +113,6 @@
                 referencedColumnNames="id"
                 onDelete="CASCADE"/>
     </changeSet>
+
 
 </databaseChangeLog>

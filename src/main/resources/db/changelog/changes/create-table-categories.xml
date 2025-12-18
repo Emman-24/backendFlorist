@@ -31,6 +31,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <createIndex indexName="idx_categories_route" tableName="categories">
+            <column name="route"/>
+        </createIndex>
+
     </changeSet>
 
 </databaseChangeLog>

@@ -35,6 +35,11 @@
             </column>
         </createTable>
 
+        <createIndex indexName="idx_subcategory_category" tableName="sub_category">
+            <column name="category_id"/>
+            <column name="status"/>
+        </createIndex>
+
         <addForeignKeyConstraint
                 baseTableName="sub_category"
                 baseColumnNames="category_id"

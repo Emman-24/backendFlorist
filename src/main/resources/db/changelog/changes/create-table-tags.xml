@@ -27,7 +27,8 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-
-
+        <createIndex indexName="idx_tags_route" tableName="tags">
+            <column name="route"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

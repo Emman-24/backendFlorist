@@ -2,6 +2,7 @@ package com.floristeriaakasia.backend.service
 
 import com.floristeriaakasia.backend.exception.ResourceNotFoundException
 import com.floristeriaakasia.backend.model.Product
+import com.floristeriaakasia.backend.model.Tag
 import com.floristeriaakasia.backend.model.dto.product.ProductCreateRequest
 import com.floristeriaakasia.backend.model.dto.product.ProductMapper
 import com.floristeriaakasia.backend.model.dto.product.ProductResponse
@@ -70,12 +71,12 @@ class ProductService(
             title = request.text
 
 
-            description = request.description
-                .lines()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-                .toMutableList()
-                .let { if (it.isEmpty()) null else it }
+//            descriptions = request.description
+//                .lines()
+//                .map { it.trim() }
+//                .filter { it.isNotEmpty() }
+//                .toMutableList()
+//                .let { if (it.isEmpty()) null else it }
 
             price = request.price!!
             facebookUrl = request.facebookUrl ?: ""
@@ -84,7 +85,7 @@ class ProductService(
 
         // Update tags
         val tags = if (request.tagIds.isNotEmpty()) tagRepository.findAllById(request.tagIds) else emptyList()
-        existingProduct.tags = tags.toMutableList()
+        existingProduct.tags = tags.toMutableList() as MutableSet<Tag>
 
 
         if (!file.isEmpty) {
@@ -156,7 +157,7 @@ class ProductService(
 
         // Set tags for new product
         val tags = if (request.tagIds.isNotEmpty()) tagRepository.findAllById(request.tagIds) else emptyList()
-        product.tags = tags.toMutableList()
+        product.tags = tags.toMutableList() as MutableSet<Tag>
 
         return repository.save(product)
     }

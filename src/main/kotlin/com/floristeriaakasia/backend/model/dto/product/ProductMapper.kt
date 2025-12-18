@@ -32,7 +32,7 @@ class ProductMapper {
             categoryId = product.category.id!!,
             subCategoryId = product.subCategory.id!!,
             price = product.price,
-            description = product.description?.joinToString("\n") ?: "",
+            description = product.descriptions?.joinToString("\n") ?: "",
             facebookUrl = product.facebookUrl,
             instagramUrl = product.instagramUrl,
             tagIds = product.tags.mapNotNull { it.id }.toMutableList()
@@ -70,7 +70,7 @@ class ProductMapper {
 
         product.category = parentCategory
         product.subCategory = parentSubcategory
-        product.description = paragraphs
+//        product.descriptions = paragraphs
 
         return product
     }
