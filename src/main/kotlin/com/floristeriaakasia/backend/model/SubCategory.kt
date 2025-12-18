@@ -1,13 +1,18 @@
 package com.floristeriaakasia.backend.model
 
 import jakarta.persistence.*
-import org.hibernate.annotations.CreationTimestamp
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 
 @Entity
 @Table(name = "sub_category")
+@EntityListeners(AuditingEntityListener::class)
 class SubCategory(
     var text: String = "",
+    var description: String = "",
+    var position: Int = 0,
     var route: String = "",
     var status: Boolean = true,
 ) {
@@ -19,14 +24,14 @@ class SubCategory(
     @JoinColumn(name = "category_id", nullable = false)
     var category: Category = Category()
 
-    @OneToMany(mappedBy = "subCategory", cascade = [], orphanRemoval = false)
+    @OneToMany(mappedBy = "subCategory", cascade = [CascadeType.ALL], orphanRemoval = false)
     var products: MutableList<Product> = mutableListOf()
 
     @Column(nullable = false, updatable = false)
-    @CreationTimestamp
+    @CreatedDate
     val createdAt: Instant = Instant.now()
 
     @Column(nullable = true)
-    @CreationTimestamp
-    val updatedAt: Instant? = null
+    @LastModifiedDate
+    val updatedAt: Instant = Instant.now()
 }
