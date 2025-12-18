@@ -34,11 +34,11 @@ class ProductService(
         return repository.findAll().map(mapper::toResponse)
     }
 
-    @Transactional(readOnly = true)
-    fun findByStatus(status: Boolean, page: Int, size: Int): Page<ProductResponse> {
-        val pageable = PageRequest.of(page, size)
-        return repository.findByStatus(status, pageable).map(mapper::toResponse)
-    }
+//    @Transactional(readOnly = true)
+//    fun findByStatus(status: Boolean, page: Int, size: Int): Page<ProductResponse> {
+//        val pageable = PageRequest.of(page, size)
+//        return repository.findByStatus(status, pageable).map(mapper::toResponse)
+//    }
 
     @Transactional(readOnly = true)
     fun finByRequestId(id: Long): ProductCreateRequest {

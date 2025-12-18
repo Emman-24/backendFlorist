@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CategoryRepository : JpaRepository<Category, Long> {
-    fun existsByText(name: String): Boolean
-    fun existsByRoute(route: String): Boolean
+    fun findByStatus(status: Boolean): List<Category>
+    fun findByStatusOrderByPositionAsc(status: Boolean): List<Category>
     fun findByRoute(route: String): Category?
 }

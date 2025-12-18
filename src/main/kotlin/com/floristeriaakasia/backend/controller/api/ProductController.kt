@@ -14,14 +14,14 @@ class ProductController(
     private val productService: ProductService
 ) {
 
-    @GetMapping
-    fun getProducts(
-        @RequestParam(required = false, defaultValue = "true") status: Boolean,
-        @RequestParam(required = false, defaultValue = "0") page: Int,
-        @RequestParam(required = false, defaultValue = "10") size: Int
-    ): Page<ProductResponse> {
-        return productService.findByStatus(status, page, size)
-    }
+//    @GetMapping
+//    fun getProducts(
+//        @RequestParam(required = false, defaultValue = "true") status: Boolean,
+//        @RequestParam(required = false, defaultValue = "0") page: Int,
+//        @RequestParam(required = false, defaultValue = "10") size: Int
+//    ): Page<ProductResponse> {
+//        return productService.findByStatus(status, page, size)
+//    }
 
 
 }
