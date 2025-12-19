@@ -36,7 +36,7 @@ class SeoUrl(
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    val createdAt: Instant = Instant.now()
+    var createdAt: Instant = Instant.now()
 
     @LastModifiedDate
     @Column(nullable = false)

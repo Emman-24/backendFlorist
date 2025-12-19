@@ -23,9 +23,9 @@ class Tag(
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    val createdAt: Instant = Instant.now()
+    var createdAt: Instant = Instant.now()
 
     @Column(nullable = true)
     @LastModifiedDate
-    val updatedAt: Instant = Instant.now()
+    var updatedAt: Instant = Instant.now()
 }

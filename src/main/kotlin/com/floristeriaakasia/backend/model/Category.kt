@@ -18,7 +18,7 @@ class Category(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    var id: Long? = null
 
     @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = false)
     var products: MutableList<Product> = mutableListOf()
@@ -33,9 +33,9 @@ class Category(
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    val createdAt: Instant = Instant.now()
+    var createdAt: Instant = Instant.now()
 
     @Column(nullable = true)
     @LastModifiedDate
-    val updatedAt: Instant = Instant.now()
+    var updatedAt: Instant = Instant.now()
 }
