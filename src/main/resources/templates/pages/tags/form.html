@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/index :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${tag.id == null || tag.id == 0} ? 'Nuevo Tag - Admin' : 'Editar Tag - Admin'">Tag</title>
+</head>
+<body>
+<div th:fragment="content" class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/tags}">Tags</a></li>
+                    <li class="breadcrumb-item active" th:text="${tag.id == null || tag.id == 0} ? 'Nuevo' : 'Editar'">
+                        Nuevo
+                    </li>
+                </ol>
+            </nav>
+            <h2 th:text="${tag.id == null || tag.id == 0} ? 'Nuevo Tag' : 'Editar Tag: ' + ${tag.text}">Nuevo Tag</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{${(tag.id == null || tag.id == 0) ? '/tags/save' : '/tags/update/' + tag.id}}"
+                          th:object="${tag}"
+                          method="post">
+
+                        <!-- Nombre del Tag -->
+                        <div class="mb-3">
+                            <label for="text" class="form-label">Nombre del Tag <span
+                                    class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('text')} ? 'is-invalid' : ''"
+                                   id="text"
+                                   th:field="*{text}"
+                                   placeholder="Ej: rosas, lirios, globos"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('text')}" th:errors="*{text}">
+                                Error en nombre
+                            </div>
+                            <div class="form-text">
+                                Nombre descriptivo del tag. Utilizado para búsquedas y filtrado de productos.
+                            </div>
+                        </div>
+
+                        <!-- Ruta (Slug) -->
+                        <div class="mb-3">
+                            <label for="route" class="form-label">Ruta (Slug) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">/buscar/</span>
+                                <input type="text"
+                                       class="form-control"
+                                       th:classappend="${#fields.hasErrors('route')} ? 'is-invalid' : ''"
+                                       id="route"
+                                       th:field="*{route}"
+                                       placeholder="rosas"
+                                       pattern="[a-z0-9-]+"
+                                       required>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('route')}" th:errors="*{route}">
+                                Error en ruta
+                            </div>
+                            <div class="form-text">
+                                Solo letras minúsculas, números y guiones. Se usa en URLs de búsqueda.
+                            </div>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" th:field="*{status}">
+                                <option th:value="1">Activo</option>
+                                <option th:value="0">Inactivo</option>
+                            </select>
+                            <div class="form-text">Solo los tags activos aparecen en filtros de búsqueda</div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${tag.id == null || tag.id == 0} ? 'Crear Tag' : 'Guardar Cambios'">Guardar</span>
+                            </button>
+                            <a th:href="@{/tags}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel lateral -->
+        <div class="col-lg-4">
+            <!-- Información -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-info-circle"></i> ¿Qué son los Tags?
+                </div>
+                <div class="card-body">
+                    <p class="small">
+                        Los tags son etiquetas que describen los componentes o características de un producto.
+                    </p>
+                    <hr>
+                    <h6>Ejemplos:</h6>
+                    <ul class="small">
+                        <li><strong>Flores:</strong> rosas, lirios, margaritas, girasoles</li>
+                        <li><strong>Complementos:</strong> globos, chocolates, peluches, vinos</li>
+                        <li><strong>Colores:</strong> rojo, blanco, amarillo, pastel</li>
+                        <li><strong>Ocasiones:</strong> romántico, elegante, alegre</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Preview URL -->
+            <div class="card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <i class="bi bi-link-45deg"></i> URL de Búsqueda
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-0">
+                        <code>
+                            <span>https://www.floristeriaakasia.com.co/buscar/</span>
+                            <span id="preview-route" th:text="${tag.route}">tag</span>
+                        </code>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Estadísticas (solo en edición) -->
+            <div class="card" th:if="${tag.id != null && tag.id != 0}">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-graph-up"></i> Estadísticas
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Productos asociados:</span>
+                        <strong th:text="${tag.products.size()}">0</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Creado:</span>
+                        <span class="small" th:text="${#temporals.format(tag.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2024 10:00
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Actualizado:</span>
+                        <span class="small" th:text="${#temporals.format(tag.updatedAt, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2024 10:00
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos asociados (solo en edición) -->
+            <div class="card mt-3" th:if="${tag.id != null && tag.id != 0 && tag.products.size() > 0}">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-box"></i> Productos con este tag
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li th:each="product : ${tag.products.stream().limit(10).toList()}" class="mb-2">
+                            <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                               class="text-decoration-none"
+                               th:text="${product.title}">
+                                Producto
+                            </a>
+                            <br>
+                            <small class="text-muted" th:text="'$' + ${product.price}">$150000</small>
+                        </li>
+                        <li th:if="${tag.products.size() > 10}" class="text-muted">
+                            <small>Y <span th:text="${tag.products.size() - 10}"></span> más...</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Auto-slug desde nombre
+    document.getElementById('text')?.addEventListener('blur', function (e) {
+        const routeInput = document.getElementById('route');
+        if (routeInput && !routeInput.value) {
+            let slug = e.target.value
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            routeInput.value = slug;
+            routeInput.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Limpiar ruta y actualizar preview
+    document.getElementById('route')?.addEventListener('input', function (e) {
+        let value = e.target.value;
+        value = value.toLowerCase()
+            .replace(/[^a-z0-9-]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+        e.target.value = value;
+
+        const preview = document.getElementById('preview-route');
+        if (preview) {
+            preview.textContent = value || 'tag';
+        }
+    });
+</script>
+</body>
+</html>
