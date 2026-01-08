@@ -14,14 +14,27 @@ interface FaqRepository: JpaRepository<Faq, Long> {
 
     @Query("""
         SELECT f FROM Faq f 
-        WHERE f.status = :status 
+        WHERE (:status IS NULL OR f.status = :status)
+        AND (:category IS NULL OR f.category = :category)
+        AND (:search IS NULL OR LOWER(f.question) LIKE LOWER(CONCAT('%', :search, '%'))
+             OR LOWER(f.answer) LIKE LOWER(CONCAT('%', :search, '%')))
+        ORDER BY f.position ASC
+    """)
+    fun searchFaqsWithFilters(
+        @Param("search") search: String?,
+        @Param("category") category: String?,
+        @Param("status") status: Boolean?
+    ): List<Faq>
+
+    @Query("""
+        SELECT f FROM Faq f 
+        WHERE f.status = true 
         AND (LOWER(f.question) LIKE LOWER(CONCAT('%', :search, '%'))
              OR LOWER(f.answer) LIKE LOWER(CONCAT('%', :search, '%')))
         ORDER BY f.position ASC
     """)
     fun searchFaqs(
-        @Param("search") search: String,
-        @Param("status") status: Int
+        @Param("search") search: String
     ): List<Faq>
 
     @Query("""

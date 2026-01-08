@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/index :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${faq.id == null or faq.id == 0} ? 'Nueva FAQ - Admin' : 'Editar FAQ - Admin'">FAQ</title>
+</head>
+<body>
+<div th:fragment="content" class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/faqs}">FAQs</a></li>
+                    <li class="breadcrumb-item active" th:text="${faq.id == null or faq.id == 0} ? 'Nueva' : 'Editar'">Nueva</li>
+                </ol>
+            </nav>
+            <h2 th:text="${faq.id == null or faq.id == 0} ? 'Nueva Pregunta Frecuente' : 'Editar FAQ'">Nueva FAQ</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form th:action="@{${(faq.id == null or faq.id == 0) ? '/faqs/save' : '/faqs/update/' + faq.id}}"
+                          th:object="${faq}"
+                          method="post">
+
+                        <!-- Pregunta -->
+                        <div class="mb-3">
+                            <label for="question" class="form-label">Pregunta <span class="text-danger">*</span></label>
+                            <textarea class="form-control"
+                                      th:classappend="${#fields.hasErrors('question')} ? 'is-invalid' : ''"
+                                      id="question"
+                                      th:field="*{question}"
+                                      rows="2"
+                                      placeholder="¿Cuál es el horario de entrega?"
+                                      required></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('question')}" th:errors="*{question}">
+                                Error en pregunta
+                            </div>
+                            <div class="form-text">Escribe la pregunta exactamente como la haría un cliente</div>
+                        </div>
+
+                        <!-- Respuesta -->
+                        <div class="mb-3">
+                            <label for="answer" class="form-label">Respuesta <span class="text-danger">*</span></label>
+                            <textarea class="form-control"
+                                      th:classappend="${#fields.hasErrors('answer')} ? 'is-invalid' : ''"
+                                      id="answer"
+                                      th:field="*{answer}"
+                                      rows="5"
+                                      placeholder="Nuestro horario de entrega es de lunes a sábado de 7am a 7pm..."
+                                      required></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('answer')}" th:errors="*{answer}">
+                                Error en respuesta
+                            </div>
+                            <div class="form-text">Respuesta clara y completa. Puedes usar saltos de línea para mejor legibilidad</div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Categoría -->
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">Categoría</label>
+                                <select class="form-select" id="category" th:field="*{category}">
+                                    <option value="">Sin categoría</option>
+                                    <option value="delivery">Entregas</option>
+                                    <option value="productos">Productos</option>
+                                    <option value="pagos">Pagos</option>
+                                    <option value="general">General</option>
+                                </select>
+                                <div class="form-text">Ayuda a organizar las FAQs en el sitio web</div>
+                            </div>
+
+                            <!-- Posición -->
+                            <div class="col-md-3 mb-3">
+                                <label for="position" class="form-label">Posición</label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="position"
+                                       th:field="*{position}"
+                                       min="0"
+                                       placeholder="0">
+                                <div class="form-text">Orden de aparición</div>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="col-md-3 mb-3">
+                                <label for="status" class="form-label">Estado</label>
+                                <select class="form-select" id="status" th:field="*{status}">
+                                    <option th:value="true">Activo</option>
+                                    <option th:value="false">Inactivo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${faq.id == null or faq.id == 0} ? 'Crear FAQ' : 'Guardar Cambios'">Guardar</span>
+                            </button>
+                            <a th:href="@{/faqs}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel lateral -->
+        <div class="col-lg-4">
+            <!-- Consejos -->
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-lightbulb"></i> Consejos para FAQs Efectivas
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li class="mb-2"><strong>Pregunta clara:</strong> Usa el lenguaje que usarían tus clientes</li>
+                        <li class="mb-2"><strong>Respuesta directa:</strong> Ve directo al punto en las primeras líneas</li>
+                        <li class="mb-2"><strong>Detalles útiles:</strong> Incluye información específica (horarios, precios, zonas)</li>
+                        <li class="mb-2"><strong>Tono amigable:</strong> Mantén un tono cercano y profesional</li>
+                        <li><strong>SEO:</strong> Las FAQs ayudan mucho al posicionamiento en Google</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Ejemplos de preguntas -->
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-question-circle"></i> Ejemplos de Preguntas
+                </div>
+                <div class="card-body">
+                    <h6 class="small fw-bold">Entregas:</h6>
+                    <ul class="small">
+                        <li>¿Cuál es el horario de entrega?</li>
+                        <li>¿Hacen entregas los domingos?</li>
+                        <li>¿A qué zonas llegan?</li>
+                    </ul>
+
+                    <h6 class="small fw-bold mt-3">Productos:</h6>
+                    <ul class="small">
+                        <li>¿Puedo personalizar un arreglo?</li>
+                        <li>¿Qué flores son de temporada?</li>
+                        <li>¿Incluyen tarjeta dedicatoria?</li>
+                    </ul>
+
+                    <h6 class="small fw-bold mt-3">Pagos:</h6>
+                    <ul class="small">
+                        <li>¿Qué métodos de pago aceptan?</li>
+                        <li>¿Puedo pagar contra entrega?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Estadísticas (solo en edición) -->
+            <div class="card" th:if="${faq.id != null and faq.id != 0}">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-graph-up"></i> Estadísticas
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Vistas:</span>
+                        <strong th:text="${faq.views}">0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Marcada como útil:</span>
+                        <strong th:text="${faq.helpfulCount}">0</strong>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Creada:</span>
+                        <span class="small" th:text="${#temporals.format(faq.createdAt, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2024 10:00
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="small text-muted">Actualizada:</span>
+                        <span class="small" th:text="${#temporals.format(faq.updatedAt, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2024 10:00
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
