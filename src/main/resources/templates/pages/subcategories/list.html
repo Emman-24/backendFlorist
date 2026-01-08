@@ -36,7 +36,7 @@
                         <option th:each="cat : ${categories}"
                                 th:value="${cat.id}"
                                 th:text="${cat.text}"
-                                th:selected="${selectedCategoryId != null && selectedCategoryId == cat.id}">
+                                th:selected="${selectedCategoryId != null and selectedCategoryId == cat.id}">
                             Categoría
                         </option>
                     </select>

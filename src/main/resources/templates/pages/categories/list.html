@@ -105,7 +105,7 @@
                                             </div>
                                             <div class="modal-body">
                                                 <p>¿Estás seguro de eliminar la categoría <strong th:text="${category.text}"></strong>?</p>
-                                                <div class="alert alert-warning" th:if="${category.subCategories.size() > 0 || category.products.size() > 0}">
+                                                <div class="alert alert-warning" th:if="${category.subCategories.size() > 0 or category.products.size() > 0}">
                                                     <strong>⚠️ Advertencia:</strong> Esta categoría tiene
                                                     <span th:text="${category.subCategories.size()}"></span> subcategorías y
                                                     <span th:text="${category.products.size()}"></span> productos asociados.

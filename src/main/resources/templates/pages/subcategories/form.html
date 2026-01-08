@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html th:replace="~{layout/index :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${subcategory.id == null || subcategory.id == 0} ? 'Nueva Subcategoría - Admin' : 'Editar Subcategoría - Admin'">
+    <title th:text="${subcategory.id == null or subcategory.id == 0} ? 'Nueva Subcategoría - Admin' : 'Editar Subcategoría - Admin'">
         Subcategoría</title>
 </head>
 <body>
@@ -13,11 +13,11 @@
                     <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
                     <li class="breadcrumb-item"><a th:href="@{/subcategories}">Subcategorías</a></li>
                     <li class="breadcrumb-item active"
-                        th:text="${subcategory.id == null || subcategory.id == 0} ? 'Nueva' : 'Editar'">Nueva
+                        th:text="${subcategory.id == null or subcategory.id == 0} ? 'Nueva' : 'Editar'">Nueva
                     </li>
                 </ol>
             </nav>
-            <h2 th:text="${subcategory.id == null || subcategory.id == 0} ? 'Nueva Subcategoría' : 'Editar Subcategoría: ' + ${subcategory.text}">
+            <h2 th:text="${subcategory.id == null or subcategory.id == 0} ? 'Nueva Subcategoría' : 'Editar Subcategoría: ' + ${subcategory.text}">
                 Nueva Subcategoría</h2>
         </div>
     </div>
@@ -26,7 +26,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{${(subcategory.id == null || subcategory.id == 0) ? '/subcategories/save' : '/subcategories/update/' + subcategory.id}}"
+                    <form th:action="@{${(subcategory.id == null or subcategory.id == 0) ? '/subcategories/save' : '/subcategories/update/' + subcategory.id}}"
                           th:object="${subcategory}"
                           method="post">
 
@@ -130,7 +130,7 @@
                         <div class="d-flex gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i>
-                                <span th:text="${subcategory.id == null || subcategory.id == 0} ? 'Crear Subcategoría' : 'Guardar Cambios'">Guardar</span>
+                                <span th:text="${subcategory.id == null or subcategory.id == 0} ? 'Crear Subcategoría' : 'Guardar Cambios'">Guardar</span>
                             </button>
                             <a th:href="@{/subcategories}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
@@ -161,7 +161,7 @@
             </div>
 
             <!-- Estadísticas (solo en edición) -->
-            <div class="card" th:if="${subcategory.id != null && subcategory.id != 0}">
+            <div class="card" th:if="${subcategory.id != null and subcategory.id != 0}">
                 <div class="card-header bg-secondary text-white">
                     <i class="bi bi-graph-up"></i> Estadísticas
                 </div>

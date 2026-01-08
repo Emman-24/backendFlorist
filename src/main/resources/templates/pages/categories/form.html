@@ -11,7 +11,7 @@
                     <li class="breadcrumb-item active">Nueva</li>
                 </ol>
             </nav>
-            <h2 th:text="${category.id == null || category.id == 0} ? 'Nueva Categoría' : 'Editar Categoría: ' + ${category.text}">
+            <h2 th:text="${category.id == null or category.id == 0} ? 'Nueva Categoría' : 'Editar Categoría: ' + ${category.text}">
                 Nueva Categoría</h2>
         </div>
     </div>
@@ -20,7 +20,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{${(category.id == null || category.id == 0) ? '/categories/save' : '/categories/update/' + category.id}}"
+                    <form th:action="@{${(category.id == null or category.id == 0) ? '/categories/save' : '/categories/update/' + category.id}}"
                           th:object="${category}"
                           method="post">
 
@@ -97,7 +97,7 @@
                         <div class="d-flex gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i>
-                                <span th:text="${category.id == null || category.id == 0} ? 'Crear Categoría' : 'Guardar Cambios'">Guardar</span>
+                                <span th:text="${category.id == null or category.id == 0} ? 'Crear Categoría' : 'Guardar Cambios'">Guardar</span>
                             </button>
                             <a th:href="@{/categories}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
