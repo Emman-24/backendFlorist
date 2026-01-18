@@ -13,41 +13,105 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CategoryService(
     private val categoryRepository: CategoryRepository,
-    private val mapper: CategoryMapper
+    private val seoUrlService: SeoUrlService
 ) {
+
     @Transactional(readOnly = true)
-    fun findAll(): List<CategoryResponse> {
-        return categoryRepository.findAll().map(mapper::toResponse)
+    fun findAll(): List<Category> {
+        return categoryRepository.findAll().sortedBy { it.position }
     }
 
     @Transactional(readOnly = true)
-     fun findRequestById(id: Long): CategoryRequest {
+    fun findAllActive(): List<Category> {
+        return categoryRepository.findByStatusOrderByPositionAsc(true)
+    }
+
+    @Transactional(readOnly = true)
+    fun findById(id: Long): Category? {
         return categoryRepository.findByIdOrNull(id)
-            ?.let {
-                CategoryRequest(text = it.text, route = it.route, status = it.status)
-            }
-            ?: throw ResourceNotFoundException("Category with id $id not found")
     }
 
-    fun create(request: CategoryRequest): CategoryResponse {
-        val category = mapper.toEntity(request)
-        val savedCategory = categoryRepository.save(category)
-        return mapper.toResponse(savedCategory)
+    @Transactional(readOnly = true)
+    fun findByRoute(route: String): Category? {
+        return categoryRepository.findByRoute(route)
     }
 
-    fun update(id: Long, request: CategoryRequest): CategoryResponse {
-        val existingCategory = categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
-        mapper.updateEntityFromRequest(request, existingCategory)
-        val updatedCategory = categoryRepository.save(existingCategory)
-        return mapper.toResponse(updatedCategory)
+    @Transactional
+    fun save(category: Category): Category {
+        val saved = categoryRepository.save(category)
+        seoUrlService.createOrUpdateCategoryUrl(saved)
+        return saved
     }
 
-    fun deleteById(id: Long) {
-        if (!categoryRepository.existsById(id)) {
-            throw ResourceNotFoundException("Category with id $id not found")
+    @Transactional
+    fun update(
+        id: Long,
+        category: Category
+    ): Category {
+        val existing = categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
+
+        existing.apply {
+            text = category.text
+            route = category.route
+            description = category.description
+            position = category.position
+            status = category.status
         }
-        categoryRepository.deleteById(id)
+        val updated = categoryRepository.save(existing)
+        seoUrlService.createOrUpdateCategoryUrl(updated)
+        return updated
     }
 
+    @Transactional
+    fun deleteById(id: Long) {
+        val category =
+            categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
+        if (category.subCategories.isNotEmpty() || category.products.isNotEmpty()) {
+            throw IllegalStateException(
+                "Cannot delete category with ${category.subCategories.size} subcategories " +
+                        "and ${category.products.size} products"
+            )
+        }
 
+        categoryRepository.delete(category)
+    }
+
+    @Transactional
+    fun toggleStatus(id: Long): Category {
+        val category = categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
+        category.status = !category.status
+        return categoryRepository.save(category)
+    }
+
+    @Transactional
+    fun reorder(positions: Map<Long, Int>) {
+        positions.forEach { (id, position) ->
+            categoryRepository.findByIdOrNull(id)?.let { category ->
+                category.position = position
+                categoryRepository.save(category)
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun getStats(id: Long): CategoryStats? {
+        val category = categoryRepository.findByIdOrNull(id) ?: return null
+        return CategoryStats(
+            id = category.id!!,
+            name = category.text,
+            subcategoriesCount = category.subCategories.size,
+            productsCount = category.products.size,
+            activeSubcategoriesCount = category.subCategories.count { it.status },
+            activeProductsCount = category.products.count { it.status }
+        )
+    }
 }
+
+data class CategoryStats(
+    val id: Long,
+    val name: String,
+    val subcategoriesCount: Int,
+    val productsCount: Int,
+    val activeSubcategoriesCount: Int,
+    val activeProductsCount: Int
+)
