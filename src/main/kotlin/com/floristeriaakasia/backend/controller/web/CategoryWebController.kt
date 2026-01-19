@@ -53,7 +53,7 @@ class CategoryWebController(
             model.addAttribute("error", "Error al guardar la categoría: ${e.message}")
             return "pages/categories/form"
         }
-        return "redirect:/categories"
+        return "redirect:/admin/categories"
     }
 
     @GetMapping("/edit/{id}")
@@ -75,7 +75,7 @@ class CategoryWebController(
 
         if (existingCategory == null) {
             redirectAttributes.addFlashAttribute("error", "Categoría no encontrada")
-            return "redirect:/categories"
+            return "redirect:/admin/categories"
         }
         val categoryWithSameRoute = categoryRepository.findByRoute(category.route)
 
@@ -98,7 +98,7 @@ class CategoryWebController(
             seoUrlService.createOrUpdateCategoryUrl(updatedCategory)
 
             redirectAttributes.addFlashAttribute("success", "Categoría actualizada exitosamente")
-            return "redirect:/categories"
+            return "redirect:/admin/categories"
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar la categoría: ${e.message}")
             return "redirect:/categories/edit/$id"
@@ -114,7 +114,7 @@ class CategoryWebController(
 
         if (category == null) {
             redirectAttributes.addFlashAttribute("error", "Categoría no encontrada")
-            return "redirect:/categories"
+            return "redirect:/admin/categories"
         }
 
         if (category.subCategories.isNotEmpty() || category.products.isNotEmpty()) {
@@ -123,7 +123,7 @@ class CategoryWebController(
                 "No se puede eliminar esta categoría porque tiene ${category.subCategories.size} subcategorías " +
                         "y ${category.products.size} productos asociados. Elimina o reasigna estos elementos primero."
             )
-            return "redirect:/categories"
+            return "redirect:/admin/categories"
         }
         try {
             categoryRepository.delete(category)
@@ -131,7 +131,7 @@ class CategoryWebController(
         } catch (_: Exception) {
             redirectAttributes.addFlashAttribute("error", "No se pudo eliminar la categoría")
         }
-        return "redirect:/categories"
+        return "redirect:/admin/categories"
     }
 
     @PostMapping("/toggle-status/{id}")
@@ -144,6 +144,6 @@ class CategoryWebController(
         } catch (_: Exception) {
             redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado")
         }
-        return "redirect:/categories"
+        return "redirect:/admin/categories"
     }
 }

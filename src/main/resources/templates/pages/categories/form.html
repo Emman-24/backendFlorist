@@ -7,7 +7,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/categories}">Categorías</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/categories}">Categorías</a></li>
                     <li class="breadcrumb-item active">Nueva</li>
                 </ol>
             </nav>
@@ -20,7 +20,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{${(category.id == null or category.id == 0) ? '/categories/save' : '/categories/update/' + category.id}}"
+                    <form th:action="@{${(category.id == null or category.id == 0) ? '/admin/categories/save' : '/admin/categories/update/' + category.id}}"
                           th:object="${category}"
                           method="post">
 
@@ -99,7 +99,7 @@
                                 <i class="bi bi-save"></i>
                                 <span th:text="${category.id == null or category.id == 0} ? 'Crear Categoría' : 'Guardar Cambios'">Guardar</span>
                             </button>
-                            <a th:href="@{/categories}" class="btn btn-secondary">
+                            <a th:href="@{/admin/categories}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
                         </div>
