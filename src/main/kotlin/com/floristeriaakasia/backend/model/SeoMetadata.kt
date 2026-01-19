@@ -21,17 +21,39 @@ import java.time.Instant
 )
 @EntityListeners(AuditingEntityListener::class)
 class SeoMetadata(
+
+    /**
+     * Product / category / subcategory
+     */
+    @Column(nullable = false, length = 50)
     var entityType: String = "",
+
+    @Column(nullable = false)
     var entityId: Long = 0,
+
+    @Column(length = 60)
     var metaTitle: String = "",
+
+    @Column(length = 160)
     var metaDescription: String = "",
+
+    @Column(length = 255)
+    var metaKeywords: String = "",
+
+    @Column(length = 100)
     var ogTitle: String = "",
+
+    @Column(length = 200)
     var ogDescription: String = "",
+
+    @Column(length = 500, name = "og_image_url")
     var ogImageUrl: String = "",
+
+    @Column(columnDefinition = "JSON", name = "schema_markup")
     var schemaMarkup: String = "",
-    var h1Override: String = "",
-    var noindex: Boolean = false,
-    var nofollow: Boolean = false
+
+    @Column(nullable = false)
+    var isCustom: Boolean = false,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

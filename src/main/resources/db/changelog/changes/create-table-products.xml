@@ -18,9 +18,6 @@
             <column name="route" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="alt_text" type="VARCHAR(255)">
-                <constraints nullable="true"/>
-            </column>
             <column name="full_route" type="VARCHAR(500)">
                 <constraints nullable="true"/>
             </column>
@@ -45,10 +42,6 @@
             <column name="price" type="DECIMAL(12,2)">
                 <constraints nullable="false"/>
             </column>
-            <column name="original_name" type="varchar(1024)"/>
-            <column name="stored_name" type="varchar(1024)"/>
-            <column name="mime_type" type="varchar(1024)"/>
-            <column name="size" type="bigint"/>
 
             <column name="facebook_url" type="VARCHAR(1024)"/>
             <column name="instagram_url" type="VARCHAR(1024)"/>

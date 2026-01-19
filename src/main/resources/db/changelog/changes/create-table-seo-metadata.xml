@@ -33,13 +33,7 @@
             <column name="schema_markup" type="JSON">
                 <constraints nullable="true"/>
             </column>
-            <column name="h1_override" type="VARCHAR(255)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="noindex" type="BOOLEAN" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-            <column name="nofollow" type="BOOLEAN" defaultValueBoolean="false">
+            <column name="is_custom" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
             <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">

@@ -16,18 +16,29 @@ import java.time.Instant
 @Entity
 @Table(
     name = "seo_urls", indexes = [
-        Index(name = "idx_seo_urls_entity", columnList = "entity_type, entity_id"),
-        Index(name = "idx_seo_urls_slug", columnList = "slug")
+        Index(name = "idx_full_path", columnList = "fullPath", unique = true),
+        Index(name = "idx_entity", columnList = "entityType,entityId", unique = true),
+        Index(name = "idx_slug", columnList = "slug")
     ]
 )
 @EntityListeners(AuditingEntityListener::class)
 class SeoUrl(
+    @Column(nullable = false, length = 50)
     var entityType: String = "",
+
+    @Column(nullable = false)
     var entityId: Long = 0,
+
+    @Column(nullable = false, length = 255, unique = true)
     var slug: String = "",
+
+    @Column(nullable = false, length = 500, unique = true)
     var fullPath: String = "",
+
+    @Column(length = 500)
     var canonicalUrl: String = "",
-    var redirectFrom: String = "",
+
+    @Column(nullable = false)
     var status: Boolean = true
 ) {
     @Id

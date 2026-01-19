@@ -27,5 +27,6 @@
     <include file="db/changelog/changes/create-table-blog-categories.xml"/>
     <include file="db/changelog/changes/create-table-blog-post-categories.xml"/>
     <include file="db/changelog/changes/create-table-blog-related-products.xml"/>
+    <include file="/db/changelog/changes/create-table-seoRedirect.xml"/>
 
 </databaseChangeLog>

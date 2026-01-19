@@ -25,4 +25,5 @@ interface ProductGalleryRepository : JpaRepository<ProductGallery, Long> {
         @Param("productId") productId: Long,
         @Param("status") status: Int
     ): List<ProductGallery>
+
 }

@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository
 @Repository
 interface SeoMetadataRepository: JpaRepository<SeoMetadata, Long> {
     fun findByEntityTypeAndEntityId(entityType: String, entityId: Long): SeoMetadata?
-    fun findByNoindexTrue(): List<SeoMetadata>
 }

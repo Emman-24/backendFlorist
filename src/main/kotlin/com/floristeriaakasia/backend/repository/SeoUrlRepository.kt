@@ -11,10 +11,4 @@ interface SeoUrlRepository : JpaRepository<SeoUrl, Long> {
     fun findBySlug(slug: String): SeoUrl?
     fun findByFullPath(fullPath: String): SeoUrl?
     fun findByEntityTypeAndEntityId(entityType: String, entityId: Long?): SeoUrl?
-
-    @Query("""
-        SELECT s FROM SeoUrl s 
-        WHERE s.redirectFrom LIKE CONCAT('%', :oldPath, '%')
-    """)
-    fun findByRedirectFrom(@Param("oldPath") oldPath: String): List<SeoUrl>
 }
