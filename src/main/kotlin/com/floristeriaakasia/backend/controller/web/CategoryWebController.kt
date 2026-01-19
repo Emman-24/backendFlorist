@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
-@RequestMapping("/categories")
+@RequestMapping("/admin/categories")
 class CategoryWebController(
     private val categoryRepository: CategoryRepository,
     private val seoUrlService: SeoUrlService

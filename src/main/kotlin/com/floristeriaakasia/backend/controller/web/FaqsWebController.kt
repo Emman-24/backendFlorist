@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
-@RequestMapping("/faqs")
+@RequestMapping("/admin/faqs")
 class FaqsWebController(
     private val faqService: FaqService
 ) {

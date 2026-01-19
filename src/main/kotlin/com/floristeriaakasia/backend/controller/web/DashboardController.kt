@@ -14,14 +14,14 @@ class DashboardController {
         return "pages/home"
     }
 
-    @GetMapping("/users")
+    @GetMapping("/admin/users")
     fun getUsers(model: Model): String {
         model.addAttribute("pageTitle", "User Management")
         model.addAttribute("userList", listOf("Alice", "Bob", "Charlie"))
         return "pages/users"
     }
 
-    @GetMapping("/settings")
+    @GetMapping("/admin/settings")
     fun getSettings(model: Model): String {
         model.addAttribute("pageTitle", "Application Settings")
         return "pages/settings"
