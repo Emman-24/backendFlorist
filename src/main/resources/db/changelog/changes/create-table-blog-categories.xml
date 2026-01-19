@@ -21,7 +21,7 @@
             <column name="position" type="INT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="INT" defaultValueNumeric="1">
+            <column name="status" type="BOOLEAN" defaultValueNumeric="1">
                 <constraints nullable="false"/>
             </column>
             <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">

@@ -2,9 +2,6 @@ package com.floristeriaakasia.backend.service
 
 import com.floristeriaakasia.backend.exception.ResourceNotFoundException
 import com.floristeriaakasia.backend.model.Category
-import com.floristeriaakasia.backend.model.dto.category.CategoryMapper
-import com.floristeriaakasia.backend.model.dto.category.CategoryRequest
-import com.floristeriaakasia.backend.model.dto.category.CategoryResponse
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
