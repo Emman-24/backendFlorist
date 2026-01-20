@@ -56,8 +56,7 @@ class TagService(
 
     @Transactional
     fun deleteById(id: Long) {
-        val tag = tagRepository.findByIdOrNull(id)
-            ?: throw ResourceNotFoundException("Tag with id $id not found")
+        val tag = tagRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Tag with id $id not found")
         tagRepository.delete(tag)
     }
 

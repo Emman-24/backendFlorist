@@ -66,10 +66,10 @@ class TagWebController(
         try {
             tagService.save(tag)
             redirectAttributes.addFlashAttribute("success", "Tag guardado correctamente")
-            return "redirect:/tags"
+            return "redirect:/admin/tags"
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al guardar el tag: ${e.message}")
-            return "redirect:/tags/new"
+            return "redirect:/admin/tags/new"
         }
     }
 
@@ -84,7 +84,7 @@ class TagWebController(
         val existingTag = tagService.findById(id)
         if (existingTag == null) {
             redirectAttributes.addFlashAttribute("error", "Tag no encontrado")
-            return "redirect:/tags"
+            return "redirect:/admin/tags"
         }
         val tagWithSameRoute = tagService.findByRoute(tag.route)
         if (tagWithSameRoute != null && tagWithSameRoute.id != id) {
@@ -98,10 +98,10 @@ class TagWebController(
         try {
             tagService.update(id, tag)
             redirectAttributes.addFlashAttribute("success", "Tag actualizado correctamente")
-            return "redirect:/tags"
+            return "redirect:/admin/tags"
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el tag: ${e.message}")
-            return "redirect:/tags/edit/$id"
+            return "redirect:/admin/tags/edit/$id"
         }
 
     }
@@ -115,7 +115,7 @@ class TagWebController(
         val tag = tagService.findById(id)
         if (tag == null) {
             redirectAttributes.addFlashAttribute("error", "Tag no encontrada")
-            return "redirect:/tags"
+            return "redirect:/admin/tags"
         }
         model.addAttribute("tag", tag)
         return "pages/tags/form"
@@ -133,7 +133,7 @@ class TagWebController(
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el tag: ${e.message}")
         }
-        return "redirect:/tags"
+        return "redirect:/admin/tags"
     }
 
     @PostMapping("/delete/{id}")
@@ -145,7 +145,7 @@ class TagWebController(
 
         if (tag == null) {
             redirectAttributes.addFlashAttribute("error", "Tag no encontrada")
-            return "redirect:/tags"
+            return "redirect:/admin/tags"
         }
         try {
             tagService.deleteById(id)
@@ -153,7 +153,7 @@ class TagWebController(
         }catch (e: Exception){
             redirectAttributes.addFlashAttribute("error", "Error al eliminar el tag: ${e.message}")
         }
-        return "redirect:/tags"
+        return "redirect:/admin/tags"
     }
 
     @GetMapping("/api/most-used")

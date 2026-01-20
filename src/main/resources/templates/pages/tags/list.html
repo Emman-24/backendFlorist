@@ -9,7 +9,7 @@
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
                 <h2>Gestión de Tags</h2>
-                <a th:href="@{/tags/new}" class="btn btn-primary">
+                <a th:href="@{/admin/tags/new}" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Nuevo Tag
                 </a>
             </div>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end" th:if="${searchQuery}">
-                    <a th:href="@{/tags}" class="btn btn-secondary">
+                    <a th:href="@{/admin/tags}" class="btn btn-secondary">
                         <i class="bi bi-x-circle"></i> Limpiar
                     </a>
                 </div>
@@ -75,10 +75,10 @@
                         <td colspan="7" class="text-center text-muted py-4">
                                 <span th:if="${searchQuery}">
                                     No se encontraron tags con "<strong th:text="${searchQuery}"></strong>".
-                                    <a th:href="@{/tags}">Ver todos</a>
+                                    <a th:href="@{/admin/tags}">Ver todos</a>
                                 </span>
                             <span th:unless="${searchQuery}">
-                                    No hay tags registrados. <a th:href="@{/tags/new}">Crear el primero</a>
+                                    No hay tags registrados. <a th:href="@{/admin/tags/new}">Crear el primero</a>
                                 </span>
                         </td>
                     </tr>
@@ -104,7 +104,7 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
-                                <a th:href="@{/tags/edit/{id}(id=${tag.id})}"
+                                <a th:href="@{/admin/tags/edit/{id}(id=${tag.id})}"
                                    class="btn btn-outline-primary"
                                    title="Editar">
                                     <i class="bi bi-pencil"></i>
@@ -136,7 +136,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <form th:action="@{/tags/delete/{id}(id=${tag.id})}" method="post" style="display: inline;">
+                                            <form th:action="@{/admin/tags/delete/{id}(id=${tag.id})}" method="post" style="display: inline;">
                                                 <button type="submit" class="btn btn-danger">Eliminar</button>
                                             </form>
                                         </div>

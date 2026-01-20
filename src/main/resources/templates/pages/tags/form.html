@@ -10,7 +10,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-                    <li class="breadcrumb-item"><a th:href="@{/tags}">Tags</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/tags}">Tags</a></li>
                     <li class="breadcrumb-item active" th:text="${tag.id == null or tag.id == 0} ? 'Nuevo' : 'Editar'">
                         Nuevo
                     </li>
@@ -24,7 +24,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
-                    <form th:action="@{${(tag.id == null or tag.id == 0) ? '/tags/save' : '/tags/update/' + tag.id}}"
+                    <form th:action="@{${(tag.id == null or tag.id == 0) ? '/admin/tags/save' : '/admin/tags/update/' + tag.id}}"
                           th:object="${tag}"
                           method="post">
 
@@ -85,7 +85,7 @@
                                 <i class="bi bi-save"></i>
                                 <span th:text="${tag.id == null or tag.id == 0} ? 'Crear Tag' : 'Guardar Cambios'">Guardar</span>
                             </button>
-                            <a th:href="@{/tags}" class="btn btn-secondary">
+                            <a th:href="@{/admin/tags}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
                         </div>
@@ -165,7 +165,7 @@
                 <div class="card-body">
                     <ul class="list-unstyled mb-0">
                         <li th:each="product : ${tag.products.stream().limit(10).toList()}" class="mb-2">
-                            <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                            <a th:href="@{/admin/products/edit/{id}(id=${product.id})}"
                                class="text-decoration-none"
                                th:text="${product.title}">
                                 Producto
