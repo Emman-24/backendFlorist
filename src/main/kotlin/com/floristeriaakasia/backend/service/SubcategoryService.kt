@@ -38,8 +38,7 @@ class SubcategoryService(
 
     @Transactional
     fun update(id: Long, subcategory: SubCategory): SubCategory {
-        val existing = subcategoryRepository.findByIdOrNull(id)
-            ?: throw ResourceNotFoundException("Subcategory with id $id not found")
+        val existing = subcategoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Subcategory with id $id not found")
 
         existing.text = subcategory.text
         existing.route = subcategory.route

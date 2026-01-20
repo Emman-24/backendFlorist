@@ -9,7 +9,7 @@
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
                 <h2>Gestión de Subcategorías</h2>
-                <a th:href="@{/subcategories/new}" class="btn btn-primary">
+                <a th:href="@{/admin/subcategories/new}" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Nueva Subcategoría
                 </a>
             </div>
@@ -42,7 +42,7 @@
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <a th:href="@{/subcategories}" class="btn btn-secondary">Limpiar</a>
+                    <a th:href="@{/admin/subcategories}" class="btn btn-secondary">Limpiar</a>
                 </div>
             </form>
         </div>
@@ -67,7 +67,7 @@
                     <tbody>
                     <tr th:if="${#lists.isEmpty(subcategories)}">
                         <td colspan="8" class="text-center text-muted py-4">
-                            No hay subcategorías registradas. <a th:href="@{/subcategories/new}">Crear la primera</a>
+                            No hay subcategorías registradas. <a th:href="@{/admin/subcategories/new}">Crear la primera</a>
                         </td>
                     </tr>
                     <tr th:each="subcategory : ${subcategories}">
@@ -92,7 +92,7 @@
                             <span class="badge bg-secondary" th:text="${subcategory.position}">0</span>
                         </td>
                         <td>
-                            <form th:action="@{/subcategories/toggle-status/{id}(id=${subcategory.id})}" method="post">
+                            <form th:action="@{/admin/subcategories/toggle-status/{id}(id=${subcategory.id})}" method="post">
                                 <button type="submit" class="btn btn-link p-0 border-0" title="Cambiar estado">
                                     <span th:if="${subcategory.status}" class="badge bg-success">Activo</span>
                                     <span th:unless="${subcategory.status}" class="badge bg-danger">Inactivo</span>
@@ -104,7 +104,7 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
-                                <a th:href="@{/subcategories/edit/{id}(id=${subcategory.id})}"
+                                <a th:href="@{/admin/subcategories/edit/{id}(id=${subcategory.id})}"
                                    class="btn btn-outline-primary" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>
@@ -133,7 +133,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <form th:action="@{/subcategories/delete/{id}(id=${subcategory.id})}" method="post" style="display: inline;">
+                                            <form th:action="@{/admin/subcategories/delete/{id}(id=${subcategory.id})}" method="post" style="display: inline;">
                                                 <button type="submit" class="btn btn-danger">Eliminar</button>
                                             </form>
                                         </div>

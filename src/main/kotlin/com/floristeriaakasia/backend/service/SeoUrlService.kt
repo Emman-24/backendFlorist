@@ -90,7 +90,7 @@ class SeoUrlService(
                 createRedirect(
                     oldPath = existingSeoUrl.fullPath,
                     newPath = newFullPath,
-                    entityType = "subategory",
+                    entityType = "subcategory",
                     entityId = subCategory.id!!
                 )
 
@@ -102,7 +102,7 @@ class SeoUrlService(
         } else {
             seoUrlRepository.save(
                 SeoUrl(
-                    entityType = "subategory",
+                    entityType = "subcategory",
                     entityId = subCategory.id!!,
                     slug = subCategory.route,
                     fullPath = newFullPath,
