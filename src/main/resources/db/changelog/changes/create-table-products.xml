@@ -89,6 +89,9 @@
 
     <changeSet id="5" author="emman">
         <createTable tableName="product_descriptions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
             <column name="product_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>

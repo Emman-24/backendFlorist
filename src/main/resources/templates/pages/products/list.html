@@ -9,19 +9,21 @@
         <div class="col">
             <div class="d-flex justify-content-between align-items-center">
                 <h2>Gestión de Productos</h2>
-                <a th:href="@{/products/new}" class="btn btn-primary">
+                <a th:href="@{/admin/products/new}" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Nuevo Producto
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Mensajes -->
+    <!-- Alerts -->
+    <!--/*@thymesVar id="success" type="addFlashAttribute"*/-->
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${success}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
+    <!--/*@thymesVar id="error" type="addFlashAttribute"*/-->
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -82,7 +84,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-filter"></i> Filtrar
                     </button>
-                    <a th:href="@{/products}" class="btn btn-secondary">
+                    <a th:href="@{/admin/products}" class="btn btn-secondary">
                         <i class="bi bi-x"></i>
                     </a>
                 </div>
@@ -94,7 +96,7 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
         <div class="col" th:if="${#lists.isEmpty(products)}">
             <div class="alert alert-info">
-                No hay productos que mostrar. <a th:href="@{/products/new}">Crear el primero</a>
+                No hay productos que mostrar. <a th:href="@{/admin/products/new}">Crear el primero</a>
             </div>
         </div>
 
@@ -102,13 +104,7 @@
             <div class="card h-100 shadow-sm">
                 <!-- Imagen del producto -->
                 <div class="position-relative">
-                    <img th:if="${product.storedName != null}"
-                         th:src="@{'/uploads/products/' + ${product.storedName}}"
-                         class="card-img-top"
-                         th:alt="${product.altText}"
-                         style="height: 250px; object-fit: cover;">
-                    <div th:unless="${product.storedName != null}"
-                         class="bg-light d-flex align-items-center justify-content-center"
+                    <div class="bg-light d-flex align-items-center justify-content-center"
                          style="height: 250px;">
                         <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
                     </div>
@@ -166,7 +162,7 @@
                 <!-- Acciones -->
                 <div class="card-footer bg-transparent">
                     <div class="btn-group w-100" role="group">
-                        <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                        <a th:href="@{/admin/products/edit/{id}(id=${product.id})}"
                            class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-pencil"></i>
                         </a>
@@ -197,7 +193,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <form th:action="@{/products/delete/{id}(id=${product.id})}" method="post" style="display: inline;">
+                                <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post" style="isplay: inline;">
                                     <button type="submit" class="btn btn-danger">Eliminar</button>
                                 </form>
                             </div>

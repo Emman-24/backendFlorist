@@ -23,7 +23,6 @@ class Product(
     var fullRoute: String = "",
     var status: Boolean = true,
     var price: BigDecimal = BigDecimal.ZERO,
-    var size: Long = Long.MIN_VALUE,
     var stockStatus: String = "available",
     var seasonal: Boolean = false,
     var featured: Boolean = false,
@@ -65,14 +64,6 @@ class Product(
 
     @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], orphanRemoval = true)
     val reviews: MutableList<Review> = mutableListOf()
-
-    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinTable(
-        name = "product_occasions",
-        joinColumns = [JoinColumn(name = "product_id")],
-        inverseJoinColumns = [JoinColumn(name = "occasion_id")]
-    )
-    val occasions: MutableSet<Occasion> = mutableSetOf()
 
     @Column(nullable = false, updatable = false)
     @CreatedDate

@@ -17,8 +17,6 @@
 
     <include file="db/changelog/changes/create-table-product-gallery.xml"/>
     <include file="db/changelog/changes/create-table-product-variants.xml"/>
-    <include file="db/changelog/changes/create-table-ocassions.xml"/>
-    <include file="db/changelog/changes/create-table-product-occasions.xml"/>
 
     <include file="db/changelog/changes/create-table-reviews.xml"/>
     <include file="db/changelog/changes/create-table-delivery-zones.xml"/>

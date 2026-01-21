@@ -21,7 +21,7 @@ class ProductImageService(
     fun uploadImage(
         product: Product,
         file: MultipartFile,
-        altText: String,
+        altText: String?,
         isPrimary: Boolean,
         seasonal: Boolean
     ): ProductGallery {

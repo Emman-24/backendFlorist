@@ -1,457 +1,460 @@
 <!DOCTYPE html>
 <html th:replace="~{layout/index :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title th:text="${isNew} ? 'Nuevo Producto - Admin' : 'Editar Producto - Admin'">Producto</title>
+    <title th:text="${isNew} ? 'Nuevo Producto - Admin' : 'Editar Producto - Admin'">Producto</title>
 </head>
 <body>
 <div th:fragment="content" class="container-fluid">
-  <div class="row mb-4">
-    <div class="col">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
-          <li class="breadcrumb-item"><a th:href="@{/products}">Productos</a></li>
-          <li class="breadcrumb-item active" th:text="${isNew} ? 'Nuevo' : 'Editar'">Nuevo</li>
-        </ol>
-      </nav>
-      <div class="d-flex justify-content-between align-items-center">
-        <h2 th:text="${isNew} ? 'Nuevo Producto' : 'Editar: ' + ${product.title}">Nuevo Producto</h2>
-        <div class="btn-group" th:if="${!isNew}">
-          <button type="button" class="btn btn-sm btn-outline-secondary"
-                  onclick="window.open('/productos/' + '[[${product.route}]]', '_blank')">
-            <i class="bi bi-eye"></i> Ver en sitio
-          </button>
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/products}">Productos</a></li>
+                    <li class="breadcrumb-item active" th:text="${isNew} ? 'Nuevo' : 'Editar'">Nuevo</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 th:text="${isNew} ? 'Nuevo Producto' : 'Editar Producto'">Nuevo Producto</h2>
+                <div class="btn-group" th:if="${!isNew}">
+<!--                    <button type="button" class="btn btn-sm btn-outline-secondary"-->
+<!--                            onclick="window.open('/admin/productos/' + '[[${product.route}]]', '_blank')">-->
+<!--                        <i class="bi bi-eye"></i> Ver en sitio-->
+<!--                    </button>-->
+                </div>
+            </div>
         </div>
-      </div>
+
     </div>
-  </div>
 
-  <!-- Tabs de navegación -->
-  <ul class="nav nav-tabs mb-3" id="productTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button">
-        <i class="bi bi-info-circle"></i> Información Básica
-      </button>
-    </li>
-    <li class="nav-item" role="presentation" th:if="${!isNew}">
-      <button class="nav-link" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery" type="button">
-        <i class="bi bi-images"></i> Galería <span class="badge bg-secondary" th:text="${productDetails?.gallery?.size() ?: 0}">0</span>
-      </button>
-    </li>
-    <li class="nav-item" role="presentation" th:if="${!isNew}">
-      <button class="nav-link" id="descriptions-tab" data-bs-toggle="tab" data-bs-target="#descriptions" type="button">
-        <i class="bi bi-card-text"></i> Descripciones
-      </button>
-    </li>
-    <li class="nav-item" role="presentation" th:if="${!isNew}">
-      <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#variants" type="button">
-        <i class="bi bi-collection"></i> Variantes <span class="badge bg-secondary" th:text="${productDetails?.variants?.size() ?: 0}">0</span>
-      </button>
-    </li>
-    <li class="nav-item" role="presentation" th:if="${!isNew}">
-      <button class="nav-link" id="seo-tab" data-bs-toggle="tab" data-bs-target="#seo" type="button">
-        <i class="bi bi-search"></i> SEO
-      </button>
-    </li>
-  </ul>
+    <!-- Tabs de navegación -->
+    <ul class="nav nav-tabs mb-3" id="productTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button">
+                <i class="bi bi-info-circle"></i> Información Básica
+            </button>
+        </li>
+        <li class="nav-item" role="presentation" th:if="${!isNew}">
+            <button class="nav-link" id="gallery-tab" data-bs-toggle="tab" data-bs-target="#gallery" type="button">
+                <i class="bi bi-images"></i> Galería <span class="badge bg-secondary">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation" th:if="${!isNew}">
+            <button class="nav-link" id="descriptions-tab" data-bs-toggle="tab" data-bs-target="#descriptions"
+                    type="button">
+                <i class="bi bi-card-text"></i> Descripciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation" th:if="${!isNew}">
+            <button class="nav-link" id="variants-tab" data-bs-toggle="tab" data-bs-target="#variants" type="button">
+                <i class="bi bi-collection"></i> Variantes <span class="badge bg-secondary">0</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation" th:if="${!isNew}">
+            <button class="nav-link" id="seo-tab" data-bs-toggle="tab" data-bs-target="#seo" type="button">
+                <i class="bi bi-search"></i> SEO
+            </button>
+        </li>
+    </ul>
 
-  <div class="tab-content" id="productTabsContent">
+    <div class="tab-content" id="productTabsContent">
 
-    <!-- TAB 1: INFORMACIÓN BÁSICA -->
-    <div class="tab-pane fade show active" id="basic" role="tabpanel">
-      <form th:action="@{${isNew ? '/products/save' : '/products/update/' + product.id}}"
-            th:object="${product}"
-            method="post"
-            enctype="multipart/form-data">
-
-        <div class="row">
-          <div class="col-lg-8">
-            <div class="card mb-3">
-              <div class="card-header">
-                <h5 class="mb-0">Datos del Producto</h5>
-              </div>
-              <div class="card-body">
-                <!-- Título -->
-                <div class="mb-3">
-                  <label for="title" class="form-label">Título del Producto <span class="text-danger">*</span></label>
-                  <input type="text"
-                         class="form-control form-control-lg"
-                         th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
-                         id="title"
-                         th:field="*{title}"
-                         placeholder="Ej: Bouquet de Rosas Rojas Romántico"
-                         required>
-                  <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
-                </div>
-
-                <!-- Ruta (Slug) -->
-                <div class="mb-3">
-                  <label for="route" class="form-label">Ruta (Slug) <span class="text-danger">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text">/productos/.../</span>
-                    <input type="text"
-                           class="form-control"
-                           th:classappend="${#fields.hasErrors('route')} ? 'is-invalid' : ''"
-                           id="route"
-                           th:field="*{route}"
-                           placeholder="bouquet-rosas-rojas"
-                           pattern="[a-z0-9-]+"
-                           required>
-                  </div>
-                  <div class="invalid-feedback" th:if="${#fields.hasErrors('route')}" th:errors="*{route}"></div>
-                  <div class="form-text">⚠️ Cambiar la ruta afecta el SEO. Se creará redirect automático.</div>
-                </div>
-
+        <!-- TAB 1: BASIC INFORMATION-->
+        <div class="tab-pane fade show active" id="basic" role="tabpanel">
+            <form th:action="${isNew} ? @{/admin/products/save} : @{/admin/products/{id}(id=${productId})}"
+                  method="post"
+                  th:object="${product}"
+                  enctype="multipart/form-data">
                 <div class="row">
-                  <!-- Categoría -->
-                  <div class="col-md-6 mb-3">
-                    <label for="category" class="form-label">Categoría <span class="text-danger">*</span></label>
-                    <select class="form-select"
-                            id="category"
-                            name="category.id"
-                            th:classappend="${#fields.hasErrors('category')} ? 'is-invalid' : ''"
-                            required>
-                      <option value="">Selecciona una categoría</option>
-                      <option th:each="cat : ${categories}"
-                              th:value="${cat.id}"
-                              th:text="${cat.text}"
-                              th:selected="${product.category != null && product.category.id == cat.id}">
-                      </option>
-                    </select>
-                    <div class="invalid-feedback" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
-                  </div>
+                    <div class="col-lg-8">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Datos del Producto</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Título -->
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Título del Producto <span class="text-danger">*</span></label>
+                                    <input type="text"
+                                           class="form-control form-control-lg"
+                                           th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''"
+                                           id="title"
+                                           th:field="*{title}"
+                                           placeholder="Ej: Bouquet de Rosas Rojas Romántico"
+                                           required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}"
+                                         th:errors="*{title}"></div>
+                                </div>
 
-                  <!-- Subcategoría -->
-                  <div class="col-md-6 mb-3">
-                    <label for="subCategory" class="form-label">Subcategoría <span class="text-danger">*</span></label>
-                    <select class="form-select"
-                            id="subCategory"
-                            name="subCategory.id"
-                            th:classappend="${#fields.hasErrors('subCategory')} ? 'is-invalid' : ''"
-                            required>
-                      <option value="">Selecciona una subcategoría</option>
-                      <option th:each="sub : ${subcategories}"
-                              th:value="${sub.id}"
-                              th:text="${sub.category.text + ' > ' + sub.text}"
-                              th:selected="${product.subCategory != null && product.subCategory.id == sub.id}">
-                      </option>
-                    </select>
-                    <div class="invalid-feedback" th:if="${#fields.hasErrors('subCategory')}" th:errors="*{subCategory}"></div>
-                  </div>
-                </div>
+                                <!-- Ruta (Slug) -->
+                                <div class="mb-3">
+                                    <label for="route" class="form-label">Ruta (Slug) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">/productos/.../</span>
+                                        <input type="text"
+                                               class="form-control"
+                                               th:classappend="${#fields.hasErrors('route')} ? 'is-invalid' : ''"
+                                               id="route"
+                                               th:field="*{route}"
+                                               placeholder="bouquet-rosas-rojas"
+                                               pattern="[a-z0-9-]+"
+                                               required>
+                                        <button class="btn btn-outline-secondary" type="button"
+                                                onclick="generateSlug()">
+                                            <i class="bi bi-magic"></i> Auto
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('route')}"
+                                         th:errors="*{route}"></div>
+                                    <div class="form-text">Solo letras minúsculas, números y guiones (ej:
+                                        ramo-de-rosas)
+                                    </div>
+                                    <div class="form-text">⚠️ Cambiar la ruta afecta el SEO. Se creará redirect
+                                        automático.
+                                    </div>
+                                </div>
 
-                <!-- Precio -->
-                <div class="mb-3">
-                  <label for="price" class="form-label">Precio (COP) <span class="text-danger">*</span></label>
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-text">$</span>
-                    <input type="number"
-                           class="form-control"
-                           th:classappend="${#fields.hasErrors('price')} ? 'is-invalid' : ''"
-                           id="price"
-                           th:field="*{price}"
-                           min="0"
-                           step="1000"
-                           placeholder="150000"
-                           required>
-                  </div>
-                  <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
-                  <div class="form-text">💡 Consejo: Este es el precio base "desde". El cliente puede personalizarlo.</div>
-                </div>
+                                <div class="row">
+                                    <!-- Categoría -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="categoryId" class="form-label">Categoría <span
+                                                class="text-danger">*</span></label>
+                                        <select id="categoryId"
+                                                th:field="*{categoryId}"
+                                                th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid' : ''"
+                                                class="form-select"
+                                                required>
+                                            <option value="">Seleccionar...</option>
+                                            <option th:each="cat : ${categories}"
+                                                    th:value="${cat.id}"
+                                                    th:text="${cat.text}">Categoría
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('categoryId')}"
+                                             th:errors="*{categoryId}"></div>
+                                    </div>
 
-                <!-- Tags -->
-                <div class="mb-3">
-                  <label class="form-label">Tags (componentes del arreglo)</label>
-                  <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                    <div th:each="tag : ${tags}" class="form-check">
-                      <input class="form-check-input"
-                             type="checkbox"
-                             name="tagIds"
-                             th:value="${tag.id}"
-                             th:id="'tag-' + ${tag.id}"
-                             th:checked="${selectedTagIds != null && selectedTagIds.contains(tag.id)}">
-                      <label class="form-check-label" th:for="'tag-' + ${tag.id}" th:text="${tag.text}">
-                        Tag
-                      </label>
+                                    <!-- Subcategoría -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="subcategoryId" class="form-label">Subcategoría <span
+                                                class="text-danger">*</span></label>
+                                        <select id="subcategoryId"
+                                                th:field="*{subcategoryId}"
+                                                class="form-select"
+                                                th:classappend="${#fields.hasErrors('subcategoryId')} ? 'is-invalid' : ''"
+                                                required>
+                                            <option value="">Seleccionar...</option>
+                                            <option th:each="sub : ${subcategories}"
+                                                    th:value="${sub.id}"
+                                                    th:text="${sub.text}">Subcategoría
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('subcategoryId')}"
+                                             th:errors="*{subcategoryId}"></div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <!-- Precio -->
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Precio<span
+                                            class="text-danger">*</span></label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number"
+                                               class="form-control"
+                                               th:classappend="${#fields.hasErrors('price')} ? 'is-invalid' : ''"
+                                               id="price"
+                                               th:field="*{price}"
+                                               step="0.01"
+                                               min="0"
+                                               required>
+                                        <span class="input-group-text">COP</span>
+                                    </div>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}"
+                                         th:errors="*{price}"></div>
+                                </div>
+
+                                <!-- Tags -->
+                                <div class="mb-3">
+                                    <label class="form-label">Tags (componentes del arreglo)</label>
+                                    <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                        <div th:each="tag : ${tags}" class="form-check">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   name="tagIds"
+                                                   th:value="${tag.id}"
+                                                   th:id="'tag-' + ${tag.id}"
+                                                   th:checked="${product.tagIds != null and #lists.contains(product.tagIds, tag.id)}">
+                                            <label class="form-check-label" th:for="'tag-' + ${tag.id}"
+                                                   th:text="${tag.text}">
+                                                Tag
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-text">Selecciona las flores y complementos que incluye este
+                                        arreglo
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Stock Status -->
+                                    <div class="col-md-4 mb-3">
+                                        <label for="stockStatus" class="form-label">Disponibilidad</label>
+                                        <select class="form-select" id="stockStatus" th:field="*{stockStatus}">
+                                            <option value="available">Disponible</option>
+                                            <option value="seasonal">Solo Temporada</option>
+                                            <option value="out_of_stock">Agotado</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Seasonal -->
+                                    <div class="col-md-4 mb-3">
+                                        <label for="seasonal" class="form-label">¿Flores de temporada?</label>
+                                        <select class="form-select" id="seasonal" th:field="*{seasonal}">
+                                            <option th:value="false">No</option>
+                                            <option th:value="true">Sí</option>
+                                        </select>
+                                        <div class="form-text small">Si usa flores que no siempre hay</div>
+                                    </div>
+
+                                    <!-- Featured -->
+                                    <div class="col-md-4 mb-3">
+                                        <label for="featured" class="form-label">¿Destacado?</label>
+                                        <select class="form-select" id="featured" th:field="*{featured}">
+                                            <option th:value="false">No</option>
+                                            <option th:value="true">Sí</option>
+                                        </select>
+                                        <div class="form-text small">Aparece en home</div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Social Media URLs -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="facebookUrl" class="form-label">URL Facebook (opcional)</label>
+                                        <input type="url" class="form-control" id="facebookUrl"
+                                               th:field="*{facebookUrl}"
+                                               placeholder="https://facebook.com/...">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="instagramUrl" class="form-label">URL Instagram (opcional)</label>
+                                        <input type="url" class="form-control" id="instagramUrl"
+                                               th:field="*{instagramUrl}"
+                                               placeholder="https://instagram.com/p/...">
+                                    </div>
+                                </div>
+
+                                <!-- Estado -->
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Estado</label>
+                                    <select class="form-select" id="status" th:field="*{status}">
+                                        <option th:value="1">Activo (visible en el sitio)</option>
+                                        <option th:value="0">Inactivo (oculto)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${isNew} ? 'Crear Producto' : 'Guardar Cambios'">Guardar</span>
+                            </button>
+                            <a th:href="@{/products}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
                     </div>
-                  </div>
-                  <div class="form-text">Selecciona las flores y complementos que incluye este arreglo</div>
-                </div>
 
-                <div class="row">
-                  <!-- Stock Status -->
-                  <div class="col-md-4 mb-3">
-                    <label for="stockStatus" class="form-label">Disponibilidad</label>
-                    <select class="form-select" id="stockStatus" th:field="*{stockStatus}">
-                      <option value="available">Disponible</option>
-                      <option value="seasonal">Solo Temporada</option>
-                      <option value="out_of_stock">Agotado</option>
-                    </select>
-                  </div>
+                    <!-- Sidebar con información -->
+                    <div class="col-lg-4">
+                        <!-- Preview URL -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-info text-white">
+                                <i class="bi bi-link-45deg"></i> URL del Producto
+                            </div>
+                            <div class="card-body">
+                                <p class="small mb-0">
+                                    <code>
+                                        <span>https://www.floristeriaakasia.com.co</span><br>
+                                        <span>/productos/</span>
+                                        <span id="preview-category">categoria</span>
+                                        <span>/</span>
+                                        <span id="preview-subcategory">subcategoria</span>
+                                        <span>/</span>
+                                        <span id="preview-route"
+                                              th:text="${product.route ?: 'producto'}">producto</span>
+                                    </code>
+                                </p>
+                            </div>
+                        </div>
 
-                  <!-- Seasonal -->
-                  <div class="col-md-4 mb-3">
-                    <label for="seasonal" class="form-label">¿Flores de temporada?</label>
-                    <select class="form-select" id="seasonal" th:field="*{seasonal}">
-                      <option th:value="false">No</option>
-                      <option th:value="true">Sí</option>
-                    </select>
-                    <div class="form-text small">Si usa flores que no siempre hay</div>
-                  </div>
+                        <!-- Estadísticas (solo edición) -->
+                        <div class="card mb-3" th:if="${!isNew}">
+                            <div class="card-header bg-primary text-white">
+                                <i class="bi bi-graph-up"></i> Estadísticas
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Vistas:</span>
+                                    <strong >0</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Imágenes:</span>
+                                    <strong>0</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <span class="small text-muted">Creado:</span>
+                                    <span class="small">01/01/2024</span>
+                                </div>
+                            </div>
+                        </div>
 
-                  <!-- Featured -->
-                  <div class="col-md-4 mb-3">
-                    <label for="featured" class="form-label">¿Destacado?</label>
-                    <select class="form-select" id="featured" th:field="*{featured}">
-                      <option th:value="false">No</option>
-                      <option th:value="true">Sí</option>
-                    </select>
-                    <div class="form-text small">Aparece en home</div>
-                  </div>
+                        <!-- Consejos -->
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <i class="bi bi-lightbulb"></i> Consejos
+                            </div>
+                            <div class="card-body">
+                                <ul class="small mb-0">
+                                    <li class="mb-2"><strong>Título descriptivo:</strong> Incluye tipo de arreglo y
+                                        flores principales
+                                    </li>
+                                    <li class="mb-2"><strong>Precio "desde":</strong> El cliente puede personalizarlo
+                                        por WhatsApp
+                                    </li>
+                                    <li class="mb-2"><strong>Tags precisos:</strong> Ayudan a que encuentren el producto
+                                    </li>
+                                    <li class="mb-2"><strong>Imágenes de calidad:</strong> Son tu mejor vendedor</li>
+                                    <li><strong>Variantes:</strong> Ofrece tamaños o colores alternativos</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </form>
+        </div>
 
-                <!-- Social Media URLs -->
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="facebookUrl" class="form-label">URL Facebook (opcional)</label>
-                    <input type="url" class="form-control" id="facebookUrl" th:field="*{facebookUrl}"
-                           placeholder="https://facebook.com/...">
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="instagramUrl" class="form-label">URL Instagram (opcional)</label>
-                    <input type="url" class="form-control" id="instagramUrl" th:field="*{instagramUrl}"
-                           placeholder="https://instagram.com/p/...">
-                  </div>
-                </div>
-
-                <!-- Estado -->
-                <div class="mb-3">
-                  <label for="status" class="form-label">Estado</label>
-                  <select class="form-select" id="status" th:field="*{status}">
-                    <option th:value="1">Activo (visible en el sitio)</option>
-                    <option th:value="0">Inactivo (oculto)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- Imagen principal (solo en creación) -->
-            <div class="card mb-3" th:if="${isNew}">
-              <div class="card-header">
-                <h5 class="mb-0">Imagen Principal</h5>
-              </div>
-              <div class="card-body">
-                <div class="mb-3">
-                  <label for="mainImage" class="form-label">Subir imagen principal</label>
-                  <input type="file"
-                         class="form-control"
-                         id="mainImage"
-                         name="mainImage"
-                         accept="image/*">
-                  <div class="form-text">Puedes agregar más imágenes después de crear el producto</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-save"></i>
-                <span th:text="${isNew} ? 'Crear Producto' : 'Guardar Cambios'">Guardar</span>
-              </button>
-              <a th:href="@{/products}" class="btn btn-secondary btn-lg">
-                <i class="bi bi-x-circle"></i> Cancelar
-              </a>
-            </div>
-          </div>
-
-          <!-- Sidebar con información -->
-          <div class="col-lg-4">
-            <!-- Preview URL -->
-            <div class="card mb-3">
-              <div class="card-header bg-info text-white">
-                <i class="bi bi-link-45deg"></i> URL del Producto
-              </div>
-              <div class="card-body">
-                <p class="small mb-0">
-                  <code>
-                    <span>https://www.floristeriaakasia.com.co</span><br>
-                    <span>/productos/</span>
-                    <span id="preview-category">categoria</span>
-                    <span>/</span>
-                    <span id="preview-subcategory">subcategoria</span>
-                    <span>/</span>
-                    <span id="preview-route" th:text="${product.route ?: 'producto'}">producto</span>
-                  </code>
-                </p>
-              </div>
-            </div>
-
-            <!-- Estadísticas (solo edición) -->
-            <div class="card mb-3" th:if="${!isNew}">
-              <div class="card-header bg-primary text-white">
-                <i class="bi bi-graph-up"></i> Estadísticas
-              </div>
-              <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Vistas:</span>
-                  <strong th:text="${product.views}">0</strong>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Imágenes:</span>
-                  <strong th:text="${productDetails?.gallery?.size() ?: 0}">0</strong>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                  <span>Reseñas:</span>
-                  <strong th:text="${productDetails?.reviewCount ?: 0}">0</strong>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span>Rating promedio:</span>
-                  <strong th:text="${#numbers.formatDecimal(productDetails?.averageRating ?: 0, 1, 1)}">0.0</strong>
-                  <span class="text-warning">★</span>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between">
-                  <span class="small text-muted">Creado:</span>
-                  <span class="small" th:text="${#temporals.format(product.createdAt, 'dd/MM/yyyy')}">01/01/2024</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Consejos -->
+        <!-- TAB 2: GALERÍA (solo en edición) -->
+        <div class="tab-pane fade" id="gallery" role="tabpanel" th:if="${!isNew}">
             <div class="card">
-              <div class="card-header bg-success text-white">
-                <i class="bi bi-lightbulb"></i> Consejos
-              </div>
-              <div class="card-body">
-                <ul class="small mb-0">
-                  <li class="mb-2"><strong>Título descriptivo:</strong> Incluye tipo de arreglo y flores principales</li>
-                  <li class="mb-2"><strong>Precio "desde":</strong> El cliente puede personalizarlo por WhatsApp</li>
-                  <li class="mb-2"><strong>Tags precisos:</strong> Ayudan a que encuentren el producto</li>
-                  <li class="mb-2"><strong>Imágenes de calidad:</strong> Son tu mejor vendedor</li>
-                  <li><strong>Variantes:</strong> Ofrece tamaños o colores alternativos</li>
-                </ul>
-              </div>
+                <div class="card-header">
+                    <h5 class="mb-0">Galería de Imágenes</h5>
+                </div>
+                <div class="card-body">
+
+                </div>
             </div>
-          </div>
         </div>
-      </form>
+
+        <!-- TAB 3: DESCRIPCIONES -->
+        <div class="tab-pane fade" id="descriptions" role="tabpanel" th:if="${!isNew}">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Descripciones del Producto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Gestión de descripciones pendiente
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: VARIANTES -->
+        <div class="tab-pane fade" id="variants" role="tabpanel" th:if="${!isNew}">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Variantes del Producto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Gestión de variantes pendiente
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: SEO -->
+        <div class="tab-pane fade" id="seo" role="tabpanel" th:if="${!isNew}">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Configuración SEO</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> Los metadatos SEO se generan automáticamente al guardar el
+                        producto
+                    </div>
+                    <p class="text-muted">Próximamente: edición manual de meta title, meta description, y schema
+                        markup</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- TAB 2: GALERÍA (solo en edición) -->
-    <div class="tab-pane fade" id="gallery" role="tabpanel" th:if="${!isNew}">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Galería de Imágenes</h5>
-        </div>
-        <div class="card-body">
-          <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> Funcionalidad de galería pendiente de implementar via AJAX
-          </div>
-          <!-- Aquí irá la gestión de galería con JavaScript -->
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 3: DESCRIPCIONES -->
-    <div class="tab-pane fade" id="descriptions" role="tabpanel" th:if="${!isNew}">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Descripciones del Producto</h5>
-        </div>
-        <div class="card-body">
-          <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> Gestión de descripciones pendiente
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 4: VARIANTES -->
-    <div class="tab-pane fade" id="variants" role="tabpanel" th:if="${!isNew}">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Variantes del Producto</h5>
-        </div>
-        <div class="card-body">
-          <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> Gestión de variantes pendiente
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 5: SEO -->
-    <div class="tab-pane fade" id="seo" role="tabpanel" th:if="${!isNew}">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Configuración SEO</h5>
-        </div>
-        <div class="card-body">
-          <div class="alert alert-success">
-            <i class="bi bi-check-circle"></i> Los metadatos SEO se generan automáticamente al guardar el producto
-          </div>
-          <p class="text-muted">Próximamente: edición manual de meta title, meta description, y schema markup</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- Scripts -->
 <script>
-  // Auto-slug desde título
-  document.getElementById('title')?.addEventListener('blur', function(e) {
-    const routeInput = document.getElementById('route');
-    if (routeInput && !routeInput.value) {
-      let slug = e.target.value
-              .toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/^-|-$/g, '');
-      routeInput.value = slug;
-      routeInput.dispatchEvent(new Event('input'));
-    }
-  });
 
-  // Limpiar ruta
-  document.getElementById('route')?.addEventListener('input', function(e) {
-    let value = e.target.value;
-    value = value.toLowerCase()
+    // Limpiar ruta
+    document.getElementById('route')?.addEventListener('input', function (e) {
+        let value = e.target.value;
+        value = value.toLowerCase()
             .replace(/[^a-z0-9-]/g, '-')
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
-    e.target.value = value;
+        e.target.value = value;
 
-    document.getElementById('preview-route').textContent = value || 'producto';
-  });
+        document.getElementById('preview-route').textContent = value || 'producto';
+    });
 
-  // Actualizar preview de categoría
-  document.getElementById('category')?.addEventListener('change', function(e) {
-    const selectedOption = e.target.selectedOptions[0];
-    if (selectedOption && selectedOption.value) {
-      const categoryText = selectedOption.text.toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/[^a-z0-9]+/g, '-');
-      document.getElementById('preview-category').textContent = categoryText;
+    // Actualizar preview de categoría
+    document.getElementById('categoryId')?.addEventListener('change', function (e) {
+        const selectedOption = e.target.selectedOptions[0];
+        if (selectedOption && selectedOption.value) {
+            const categoryText = selectedOption.text.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-');
+            document.getElementById('preview-category').textContent = categoryText;
+        }
+    });
+
+    // Actualizar preview de subcategoría
+    document.getElementById('subcategoryId')?.addEventListener('change', function (e) {
+        const selectedOption = e.target.selectedOptions[0];
+        if (selectedOption && selectedOption.value) {
+            const text = selectedOption.text;
+            const subcatText = text.includes('>') ? text.split('>')[1].trim() : text;
+            const slug = subcatText.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-');
+            document.getElementById('preview-subcategory').textContent = slug;
+        }
+    });
+
+    function generateSlug() {
+        const title = document.getElementById('title').value;
+        const slug = title
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        document.getElementById('route').value = slug;
+        document.getElementById('preview-route').textContent = slug || 'producto';
     }
-  });
 
-  // Actualizar preview de subcategoría
-  document.getElementById('subCategory')?.addEventListener('change', function(e) {
-    const selectedOption = e.target.selectedOptions[0];
-    if (selectedOption && selectedOption.value) {
-      const text = selectedOption.text;
-      const subcatText = text.includes('>') ? text.split('>')[1].trim() : text;
-      const slug = subcatText.toLowerCase()
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-              .replace(/[^a-z0-9]+/g, '-');
-      document.getElementById('preview-subcategory').textContent = slug;
-    }
-  });
 </script>
 </body>
 </html>
