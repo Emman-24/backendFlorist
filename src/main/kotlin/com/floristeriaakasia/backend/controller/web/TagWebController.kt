@@ -1,7 +1,6 @@
 package com.floristeriaakasia.backend.controller.web
 
 import com.floristeriaakasia.backend.model.Tag
-import com.floristeriaakasia.backend.model.dto.tag.TagRequest
 import com.floristeriaakasia.backend.service.TagService
 import jakarta.validation.Valid
 import org.springframework.stereotype.Controller

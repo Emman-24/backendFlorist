@@ -4,6 +4,7 @@ import com.floristeriaakasia.backend.model.SubCategory
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import com.floristeriaakasia.backend.service.SubcategoryService
 import jakarta.validation.Valid
+import org.apache.juli.logging.Log
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -52,7 +53,7 @@ class SubcategoryWebController(
 
         if (categories.isEmpty()) {
             model.addAttribute("error", "No hay categorías activas. Crea una categoría primero.")
-            return "redirect:/categories/new"
+            return "redirect:/admin/categories/new"
         }
 
         model.addAttribute("subcategory", newSubCategory)
@@ -69,7 +70,7 @@ class SubcategoryWebController(
         val subcategory = subcategoryService.findById(id)
         if (subcategory == null) {
             redirectAttributes.addFlashAttribute("error", "Subcategoría no encontrada")
-            return "redirect:/subcategories"
+            return "redirect:/admin/subcategories"
         }
         val categories = categoryRepository.findByStatus(true)
         model.addAttribute("subcategory", subcategory)
@@ -108,10 +109,10 @@ class SubcategoryWebController(
         try {
             subcategoryService.save(subcategory)
             redirectAttributes.addFlashAttribute("success", "Subcategoría creada exitosamente")
-            return "redirect:/subcategories"
+            return "redirect:/admin/subcategories"
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al crear la subcategoría: ${e.message}")
-            return "redirect:/subcategories/new"
+            return "redirect:/admin/subcategories/new"
         }
     }
 
@@ -129,7 +130,7 @@ class SubcategoryWebController(
 
         if (existingSubCategory == null) {
             redirectAttributes.addFlashAttribute("error", "Subcategoría no encontrada")
-            return "redirect:/subcategories"
+            return "redirect:/admin/subcategories"
         }
 
         val category = categoryRepository.findById(categoryId).orElse(null)
@@ -153,10 +154,11 @@ class SubcategoryWebController(
         try {
             subcategoryService.update(id, subcategory)
             redirectAttributes.addFlashAttribute("success", "Subcategoría actualizada exitosamente")
-            return "redirect:/subcategories"
+            return "redirect:/admin/subcategories"
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar: ${e.message}")
-            return "redirect:/subcategories/edit/$id"
+            println(e.message)
+            return "redirect:/admin/subcategories/edit/$id"
         }
     }
 
@@ -171,7 +173,7 @@ class SubcategoryWebController(
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar: ${e.message}")
         }
-        return "redirect:/subcategories"
+        return "redirect:/admin/subcategories"
     }
 
     @PostMapping("/toggle-status/{id}")
@@ -182,7 +184,7 @@ class SubcategoryWebController(
         } catch (e: Exception) {
             redirectAttributes.addFlashAttribute("error", "No se pudo actualizar el estado: ${e.message}")
         }
-        return "redirect:/subcategories"
+        return "redirect:/admin/subcategories"
     }
 
 }

@@ -34,7 +34,7 @@ class SeoMetadata(
     @Column(length = 60)
     var metaTitle: String = "",
 
-    @Column(length = 160)
+    @Column(length = 320)
     var metaDescription: String = "",
 
     @Column(length = 255)
