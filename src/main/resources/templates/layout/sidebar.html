@@ -33,4 +33,8 @@
             <a th:href="@{/admin/settings}" class="nav-link link-dark">Settings</a>
         </li>
     </ul>
+    <hr>
+    <form th:action="@{/logout}" method="post" id="logoutForm">
+        <button type="submit" class="btn btn-outline-danger w-100">Logout</button>
+    </form>
 </div>
