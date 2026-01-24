@@ -94,6 +94,7 @@
 
     <!-- Grid de productos -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+
         <div class="col" th:if="${#lists.isEmpty(products)}">
             <div class="alert alert-info">
                 No hay productos que mostrar. <a th:href="@{/admin/products/new}">Crear el primero</a>
@@ -104,9 +105,13 @@
             <div class="card h-100 shadow-sm">
                 <!-- Imagen del producto -->
                 <div class="position-relative">
-                    <div class="bg-light d-flex align-items-center justify-content-center"
-                         style="height: 250px;">
-                        <i class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 250px; overflow: hidden;">
+                        <i th:if="${product.gallery.isEmpty()}" class="bi bi-image text-muted" style="font-size: 4rem;"></i>
+                        <img th:if="${!product.gallery.isEmpty()}" 
+                             th:src="@{/{path}(path=${product.gallery[0].storedName})}" 
+                             th:alt="${product.title}"
+                             class="img-fluid w-100 h-100"
+                             style="object-fit: cover;">
                     </div>
 
                     <!-- Badges -->
@@ -166,7 +171,7 @@
                            class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <a th:href="@{/products/view/{id}(id=${product.id})}"
+                        <a th:href="@{/admin/products/{id}(id=${product.id})}"
                            class="btn btn-sm btn-outline-info">
                             <i class="bi bi-eye"></i>
                         </a>

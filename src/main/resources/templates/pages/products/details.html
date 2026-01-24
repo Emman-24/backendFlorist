@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/index :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${product.title} + ' - Detalles'">Detalles del Producto</title>
+</head>
+<body>
+<div th:fragment="content" class="container-fluid">
+    <!-- Breadcrumb y header -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/products}">Productos</a></li>
+                    <li class="breadcrumb-item active" th:text="${product.title}">Producto</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 th:text="${product.title}">Nombre del Producto</h2>
+                    <p class="text-muted mb-0">
+                        <span class="badge bg-primary me-1" th:text="${product.category.text}">Categoría</span>
+                        <span class="badge bg-secondary me-1" th:text="${product.subCategory.text}">Subcategoría</span>
+                        <span th:if="${product.status}" class="badge bg-success">Activo</span>
+                        <span th:unless="${product.status}" class="badge bg-danger">Inactivo</span>
+                        <span th:if="${product.featured}" class="badge bg-warning text-dark">Destacado</span>
+                        <span th:if="${product.seasonal}" class="badge bg-info">Temporada</span>
+                    </p>
+                </div>
+                <div class="btn-group">
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row">
+        <!-- Columna principal -->
+        <div class="col-lg-8">
+            <!-- Información básica -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Básica</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Precio</label>
+                            <h3 class="text-success mb-0">
+                                $<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">0</span> COP
+                            </h3>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Disponibilidad</label>
+                            <h5 class="mb-0">
+                                <span th:if="${product.stockStatus == 'available'}" class="badge bg-success">Disponible</span>
+                                <span th:if="${product.stockStatus == 'seasonal'}" class="badge bg-info">Solo Temporada</span>
+                                <span th:if="${product.stockStatus == 'out_of_stock'}" class="badge bg-danger">Agotado</span>
+                            </h5>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Ruta (Slug)</label>
+                            <p class="mb-0">
+                                <code th:text="'/productos/' + ${product.category.route} + '/' + ${product.subCategory.route} + '/' + ${product.route}">
+                                    /productos/categoria/subcategoria/producto
+                                </code>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Vistas</label>
+                            <p class="mb-0"><i class="bi bi-eye"></i> <span th:text="${product.views}">0</span></p>
+                        </div>
+                    </div>
+
+                    <div class="row" th:if="${product.facebookUrl != '' or product.instagramUrl != ''}">
+                        <div class="col-12">
+                            <label class="text-muted small">Redes Sociales</label>
+                            <div>
+                                <a th:if="${product.facebookUrl != ''}" th:href="${product.facebookUrl}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-facebook"></i> Facebook
+                                </a>
+                                <a th:if="${product.instagramUrl != ''}" th:href="${product.instagramUrl}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-instagram"></i> Instagram
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripciones -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-card-text"></i> Descripciones</h5>
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Gestionar
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${descriptions.isEmpty()}" class="text-muted text-center py-3">
+                        <i class="bi bi-info-circle"></i> No hay descripciones aún
+                    </div>
+                    <div th:unless="${descriptions.isEmpty()}">
+                        <div th:each="desc, iterStat : ${descriptions}" class="mb-3">
+                            <div class="d-flex align-items-start">
+                                <span class="badge bg-secondary me-2" th:text="'#' + ${desc.position + 1}">1</span>
+                                <p class="mb-0" th:text="${desc.paragraph}">Descripción del producto...</p>
+                            </div>
+                            <hr th:unless="${iterStat.last}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galería -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-images"></i> Galería (<span th:text="${gallery.size()}">0</span>)</h5>
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-upload"></i> Gestionar Imágenes
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${gallery.isEmpty()}" class="text-muted text-center py-3">
+                        <i class="bi bi-image"></i> No hay imágenes aún
+                    </div>
+                    <div th:unless="${gallery.isEmpty()}" class="row g-3">
+                        <div th:each="img : ${gallery}" class="col-md-4">
+                            <div class="card">
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px; overflow: hidden;">
+                                    <img th:src="@{/{path}(path=${img.storedName})}" 
+                                         th:alt="${img.altText}"
+                                         class="img-fluid w-100 h-100"
+                                         style="object-fit: cover;">
+                                </div>
+                                <div class="card-body p-2">
+                                    <small th:if="${img.isPrimary}" class="badge bg-warning text-dark">Principal</small>
+                                    <small th:if="${img.seasonal}" class="badge bg-info">Temporada</small>
+                                    <p class="small mb-0 mt-1" th:text="${img.altText}">Alt text</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Variantes -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-collection"></i> Variantes (<span th:text="${variants.size()}">0</span>)</h5>
+                    <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Gestionar
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${variants.isEmpty()}" class="text-muted text-center py-3">
+                        <i class="bi bi-info-circle"></i> No hay variantes aún
+                    </div>
+                    <div th:unless="${variants.isEmpty()}">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Ajuste Precio</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="variant : ${variants}">
+                                    <td><span class="badge bg-primary" th:text="${variant.variantType}">Tipo</span></td>
+                                    <td th:text="${variant.name}">Nombre</td>
+                                    <td>
+                                        <span th:if="${variant.priceAdjustment > 0}" class="text-success">
+                                            +$<span th:text="${#numbers.formatDecimal(variant.priceAdjustment, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                        </span>
+                                        <span th:if="${variant.priceAdjustment < 0}" class="text-danger">
+                                            -$<span th:text="${#numbers.formatDecimal(variant.priceAdjustment * -1, 0, 'COMMA', 0, 'POINT')}">0</span>
+                                        </span>
+                                        <span th:if="${variant.priceAdjustment == 0}">$0</span>
+                                    </td>
+                                    <td><small th:text="${variant.description}">-</small></td>
+                                    <td>
+                                        <span th:if="${variant.status && variant.available}" class="badge bg-success">Disponible</span>
+                                        <span th:unless="${variant.status && variant.available}" class="badge bg-secondary">No disponible</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-star"></i> Reseñas (<span th:text="${reviewCount}">0</span>)
+                        <span th:if="${reviewCount > 0}" class="ms-2">
+                            - Promedio: <span th:text="${#numbers.formatDecimal(averageRating, 1, 'POINT', 1, 'POINT')}">0.0</span>
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${reviews.isEmpty()}" class="text-muted text-center py-3">
+                        <i class="bi bi-info-circle"></i> No hay reseñas aprobadas aún
+                    </div>
+                    <div th:unless="${reviews.isEmpty()}">
+                        <div th:each="review : ${reviews}" class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong th:text="${review.customerName}">Cliente</strong>
+                                    <div class="text-warning">
+                                        <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span>
+                                        <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}">☆</span>
+                                    </div>
+                                </div>
+                                <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy')}">Fecha</small>
+                            </div>
+                            <p class="mb-0 mt-2" th:text="${review.comment}">Comentario...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Tags -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-tags"></i> Tags</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${tags.isEmpty()}" class="text-muted text-center">
+                        No hay tags asignados
+                    </div>
+                    <div th:unless="${tags.isEmpty()}">
+                        <span th:each="tag : ${tags}" class="badge bg-light text-dark border me-1 mb-1" th:text="${tag.text}">Tag</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Acciones Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <form th:action="@{/admin/products/{id}/toggle-status(id=${product.id})}" method="post">
+                            <button type="submit" class="btn w-100" th:classappend="${product.status} ? 'btn-warning' : 'btn-success'">
+                                <i th:class="${product.status} ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                <span th:text="${product.status} ? 'Desactivar' : 'Activar'">Cambiar Estado</span>
+                            </button>
+                        </form>
+
+                        <form th:action="@{/admin/products/{id}/toggle-featured(id=${product.id})}" method="post">
+                            <button type="submit" class="btn w-100" th:classappend="${product.featured} ? 'btn-outline-warning' : 'btn-warning'">
+                                <i class="bi bi-star"></i>
+                                <span th:text="${product.featured} ? 'Quitar destacado' : 'Marcar destacado'">Toggle Featured</span>
+                            </button>
+                        </form>
+
+                        <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-primary">
+                            <i class="bi bi-pencil"></i> Editar Producto
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadatos -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Metadatos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">ID:</small>
+                        <p class="mb-0" th:text="${product.id}">1</p>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Creado:</small>
+                        <p class="mb-0" th:text="${#temporals.format(product.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</p>
+                    </div>
+                    <div>
+                        <small class="text-muted">Última actualización:</small>
+                        <p class="mb-0" th:text="${#temporals.format(product.updatedAt, 'dd/MM/yyyy HH:mm')}">Fecha</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de eliminación -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de eliminar el producto <strong th:text="${product.title}"></strong>?</p>
+                    <p class="text-danger small">Se eliminarán también todas sus imágenes, variantes, descripciones y reseñas. Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">Eliminar Permanentemente</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

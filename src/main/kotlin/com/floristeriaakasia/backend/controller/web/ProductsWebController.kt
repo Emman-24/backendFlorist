@@ -156,11 +156,11 @@ class ProductsWebController(
         model: Model
     ): String {
         val product = productService.findById(id) ?: throw ResourceNotFoundException("Producto no encontrado")
-        
+
         val categories = categoryRepository.findByStatus(true)
         val subcategories = subCategoryRepository.findAll()
         val tags = tagService.findAllActive()
-        
+
         val updateRequest = ProductUpdateRequest(
             title = product.title,
             route = product.route,
@@ -175,14 +175,16 @@ class ProductsWebController(
             status = product.status,
             tagIds = product.tags.mapNotNull { it.id }
         )
-        
+
         model.addAttribute("product", updateRequest)
         model.addAttribute("productId", id)
         model.addAttribute("categories", categories)
         model.addAttribute("subcategories", subcategories)
         model.addAttribute("tags", tags)
+        model.addAttribute("descriptions", product.descriptions.sortedBy { it.position })
+        model.addAttribute("gallery", product.gallery.sortedBy { it.position })
         model.addAttribute("isNew", false)
-        
+
         return "pages/products/form"
     }
 
@@ -243,8 +245,6 @@ class ProductsWebController(
             return "redirect:/admin/products/edit/$id"
         }
     }
-
-    //TODO: Create product details html
 
     @GetMapping("/{id}")
     fun showProduct(
