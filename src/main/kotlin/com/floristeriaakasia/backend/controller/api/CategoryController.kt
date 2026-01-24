@@ -15,14 +15,17 @@ class CategoryController(
 ) {
 
     @GetMapping
-    fun getAllCategories(@RequestParam(required = false) active: Boolean?): ResponseEntity<List<Category>> {
+    fun getAllCategories(
+        @RequestParam(required = false) active: Boolean?
+    ): ResponseEntity<List<CategoryDTO>> {
         return try {
             val categories = if (active == true) {
                 categoryService.findAllActive()
             } else {
                 categoryService.findAll()
             }
-            ResponseEntity.ok(categories)
+            val dto = categories.map { CategoryDTO.from(it) }
+            ResponseEntity.ok(dto)
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(emptyList())
         }
@@ -70,4 +73,33 @@ class CategoryController(
         }
     }
 
+}
+
+data class CategoryDTO(
+    val id: Long,
+    val name: String,
+    val route: String,
+    val description: String?,
+    val subCategories: List<SubCategoryDTO>
+) {
+    companion object {
+        fun from(category: Category): CategoryDTO {
+            return CategoryDTO(
+                id = category.id!!,
+                name = category.text, 
+                route = category.route,
+                description = null,
+                subCategories = category.subCategories.map { subCategory ->
+                    SubCategoryDTO(
+                        id = subCategory.id!!,
+                        name = subCategory.text,
+                        route = subCategory.route,
+                        description = subCategory.description,
+                        position = subCategory.position,
+                        status = subCategory.status
+                    )
+                }
+            )
+        }
+    }
 }
