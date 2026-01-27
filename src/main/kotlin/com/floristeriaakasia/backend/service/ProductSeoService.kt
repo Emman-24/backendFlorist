@@ -181,8 +181,15 @@ class ProductSeoService(
             .replace("\"", "\\\"")
             .replace("\n", "\\n")
             .replace("\r", "\\r")
-
             .replace("\t", "\\t")
+    }
+
+    @Transactional
+    fun deleteProductSeo(product: Product) {
+        seoUrlService.deleteProductUrl(product)
+        seoMetadataRepository.findByEntityTypeAndEntityId("product", product.id!!)?.let {
+            seoMetadataRepository.delete(it)
+        }
     }
 
     @Transactional(readOnly = true)

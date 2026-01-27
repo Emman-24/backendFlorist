@@ -145,6 +145,13 @@ class SeoUrlService(
         }
     }
 
+    @Transactional
+    fun deleteProductUrl(product: Product) {
+        seoUrlRepository.findByEntityTypeAndEntityId("product", product.id)?.let {
+            seoUrlRepository.delete(it)
+        }
+    }
+
     @Transactional(readOnly = true)
     fun resolveUrl(path: String): Triple<String, Long, Boolean>? {
 

@@ -117,6 +117,7 @@ class ProductService(
     fun deleteById(id: Long) {
         val product = findByIdOrThrow(id)
         productImageService.deleteAllImages(product)
+        seoService.deleteProductSeo(product)
         productRepository.delete(product)
     }
 
