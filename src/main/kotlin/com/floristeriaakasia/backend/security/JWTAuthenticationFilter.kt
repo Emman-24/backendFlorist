@@ -24,6 +24,25 @@ class JWTAuthenticationFilter(
     companion object {
         private const val BEARER_PREFIX = "Bearer "
         private const val AUTHORIZATION_HEADER = "Authorization"
+        private const val TOKEN_COOKIE_NAME = "accessToken"
+    }
+
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val path = request.requestURI
+
+        return path.startsWith("/api/auth/") ||
+                path.startsWith("/uploads/") ||
+                path.startsWith("/static/") ||
+                path.startsWith("/css/") ||
+                path.startsWith("/js/") ||
+                path.startsWith("/images/") ||
+                path.startsWith("/api/products") ||
+                path.startsWith("/api/categories") ||
+                path.startsWith("/api/subcategories") ||
+                path.startsWith("/api/tags") ||
+                path.startsWith("/error") ||
+                path == "/login" ||
+                path == "/access-denied"
     }
 
     override fun doFilterInternal(
@@ -37,7 +56,7 @@ class JWTAuthenticationFilter(
         jwt = if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
             authHeader.substring(BEARER_PREFIX.length)
         }else{
-            request.cookies?.find { it.name == "accessToken" }?.value
+            request.cookies?.find { it.name == TOKEN_COOKIE_NAME }?.value
         }
 
         if (jwt == null) {

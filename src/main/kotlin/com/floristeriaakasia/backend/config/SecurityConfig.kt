@@ -43,15 +43,18 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/logout").permitAll()
+                    .requestMatchers("/login", "/access-denied", "/error").permitAll()
 
+
+                    .requestMatchers("/static/**").permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/subcategories/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/faqs/**").permitAll()
 
-                    .requestMatchers("/uploads/**", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
 
                     .requestMatchers("/admin/**").hasRole("ADMIN")
 
@@ -88,9 +91,7 @@ class SecurityConfig(
             }
 
             .authenticationProvider(authenticationProvider())
-
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-
 
         return http.build()
     }
@@ -105,7 +106,7 @@ class SecurityConfig(
         )
 
         configuration.allowedMethods = listOf(
-            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+            "GET"
         )
 
         configuration.allowedHeaders = listOf(
