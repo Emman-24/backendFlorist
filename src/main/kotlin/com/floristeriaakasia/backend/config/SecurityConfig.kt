@@ -1,6 +1,7 @@
 package com.floristeriaakasia.backend.config
 
 import com.floristeriaakasia.backend.security.JWTAuthenticationFilter
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import java.time.Instant
 
 @Configuration
 @EnableWebSecurity
@@ -33,30 +35,22 @@ class SecurityConfig(
         http
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
-
-            .formLogin { formLogin ->
-                formLogin.loginPage("/login")
-                    .permitAll()
-            }
+            .formLogin { it.disable() }
             .httpBasic { it.disable() }
-
+            .sessionManagement { session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/login", "/access-denied", "/error").permitAll()
-
-
-                    .requestMatchers("/static/**").permitAll()
-                    .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-
-                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/subcategories/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/tags/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/faqs/**").permitAll()
-
-
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers(
+                        "/api/auth/**",
+                        "/api/products/**",
+                        "/api/categories/**",
+                        "/api/subcategories/**",
+                        "/api/tags/**",
+                        "/api/faqs/**",
+                        "/actuator/health"
+                    ).permitAll()
 
                     .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MANAGER")
 
@@ -67,29 +61,32 @@ class SecurityConfig(
             .exceptionHandling { exceptions ->
                 exceptions
                     .authenticationEntryPoint { request, response, authException ->
-                        if (request.requestURI.startsWith("/api/")) {
-                            response.contentType = "application/json"
-                            response.status = 401
-                            response.writer.write("""{"error": "Unauthorized", "message": "${authException.message}"}""")
-                        } else {
-                            response.sendRedirect("/login")
-                        }
+                        response.contentType = "application/json"
+                        response.status = HttpServletResponse.SC_UNAUTHORIZED
+                        response.writer.write(
+                            """
+                            {
+                                "error": "Unauthorized",
+                                "message": "${authException.message}",
+                                "timestamp": "${Instant.now()}",
+                                "path": "${request.requestURI}"
+                            }
+                        """.trimIndent()
+                        )
                     }
                     .accessDeniedHandler { request, response, accessDeniedException ->
-                        if (request.requestURI.startsWith("/api/")) {
-                            response.contentType = "application/json"
-                            response.status = 403
-                            response.writer.write("""{"error": "Forbidden", "message": "${accessDeniedException.message}"}""")
-                        } else {
-                            response.sendRedirect("/access-denied")
-                        }
+                        response.contentType = "application/json"
+                        response.status = HttpServletResponse.SC_FORBIDDEN
+                        response.writer.write("""
+                            {
+                                "error": "Forbidden",
+                                "message": "${accessDeniedException.message}",
+                                "timestamp": "${Instant.now()}",
+                                "path": "${request.requestURI}"
+                            }
+                        """.trimIndent())
                     }
             }
-
-            .sessionManagement { session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            }
-
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
 
@@ -98,35 +95,27 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
+
         val configuration = CorsConfiguration()
+
         configuration.allowedOrigins = listOf(
-            "https://www.floristeriaakasia.com.co",
             "http://localhost:4200",
-            "http://localhost:3000"
+            "https://www.floristeriaakasia.com.co"
         )
 
         configuration.allowedMethods = listOf(
-            "GET"
+            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         )
 
-        configuration.allowedHeaders = listOf(
-            "Authorization",
-            "Content-Type",
-            "X-Requested-With",
-            "Accept"
-        )
-
-        configuration.exposedHeaders = listOf(
-            "Authorization",
-            "X-Total-Count"
-        )
+        configuration.allowedHeaders = listOf("*")
+        configuration.exposedHeaders = listOf("Authorization", "X-Total-Count")
 
         configuration.allowCredentials = true
 
         configuration.maxAge = 3600L
 
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
+        source.registerCorsConfiguration("/api/**", configuration)
         return source
 
     }

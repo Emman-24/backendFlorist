@@ -25,15 +25,14 @@ class AuthService(
 
     @Transactional
     fun login(
-        username: String,
-        password: String,
-        response: HttpServletResponse
+        request: LoginRequest
     ): AuthResponse {
         authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(username, password)
+            UsernamePasswordAuthenticationToken(request.username, request.password)
         )
 
-        val user = userRepository.findByUsername(username).orElseThrow { IllegalArgumentException("Usuario no encontrado") }
+        val user = userRepository.findByUsername(request.username)
+            .orElseThrow { IllegalArgumentException("Usuario no encontrado") }
 
         user.lastLoginAt = LocalDateTime.now()
         userRepository.save(user)
@@ -41,21 +40,11 @@ class AuthService(
         val accessToken = jwtService.generateToken(user)
         val refreshToken = jwtService.generateRefreshToken(user)
 
-        response.let {
-            val cookie = Cookie("accessToken", accessToken).apply {
-                isHttpOnly = true
-                secure = true
-                path = "/"
-                maxAge = 86400
-            }
-            it.addCookie(cookie)
-        }
-
         return AuthResponse(
             accessToken = accessToken,
             refreshToken = refreshToken,
             tokenType = "Bearer",
-            expiresIn = 86400,
+            expiresIn = jwtService.getExpirationTime(),
             user = UserInfo.from(user)
         )
     }
@@ -95,18 +84,16 @@ class AuthService(
             accessToken = accessToken,
             refreshToken = refreshToken,
             tokenType = "Bearer",
-            expiresIn = 86400,
+            expiresIn = jwtService.getExpirationTime(),
             user = UserInfo.from(savedUser)
         )
     }
 
     @Transactional(readOnly = true)
     fun refreshToken(refreshToken: String): AuthResponse {
-
         val username = jwtService.extractUsername(refreshToken)
 
-        val user =
-            userRepository.findByUsername(username).orElseThrow { IllegalArgumentException("Usuario no encontrado") }
+        val user = userRepository.findByUsername(username).orElseThrow { IllegalArgumentException("Usuario no encontrado") }
 
         if (!jwtService.isTokenValid(refreshToken, user)) {
             throw IllegalArgumentException("Refresh token inválido o expirado")
@@ -118,79 +105,17 @@ class AuthService(
             accessToken = newAccessToken,
             refreshToken = refreshToken,
             tokenType = "Bearer",
-            expiresIn = 86400,
+            expiresIn = jwtService.getExpirationTime(),
             user = UserInfo.from(user)
         )
     }
 
-    @Transactional
-    fun createAdminUser(
-        username: String,
-        email: String,
-        password: String
-    ): User {
-
-        if (userRepository.existsByUsername(username)) {
-            throw IllegalArgumentException("El username ya existe")
-        }
-
-        val adminRole = roleRepository.findByName(Role.ADMIN).orElseGet {
-            roleRepository.save(
-                Role(name = Role.ADMIN, description = "Administrador del sistema")
-            )
-        }
-
-        val admin = User(
-            username = username,
-            email = email,
-            password = passwordEncoder.encode(password),
-            fullName = "Administrador",
-            enabled = true,
-            roles = mutableSetOf(adminRole)
-        )
-
-        return userRepository.save(admin)
-    }
-
-    @Transactional
-    fun createUserWithRole(
-        username: String,
-        email: String,
-        password: String,
-        fullName: String,
-        roleName: String
-    ): User {
-
-        if (userRepository.existsByUsername(username)) {
-            throw IllegalArgumentException("El username ya existe")
-        }
-
-        val roleDescription = when (roleName) {
-            Role.ADMIN -> "Administrador del sistema"
-            Role.MANAGER -> "Gerente"
-            Role.USER -> "Usuario regular"
-            else -> "Usuario"
-        }
-
-        val role = roleRepository.findByName(roleName).orElseGet {
-            roleRepository.save(
-                Role(name = roleName, description = roleDescription)
-            )
-        }
-
-        val user = User(
-            username = username,
-            email = email,
-            password = passwordEncoder.encode(password),
-            fullName = fullName,
-            enabled = true,
-            roles = mutableSetOf(role)
-        )
-
-        return userRepository.save(user)
-    }
 }
 
+data class LoginRequest(
+    val username: String,
+    val password: String
+)
 
 data class RegisterRequest(
     val username: String,
@@ -199,11 +124,6 @@ data class RegisterRequest(
     val fullName: String?
 )
 
-
-data class LoginRequest(
-    val username: String,
-    val password: String
-)
 
 data class AuthResponse(
     val accessToken: String,
