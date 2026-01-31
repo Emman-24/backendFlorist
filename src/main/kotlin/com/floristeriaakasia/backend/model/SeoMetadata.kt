@@ -14,18 +14,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 
 @Entity
-@Table(
-    name = "seo_metadata", indexes = [
-        Index(name = "idx_seo_metadata_entity", columnList = "entity_type, entity_id")
-    ]
-)
+@Table(name = "seo_metadata")
 @EntityListeners(AuditingEntityListener::class)
 class SeoMetadata(
 
     /**
      * Product / category / subcategory
      */
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     var entityType: String = "",
 
     @Column(nullable = false)
@@ -37,20 +33,8 @@ class SeoMetadata(
     @Column(length = 320)
     var metaDescription: String = "",
 
-    @Column(length = 255)
-    var metaKeywords: String = "",
-
-    @Column(length = 100)
-    var ogTitle: String = "",
-
-    @Column(length = 200)
-    var ogDescription: String = "",
-
-    @Column(length = 500, name = "og_image_url")
-    var ogImageUrl: String = "",
-
-    @Column(columnDefinition = "JSON", name = "schema_markup")
-    var schemaMarkup: String = "",
+    @Column(columnDefinition = "TEXT")
+    var schemaMarkup: String? = null,
 
     @Column(nullable = false)
     var isCustom: Boolean = false,

@@ -19,30 +19,29 @@ import java.time.Instant
 @EntityListeners(AuditingEntityListener::class)
 class Product(
     var title: String = "",
-    var route: String = "",
-    var fullRoute: String = "",
+    var slug: String = "",
     var status: Boolean = true,
     var price: BigDecimal = BigDecimal.ZERO,
-    var stockStatus: String = "available",
+    var stockStatus: StockStatus = StockStatus.AVAILABLE,
     var seasonal: Boolean = false,
     var featured: Boolean = false,
-    var facebookUrl: String = "",
-    var instagramUrl: String = "",
+    var facebookUrl: String? = null,
+    var instagramUrl: String? = null,
     var views: Int = 0
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    var category: Category = Category()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    lateinit var category: Category
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "subcategory_id", nullable = false)
-    var subCategory: SubCategory = SubCategory()
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subcategory_id")
+    lateinit var subCategory: SubCategory
 
-    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @ManyToMany
     @JoinTable(
         name = "product_tags",
         joinColumns = [JoinColumn(name = "product_id")],
@@ -60,9 +59,6 @@ class Product(
     val variants: MutableList<ProductVariant> = mutableListOf()
 
     @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val seoContent: MutableList<ProductSeoContent> = mutableListOf()
-
-    @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], orphanRemoval = true)
     val reviews: MutableList<Review> = mutableListOf()
 
     @Column(nullable = false, updatable = false)
@@ -72,4 +68,14 @@ class Product(
     @Column(nullable = true)
     @LastModifiedDate
     var updatedAt: Instant = Instant.now()
+
+    fun getFullPath(): String {
+        return "/productos/${category.route}/${subCategory.route}/$slug"
+    }
+}
+
+enum class StockStatus {
+    AVAILABLE,
+    SEASONAL,
+    OUT_OF_STOCK
 }
