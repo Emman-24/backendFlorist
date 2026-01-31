@@ -24,9 +24,6 @@
             <column name="comment" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="images" type="JSON">
-                <constraints nullable="true"/>
-            </column>
             <column name="verified_purchase" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>

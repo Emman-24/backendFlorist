@@ -11,7 +11,6 @@
     <include file="db/changelog/changes/create-table-tags.xml"/>
     <include file="db/changelog/changes/create-table-product-tags.xml"/>
 
-    <include file="db/changelog/changes/create-table-product-seo-content.xml"/>
     <include file="db/changelog/changes/create-table-seo-urls.xml"/>
     <include file="db/changelog/changes/create-table-seo-metadata.xml"/>
 
@@ -19,13 +18,11 @@
     <include file="db/changelog/changes/create-table-product-variants.xml"/>
 
     <include file="db/changelog/changes/create-table-reviews.xml"/>
-    <include file="db/changelog/changes/create-table-delivery-zones.xml"/>
+
     <include file="db/changelog/changes/create-table-faqs.xml"/>
-    <include file="db/changelog/changes/create-table-blog-posts.xml"/>
-    <include file="db/changelog/changes/create-table-blog-categories.xml"/>
-    <include file="db/changelog/changes/create-table-blog-post-categories.xml"/>
+
     <include file="db/changelog/changes/create-table-blog-related-products.xml"/>
-    <include file="/db/changelog/changes/create-table-seoRedirect.xml"/>
+
     <include file="/db/changelog/changes/create-table-roles.xml"/>
     <include file="/db/changelog/changes/create-table-user.xml"/>
 

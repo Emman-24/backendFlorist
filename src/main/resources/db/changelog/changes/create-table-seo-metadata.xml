@@ -18,19 +18,7 @@
             <column name="meta_title" type="VARCHAR(60)">
                 <constraints nullable="true"/>
             </column>
-            <column name="meta_description" type="VARCHAR(320)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="meta_keywords" type="VARCHAR(255)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="og_title" type="VARCHAR(100)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="og_description" type="VARCHAR(200)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="og_image_url" type="VARCHAR(500)">
+            <column name="meta_description" type="VARCHAR(160)">
                 <constraints nullable="true"/>
             </column>
             <column name="schema_markup" type="JSON">
