@@ -20,8 +20,7 @@ class ProductVariantService(
         productId: Long,
         request: VariantCreateRequest
     ): ProductVariant {
-        val product = productRepository.findByIdOrNull(productId)
-            ?: throw ResourceNotFoundException("Product not found")
+        val product = productRepository.findByIdOrNull(productId) ?: throw ResourceNotFoundException("Product not found")
 
         val variant = ProductVariant(
             variantType = request.variantType,
@@ -59,6 +58,7 @@ class ProductVariantService(
             ?: throw ResourceNotFoundException("Variant not found")
         productVariantRepository.delete(variant)
     }
+
 }
 
 data class VariantCreateRequest(

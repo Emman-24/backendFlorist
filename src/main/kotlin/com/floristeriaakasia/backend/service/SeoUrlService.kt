@@ -2,25 +2,20 @@ package com.floristeriaakasia.backend.service
 
 import com.floristeriaakasia.backend.model.Category
 import com.floristeriaakasia.backend.model.Product
-import com.floristeriaakasia.backend.model.SeoRedirect
 import com.floristeriaakasia.backend.model.SeoUrl
 import com.floristeriaakasia.backend.model.SubCategory
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import com.floristeriaakasia.backend.repository.ProductRepository
-import com.floristeriaakasia.backend.repository.SeoRedirectRepository
 import com.floristeriaakasia.backend.repository.SeoUrlRepository
 import com.floristeriaakasia.backend.repository.SubcategoryRepository
 import org.antlr.v4.runtime.misc.Triple
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
-import java.time.LocalDateTime
 
 @Service
 class SeoUrlService(
     private val seoUrlRepository: SeoUrlRepository,
-    private val seoRedirectRepository: SeoRedirectRepository,
     private val productRepository: ProductRepository,
     private val categoryRepository: CategoryRepository,
     private val subcategoryRepository: SubcategoryRepository,
@@ -33,7 +28,7 @@ class SeoUrlService(
     fun generateProductFullPath(product: Product): String {
         val categoryRoute = product.category.route
         val subCategoryRoute = product.subCategory.route
-        val productRoute = product.route
+        val productRoute = product.slug
         return "/productos/$categoryRoute/$subCategoryRoute/$productRoute"
     }
 
@@ -54,15 +49,8 @@ class SeoUrlService(
         return if (existingSeoUrl != null) {
             if (existingSeoUrl.fullPath != newFullPath) {
 
-                createRedirect(
-                    oldPath = existingSeoUrl.fullPath,
-                    newPath = newFullPath,
-                    entityType = "product",
-                    entityId = product.id!!
-                )
-
                 existingSeoUrl.fullPath = newFullPath
-                existingSeoUrl.slug = product.route
+                existingSeoUrl.slug = product.slug
                 existingSeoUrl.canonicalUrl = "$baseUrl$newFullPath"
             }
             seoUrlRepository.save(existingSeoUrl)
@@ -71,7 +59,7 @@ class SeoUrlService(
                 SeoUrl(
                     entityType = "product",
                     entityId = product.id!!,
-                    slug = product.route,
+                    slug = product.slug,
                     fullPath = newFullPath,
                     canonicalUrl = "$baseUrl$newFullPath"
                 )
@@ -87,16 +75,10 @@ class SeoUrlService(
         return if (existingSeoUrl != null) {
             if (existingSeoUrl.fullPath != newFullPath) {
 
-                createRedirect(
-                    oldPath = existingSeoUrl.fullPath,
-                    newPath = newFullPath,
-                    entityType = "subcategory",
-                    entityId = subCategory.id!!
-                )
-
                 existingSeoUrl.fullPath = newFullPath
                 existingSeoUrl.slug = subCategory.route
                 existingSeoUrl.canonicalUrl = "$baseUrl$newFullPath"
+
             }
             seoUrlRepository.save(existingSeoUrl)
         } else {
@@ -119,14 +101,6 @@ class SeoUrlService(
 
         return if (existingSeoUrl != null) {
             if (existingSeoUrl.fullPath != newFullPath) {
-
-                createRedirect(
-                    oldPath = existingSeoUrl.fullPath,
-                    newPath = newFullPath,
-                    entityType = "category",
-                    entityId = category.id!!
-                )
-
                 existingSeoUrl.fullPath = newFullPath
                 existingSeoUrl.slug = category.route
                 existingSeoUrl.canonicalUrl = "$baseUrl$newFullPath"
@@ -154,70 +128,12 @@ class SeoUrlService(
 
     @Transactional(readOnly = true)
     fun resolveUrl(path: String): Triple<String, Long, Boolean>? {
-
         seoUrlRepository.findByFullPath(path)?.let {
             return Triple(it.entityType, it.entityId, false)
         }
 
-        seoRedirectRepository.findByOldPathAndIsActiveTrue(path)?.let { redirect ->
-            return Triple(redirect.entityType, redirect.entityId, true)
-        }
-
         return null
     }
-
-    @Transactional
-    fun recordRedirectHit(oldPath: String) {
-        seoRedirectRepository.findByOldPathAndIsActiveTrue(oldPath)?.let { redirect ->
-            redirect.recordHit()
-            seoRedirectRepository.save(redirect)
-        }
-    }
-
-
-    @Transactional
-    fun createRedirect(
-        oldPath: String,
-        newPath: String,
-        entityType: String,
-        entityId: Long,
-        statusCode: Int = 301
-    ): SeoRedirect {
-        if (oldPath == newPath) {
-            throw IllegalArgumentException("Cannot create redirect to same path")
-        }
-        val existing = seoRedirectRepository.findByOldPathAndIsActiveTrue(oldPath)
-
-        if (existing != null) {
-            existing.newPath = newPath
-            existing.updatedAt = Instant.now()
-            return seoRedirectRepository.save(existing)
-        }
-
-        val finalNewPath = seoRedirectRepository.findByOldPathAndIsActiveTrue(newPath)?.newPath ?: newPath
-
-        return seoRedirectRepository.save(
-            SeoRedirect(
-                oldPath = oldPath,
-                newPath = finalNewPath,
-                entityType = entityType,
-                entityId = entityId,
-                statusCode = statusCode
-            )
-        )
-    }
-
-    @Transactional
-    fun cleanStaleRedirects(daysInactive: Long = 365): Int {
-        val cutoffDate = LocalDateTime.now().minusDays(daysInactive)
-        val staleRedirects = seoRedirectRepository.findStaleRedirects(cutoffDate)
-
-        staleRedirects.forEach { it.isActive = false }
-        seoRedirectRepository.saveAll(staleRedirects)
-
-        return staleRedirects.size
-    }
-
 
     @Transactional
     fun generateAllCategoryUrls() {
