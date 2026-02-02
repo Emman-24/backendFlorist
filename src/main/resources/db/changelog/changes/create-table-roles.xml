@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1" author="emman">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="roles" indexName="idx_role_name">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="4" author="emman">
+        <insert tableName="roles">
+            <column name="name" value="ADMIN"/>
+            <column name="description" value="Administrador del sistema"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="USER"/>
+            <column name="description" value="Usuario regular"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="MANAGER"/>
+            <column name="description" value="Gerente de contenido"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

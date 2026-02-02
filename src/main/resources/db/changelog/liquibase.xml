@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="db/changelog/changes/create-table-categories.xml"/>
+    <include file="db/changelog/changes/create-table-subcategories.xml"/>
+    <include file="db/changelog/changes/create-table-products.xml"/>
+    <include file="db/changelog/changes/create-table-tags.xml"/>
+    <include file="db/changelog/changes/create-table-product-tags.xml"/>
+
+    <include file="db/changelog/changes/create-table-seo-urls.xml"/>
+    <include file="db/changelog/changes/create-table-seo-metadata.xml"/>
+
+    <include file="db/changelog/changes/create-table-product-gallery.xml"/>
+    <include file="db/changelog/changes/create-table-product-variants.xml"/>
+
+    <include file="db/changelog/changes/create-table-reviews.xml"/>
+
+    <include file="db/changelog/changes/create-table-faqs.xml"/>
+
+    <include file="/db/changelog/changes/create-table-roles.xml"/>
+    <include file="/db/changelog/changes/create-table-user.xml"/>
+
+</databaseChangeLog>
