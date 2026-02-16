@@ -1,0 +1,22 @@
+### macOS ###
+.DS_Store
+
+### Maven ###
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+### IntelliJ IDEA ###
+.idea/
+*.iml
+
+### Environment Variables ###
+.env
+
+### Logs ###
+*.log
+logs/
+
+### Temporary Files ###
+*.tmp
+*.swp
+*.bak
