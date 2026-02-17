@@ -1,9 +1,10 @@
 package com.floristeriaakasia.backend.controller.api
 
-import com.floristeriaakasia.backend.model.Category
-import com.floristeriaakasia.backend.model.dto.SubCategorySimpleDTO
+import com.floristeriaakasia.backend.model.dto.CategoryCreateRequest
+import com.floristeriaakasia.backend.model.dto.CategoryDTO
 import com.floristeriaakasia.backend.service.CategoryService
 import com.floristeriaakasia.backend.service.CategoryStats
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -13,6 +14,16 @@ import org.springframework.web.bind.annotation.*
 class CategoryController(
     private val categoryService: CategoryService
 ) {
+
+    @PostMapping
+    fun createCategory(@Valid @RequestBody request: CategoryCreateRequest): ResponseEntity<CategoryDTO> {
+        return try {
+            categoryService.save(CategoryCreateRequest.toCategory(request))
+            ResponseEntity.status(HttpStatus.CREATED).build()
+        } catch (_: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
 
     @GetMapping
     fun getAllCategories(
@@ -31,12 +42,13 @@ class CategoryController(
         }
     }
 
+
     @GetMapping("/{id}")
-    fun getCategoryById(@PathVariable id: Long): ResponseEntity<Category> {
+    fun getCategoryById(@PathVariable id: Long): ResponseEntity<CategoryDTO> {
         return try {
             val category = categoryService.findById(id)
             if (category != null) {
-                ResponseEntity.ok(category)
+                ResponseEntity.ok(CategoryDTO.from(category))
             } else {
                 ResponseEntity.notFound().build()
             }
@@ -46,11 +58,11 @@ class CategoryController(
     }
 
     @GetMapping("/route/{route}")
-    fun getCategoryByRoute(@PathVariable route: String): ResponseEntity<Category> {
+    fun getCategoryByRoute(@PathVariable route: String): ResponseEntity<CategoryDTO> {
         return try {
             val category = categoryService.findByRoute(route)
             if (category != null) {
-                ResponseEntity.ok(category)
+                ResponseEntity.ok(CategoryDTO.from(category))
             } else {
                 ResponseEntity.notFound().build()
             }
@@ -60,7 +72,9 @@ class CategoryController(
     }
 
     @GetMapping("/{id}/stats")
-    fun getCategoryStats(@PathVariable id: Long): ResponseEntity<CategoryStats> {
+    fun getCategoryStats(
+        @PathVariable id: Long
+    ): ResponseEntity<CategoryStats> {
         return try {
             val stats = categoryService.getStats(id)
             if (stats != null) {
@@ -75,28 +89,3 @@ class CategoryController(
 
 }
 
-data class CategoryDTO(
-    val id: Long,
-    val name: String,
-    val route: String,
-    val description: String?,
-    val subCategories: List<SubCategorySimpleDTO>
-) {
-    companion object {
-        fun from(category: Category): CategoryDTO {
-            return CategoryDTO(
-                id = category.id!!,
-                name = category.text,
-                route = category.route,
-                description = null,
-                subCategories = category.subCategories.map { subCategory ->
-                    SubCategorySimpleDTO(
-                        id = subCategory.id!!,
-                        name = subCategory.text,
-                        route = subCategory.route
-                    )
-                }
-            )
-        }
-    }
-}

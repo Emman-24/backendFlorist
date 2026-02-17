@@ -10,12 +10,11 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CategoryService(
     private val categoryRepository: CategoryRepository,
-    private val seoUrlService: SeoUrlService
 ) {
 
     @Transactional(readOnly = true)
     fun findAll(): List<Category> {
-        return categoryRepository.findAll().sortedBy { it.position }
+        return categoryRepository.findAllWithSubcategories()
     }
 
     @Transactional(readOnly = true)
@@ -25,7 +24,7 @@ class CategoryService(
 
     @Transactional(readOnly = true)
     fun findById(id: Long): Category? {
-        return categoryRepository.findByIdOrNull(id)
+        return categoryRepository.findByIdWithSubcategories(id)
     }
 
     @Transactional(readOnly = true)
@@ -36,7 +35,6 @@ class CategoryService(
     @Transactional
     fun save(category: Category): Category {
         val saved = categoryRepository.save(category)
-        seoUrlService.createOrUpdateCategoryUrl(saved)
         return saved
     }
 
@@ -55,7 +53,6 @@ class CategoryService(
             status = category.status
         }
         val updated = categoryRepository.save(existing)
-        seoUrlService.createOrUpdateCategoryUrl(updated)
         return updated
     }
 
@@ -71,23 +68,6 @@ class CategoryService(
         }
 
         categoryRepository.delete(category)
-    }
-
-    @Transactional
-    fun toggleStatus(id: Long): Category {
-        val category = categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
-        category.status = !category.status
-        return categoryRepository.save(category)
-    }
-
-    @Transactional
-    fun reorder(positions: Map<Long, Int>) {
-        positions.forEach { (id, position) ->
-            categoryRepository.findByIdOrNull(id)?.let { category ->
-                category.position = position
-                categoryRepository.save(category)
-            }
-        }
     }
 
     @Transactional(readOnly = true)
