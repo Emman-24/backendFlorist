@@ -11,9 +11,6 @@
     <include file="db/changelog/changes/create-table-tags.xml"/>
     <include file="db/changelog/changes/create-table-product-tags.xml"/>
 
-    <include file="db/changelog/changes/create-table-seo-urls.xml"/>
-    <include file="db/changelog/changes/create-table-seo-metadata.xml"/>
-
     <include file="db/changelog/changes/create-table-product-gallery.xml"/>
 
     <include file="db/changelog/changes/create-table-faqs.xml"/>
