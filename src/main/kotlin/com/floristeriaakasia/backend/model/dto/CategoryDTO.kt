@@ -25,3 +25,17 @@ data class CategoryDTO(
         }
     }
 }
+
+data class CategorySimpleResponse(
+    val name: String,
+    val route: String,
+    val description: String
+){
+    companion object {
+        fun from(category: Category) = CategorySimpleResponse(
+            name = category.text,
+            route = category.route,
+            description = category.description
+        )
+    }
+}

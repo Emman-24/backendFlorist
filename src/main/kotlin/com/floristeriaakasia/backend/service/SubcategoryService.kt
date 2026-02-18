@@ -11,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class SubcategoryService(
     private val subcategoryRepository: SubcategoryRepository,
-    private val categoryRepository: CategoryRepository,
-    private val seoUrlService: SeoUrlService,
+    private val categoryRepository: CategoryRepository
 ) {
     @Transactional(readOnly = true)
     fun findAll(): List<SubCategory> {
@@ -30,9 +29,12 @@ class SubcategoryService(
     }
 
     @Transactional
-    fun save(subcategory: SubCategory): SubCategory {
+    fun save(subcategory: SubCategory, categoryId: Long): SubCategory {
+        val category = categoryRepository.findByIdOrNull(categoryId)
+            ?: throw ResourceNotFoundException("Category with id $categoryId not found")
+
+        subcategory.category = category
         val saved = subcategoryRepository.save(subcategory)
-        seoUrlService.createOrUpdateSubCategoryUrl(saved)
         return saved
     }
 
@@ -48,7 +50,6 @@ class SubcategoryService(
         existing.status = subcategory.status
 
         val updated = subcategoryRepository.save(existing)
-        seoUrlService.createOrUpdateSubCategoryUrl(updated)
         return updated
     }
 
