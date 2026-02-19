@@ -4,9 +4,11 @@ import com.floristeriaakasia.backend.model.dto.CategoryCreateRequest
 import com.floristeriaakasia.backend.model.dto.CategoryDTO
 import com.floristeriaakasia.backend.service.CategoryService
 import com.floristeriaakasia.backend.service.CategoryStats
+import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,7 +18,11 @@ class CategoryController(
 ) {
 
     @PostMapping
-    fun createCategory(@Valid @RequestBody request: CategoryCreateRequest): ResponseEntity<CategoryDTO> {
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Create a new category")
+    fun createCategory(
+        @Valid @RequestBody request: CategoryCreateRequest
+    ): ResponseEntity<CategoryDTO> {
         return try {
             categoryService.save(CategoryCreateRequest.toCategory(request))
             ResponseEntity.status(HttpStatus.CREATED).build()

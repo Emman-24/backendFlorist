@@ -13,12 +13,15 @@ data class CategoryDTO(
             return CategoryDTO(
                 name = category.text,
                 route = category.route,
-                description = null,
+                description = category.description,
+
                 subCategories = category.subCategories.map { subCategory ->
                     SubCategorySimpleDTO(
                         id = subCategory.id!!,
                         name = subCategory.text,
-                        route = subCategory.route
+                        route = subCategory.route,
+                        description = subCategory.description,
+                        status = subCategory.status
                     )
                 }
             )

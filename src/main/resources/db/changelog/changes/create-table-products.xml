@@ -30,9 +30,6 @@
             <column name="views" type="INT" defaultValueNumeric="0">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="BOOLEAN" defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
             <column name="title" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -52,17 +49,17 @@
 
         <createIndex indexName="idx_products_category" tableName="products">
             <column name="category_id"/>
-            <column name="status"/>
+            <column name="stock_status"/>
         </createIndex>
 
         <createIndex indexName="idx_products_subcategory" tableName="products">
             <column name="subcategory_id"/>
-            <column name="status"/>
+            <column name="stock_status"/>
         </createIndex>
 
         <createIndex indexName="idx_products_featured" tableName="products">
             <column name="featured"/>
-            <column name="status"/>
+            <column name="stock_status"/>
         </createIndex>
 
         <addForeignKeyConstraint

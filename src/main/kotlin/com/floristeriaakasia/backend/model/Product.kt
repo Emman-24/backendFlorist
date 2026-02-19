@@ -10,16 +10,15 @@ import java.time.Instant
 @Entity
 @Table(
     name = "products", indexes = [
-        Index(name = "idx_products_category", columnList = "category_id, status"),
-        Index(name = "idx_products_subcategory", columnList = "subcategory_id, status"),
-        Index(name = "idx_products_featured", columnList = "featured, status")
+        Index(name = "idx_products_category", columnList = "category_id, stock_status"),
+        Index(name = "idx_products_subcategory", columnList = "subcategory_id, stock_status"),
+        Index(name = "idx_products_featured", columnList = "featured, stock_status")
     ]
 )
 @EntityListeners(AuditingEntityListener::class)
 class Product(
     var title: String = "",
     var slug: String = "",
-    var status: Boolean = true,
     var price: BigDecimal = BigDecimal.ZERO,
     var stockStatus: StockStatus = StockStatus.AVAILABLE,
     var seasonal: Boolean = false,

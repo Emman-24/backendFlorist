@@ -2,6 +2,7 @@ package com.floristeriaakasia.backend.service
 
 import com.floristeriaakasia.backend.exception.ResourceNotFoundException
 import com.floristeriaakasia.backend.model.Category
+import com.floristeriaakasia.backend.model.StockStatus
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -79,7 +80,7 @@ class CategoryService(
             subcategoriesCount = category.subCategories.size,
             productsCount = category.products.size,
             activeSubcategoriesCount = category.subCategories.count { it.status },
-            activeProductsCount = category.products.count { it.status }
+            activeProductsCount = category.products.count { it.stockStatus == StockStatus.AVAILABLE }
         )
     }
 }
