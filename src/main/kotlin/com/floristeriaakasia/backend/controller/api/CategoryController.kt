@@ -4,7 +4,6 @@ import com.floristeriaakasia.backend.model.dto.CategoryCreateRequest
 import com.floristeriaakasia.backend.model.dto.CategoryDTO
 import com.floristeriaakasia.backend.service.CategoryService
 import com.floristeriaakasia.backend.service.CategoryStats
-import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +18,6 @@ class CategoryController(
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "Create a new category")
     fun createCategory(
         @Valid @RequestBody request: CategoryCreateRequest
     ): ResponseEntity<CategoryDTO> {
