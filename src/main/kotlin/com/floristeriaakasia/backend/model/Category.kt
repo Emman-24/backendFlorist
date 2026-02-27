@@ -6,36 +6,98 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 
+
 @Entity
 @Table(name = "categories")
 @EntityListeners(AuditingEntityListener::class)
-class Category(
-    var text: String = "",
-    var route: String = "",
-    var description: String = "",
-    var position: Int = 0,
-    var status: Boolean = true,
-) {
+data class Category(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
+    val id: Long? = null,
 
-    @OneToMany(mappedBy = "category", cascade = [CascadeType.ALL], orphanRemoval = false)
-    var products: MutableList<Product> = mutableListOf()
+    @Column(nullable = false)
+    val name: String,
 
-    @OneToMany(
-        mappedBy = "category",
-        cascade = [CascadeType.ALL],
-        orphanRemoval = true,
-        fetch = FetchType.LAZY
-    )
-    var subCategories: MutableList<SubCategory> = mutableListOf()
+    @Column(nullable = false, unique = true)
+    val slug: String,
+
+    @Column(nullable = false, length = 3000)
+    val path: String,
+
+    @Column
+    val parentId: Long? = null,
+
+    @Column(nullable = false)
+    val depth: Int,
+
+    @Column(nullable = false)
+    val displayOrder: Int = 0,
+
+    @Column
+    val description: String? = null,
+
+    @Column(nullable = false)
+    val status: Boolean = true,
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    var createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
 
     @Column(nullable = true)
     @LastModifiedDate
-    var updatedAt: Instant = Instant.now()
+    val updatedAt: Instant = Instant.now()
+
+) {
+    companion object{
+        fun buildRootPath(id: Long): String = "/$id/"
+        fun buildChildPath(parentPath: String, newId: Long): String = "${parentPath}$newId/"
+        fun createRoot(name: String, slug: String, displayOrder: Int = 0): Category =
+            Category(
+                name = name,
+                slug = slug,
+                path = "",
+                parentId = null,
+                depth = 0,
+                displayOrder = displayOrder
+            )
+
+        fun createChild(
+            name: String,
+            slug: String,
+            parent: Category,
+            displayOrder: Int = 0
+        ): Category {
+            require(parent.id != null) { "Parent must be persisted before creating children" }
+            return Category(
+                name = name,
+                slug = slug,
+                path = "",
+                parentId = parent.id,
+                depth = parent.depth + 1,
+                displayOrder = displayOrder
+            )
+        }
+    }
+
+    fun descendantPathPattern(): String = "$path%"
+    fun ancestorIds(): List<Long> {
+        val segments = path.trim('/').split('/')
+        val selfId = id?.toString()
+        return segments
+            .filter { it.isNotBlank() && it != selfId }
+            .map { it.toLong() }
+    }
+    fun isDescendantOf(potentialAncestor: Category): Boolean = potentialAncestor.id?.let { path.contains("/${it}/") } ?: false
+    fun isRoot(): Boolean = parentId == null
+    fun buildMovedPath(newParentPath: String): String {
+        require(id != null) { "Cannot build path for unpersisted category" }
+        return "$newParentPath$id/"
+    }
+    fun isPathValid(): Boolean {
+        if (!path.startsWith("/") || !path.endsWith("/")) return false
+        val segments = path.trim('/').split('/')
+        if (segments.isEmpty() || segments.any { it.isBlank() }) return false
+        if (id != null && segments.last() != id.toString()) return false
+        return true
+    }
 }

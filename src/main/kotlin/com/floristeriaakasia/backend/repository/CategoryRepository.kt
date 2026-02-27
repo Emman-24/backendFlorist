@@ -8,17 +8,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface CategoryRepository : JpaRepository<Category, Long> {
-    fun findByStatus(status: Boolean): List<Category>
+    fun findBySlug(slug: String): Category?
 
-    @Query("SELECT DISTINCT c FROM Category c LEFT JOIN FETCH c.subCategories WHERE c.status = :status ORDER BY c.position ASC")
-    fun findByStatusOrderByPositionAsc(@Param("status") status: Boolean): List<Category>
+    @Query("SELECT c FROM Category c WHERE c.path LIKE :pathPrefix ORDER BY c.depth ASC, c.displayOrder ASC")
+    fun findSubtree(@Param("pathPrefix") pathPrefix: String): List<Category>
 
-    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.subCategories WHERE c.route = :route")
-    fun findByRoute(@Param("route") route: String): Category?
+    @Query("SELECT c FROM Category c ORDER BY c.depth ASC, c.displayOrder ASC")
+    fun findFullTree(): List<Category>
 
-    @Query("SELECT DISTINCT c FROM Category c LEFT JOIN FETCH c.subCategories ORDER BY c.position ASC")
-    fun findAllWithSubcategories(): List<Category>
-
-    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.subCategories WHERE c.id = :id")
-    fun findByIdWithSubcategories(@Param("id") id: Long): Category?
 }

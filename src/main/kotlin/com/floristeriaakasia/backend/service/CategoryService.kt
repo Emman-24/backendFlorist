@@ -1,8 +1,7 @@
 package com.floristeriaakasia.backend.service
 
-import com.floristeriaakasia.backend.exception.ResourceNotFoundException
 import com.floristeriaakasia.backend.model.Category
-import com.floristeriaakasia.backend.model.StockStatus
+import com.floristeriaakasia.backend.model.dto.CategoryNode
 import com.floristeriaakasia.backend.repository.CategoryRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -10,86 +9,69 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CategoryService(
-    private val categoryRepository: CategoryRepository,
+    private val repository: CategoryRepository,
 ) {
 
-    @Transactional(readOnly = true)
-    fun findAll(): List<Category> {
-        return categoryRepository.findAllWithSubcategories()
+    fun getById(id: Long): Category {
+        return repository.findByIdOrNull(id) ?: throw IllegalArgumentException("Category not found")
     }
 
-    @Transactional(readOnly = true)
-    fun findAllActive(): List<Category> {
-        return categoryRepository.findByStatusOrderByPositionAsc(true)
-    }
+    fun getRoots() = repository.findFullTree()
 
-    @Transactional(readOnly = true)
-    fun findById(id: Long): Category? {
-        return categoryRepository.findByIdWithSubcategories(id)
-    }
+    fun getFullTree() = repository.findFullTree()
 
-    @Transactional(readOnly = true)
-    fun findByRoute(route: String): Category? {
-        return categoryRepository.findByRoute(route)
-    }
+
+
 
     @Transactional
-    fun save(category: Category): Category {
-        val saved = categoryRepository.save(category)
-        return saved
-    }
-
-    @Transactional
-    fun update(
-        id: Long,
-        category: Category
+    fun createRoot(
+        name: String,
+        slug: String,
+        displayOrder: Int = 0
     ): Category {
-        val existing = categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
-
-        existing.apply {
-            text = category.text
-            route = category.route
-            description = category.description
-            position = category.position
-            status = category.status
-        }
-        val updated = categoryRepository.save(existing)
-        return updated
+        val category = Category.createRoot(name, slug, displayOrder)
+        val saved = repository.save(category)
+        val withPath = saved.copy(path = Category.buildRootPath(saved.id!!))
+        return repository.save(withPath)
     }
 
     @Transactional
-    fun deleteById(id: Long) {
-        val category =
-            categoryRepository.findByIdOrNull(id) ?: throw ResourceNotFoundException("Category with id $id not found")
-        if (category.subCategories.isNotEmpty() || category.products.isNotEmpty()) {
-            throw IllegalStateException(
-                "Cannot delete category with ${category.subCategories.size} subcategories " +
-                        "and ${category.products.size} products"
-            )
-        }
-
-        categoryRepository.delete(category)
-    }
-
-    @Transactional(readOnly = true)
-    fun getStats(id: Long): CategoryStats? {
-        val category = categoryRepository.findByIdOrNull(id) ?: return null
-        return CategoryStats(
-            id = category.id!!,
-            name = category.text,
-            subcategoriesCount = category.subCategories.size,
-            productsCount = category.products.size,
-            activeSubcategoriesCount = category.subCategories.count { it.status },
-            activeProductsCount = category.products.count { it.stockStatus == StockStatus.AVAILABLE }
+    fun createChild(
+        name: String,
+        slug: String,
+        parentId: Long,
+        displayOrder: Int = 0
+    ): Category {
+        val parent = getById(parentId)
+        val category = Category.createChild(
+            name = name,
+            slug = slug,
+            parent = parent,
+            displayOrder = displayOrder
         )
+        val saved = repository.save(category)
+        val withPath = saved.copy(path = Category.buildChildPath(parent.path, saved.id!!))
+        return repository.save(withPath)
     }
+
+    fun buildTreeFromFlat(
+        categories: List<Category>
+    ): List<CategoryNode> {
+        val nodeMap = categories.associateBy({ it.id!! }, { CategoryNode(it) })
+        val roots = mutableListOf<CategoryNode>()
+
+        categories.forEach { cat ->
+            val node = nodeMap[cat.id!!]!!
+            if (cat.parentId == null) {
+                roots.add(node)
+            } else {
+                nodeMap[cat.parentId]?.children?.add(node)
+            }
+        }
+        return roots.sortedBy { it.category.displayOrder }
+    }
+
+
+
 }
 
-data class CategoryStats(
-    val id: Long,
-    val name: String,
-    val subcategoriesCount: Int,
-    val productsCount: Int,
-    val activeSubcategoriesCount: Int,
-    val activeProductsCount: Int
-)

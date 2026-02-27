@@ -1,9 +1,15 @@
 package com.floristeriaakasia.backend.controller.api
 
-import com.floristeriaakasia.backend.model.dto.CategoryCreateRequest
-import com.floristeriaakasia.backend.model.dto.CategoryDTO
+import com.floristeriaakasia.backend.controller.response.ApiResponse
+import com.floristeriaakasia.backend.model.Category
+import com.floristeriaakasia.backend.model.dto.CategoryNode
+import com.floristeriaakasia.backend.model.dto.CategoryResponse
+import com.floristeriaakasia.backend.model.dto.CategoryTreeResponse
+import com.floristeriaakasia.backend.model.dto.CreateChildCategoryRequest
+import com.floristeriaakasia.backend.model.dto.CreateRootCategoryRequest
+import com.floristeriaakasia.backend.model.dto.MoveCategoryRequest
+
 import com.floristeriaakasia.backend.service.CategoryService
-import com.floristeriaakasia.backend.service.CategoryStats
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,80 +22,64 @@ class CategoryController(
     private val categoryService: CategoryService
 ) {
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    fun createCategory(
-        @Valid @RequestBody request: CategoryCreateRequest
-    ): ResponseEntity<CategoryDTO> {
-        return try {
-            categoryService.save(CategoryCreateRequest.toCategory(request))
-            ResponseEntity.status(HttpStatus.CREATED).build()
-        } catch (_: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-        }
+    @PostMapping("/root")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
+    fun createRoot(
+        @Valid @RequestBody request: CreateRootCategoryRequest
+    ): ResponseEntity<ApiResponse<CategoryResponse>> {
+        val category = categoryService.createRoot(request.name,request.slug,request.displayOrder)
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.Success(toResponse(category)))
+    }
+
+    @PostMapping("/{parentId}/children")
+    //    @PreAuthorize("hasAnyRole('ADMIN')")
+    fun createChild(
+        @PathVariable parentId: Long,
+        @Valid @RequestBody request: CreateChildCategoryRequest
+    ):ResponseEntity<ApiResponse<CategoryResponse>>{
+        val category = categoryService.createChild(request.name,request.slug,parentId,request.displayOrder)
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(ApiResponse.Success(toResponse(category)))
+    }
+
+    @GetMapping("/tree")
+    fun getFullTree():ResponseEntity<ApiResponse<List<CategoryTreeResponse>>>{
+        val flat = categoryService.getFullTree()
+        val tree = categoryService.buildTreeFromFlat(flat)
+        return ResponseEntity.ok(ApiResponse.Success(tree.map(::toTreeResponse)))
     }
 
     @GetMapping
-    fun getAllCategories(
-        @RequestParam(required = false) active: Boolean?
-    ): ResponseEntity<List<CategoryDTO>> {
-        return try {
-            val categories = if (active == true) {
-                categoryService.findAllActive()
-            } else {
-                categoryService.findAll()
-            }
-            val dto = categories.map { CategoryDTO.from(it) }
-            ResponseEntity.ok(dto)
-        } catch (_: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(emptyList())
-        }
+    fun getRoots():ResponseEntity<ApiResponse<List<CategoryResponse>>>{
+        val categories = categoryService.getRoots()
+        return ResponseEntity.ok(ApiResponse.Success(categories.map { toResponse(it) }))
     }
-
 
     @GetMapping("/{id}")
-    fun getCategoryById(@PathVariable id: Long): ResponseEntity<CategoryDTO> {
-        return try {
-            val category = categoryService.findById(id)
-            if (category != null) {
-                ResponseEntity.ok(CategoryDTO.from(category))
-            } else {
-                ResponseEntity.notFound().build()
-            }
-        } catch (_: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-        }
-    }
-
-    @GetMapping("/route/{route}")
-    fun getCategoryByRoute(@PathVariable route: String): ResponseEntity<CategoryDTO> {
-        return try {
-            val category = categoryService.findByRoute(route)
-            if (category != null) {
-                ResponseEntity.ok(CategoryDTO.from(category))
-            } else {
-                ResponseEntity.notFound().build()
-            }
-        } catch (_: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-        }
-    }
-
-    @GetMapping("/{id}/stats")
-    fun getCategoryStats(
+    fun getById(
         @PathVariable id: Long
-    ): ResponseEntity<CategoryStats> {
-        return try {
-            val stats = categoryService.getStats(id)
-            if (stats != null) {
-                ResponseEntity.ok(stats)
-            } else {
-                ResponseEntity.notFound().build()
-            }
-        } catch (_: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-        }
+    ): ResponseEntity<ApiResponse<CategoryResponse>>{
+        val category = categoryService.getById(id)
+        return ResponseEntity.ok(ApiResponse.Success(toResponse(category)))
     }
 
 }
 
+
+private fun toResponse(c: Category) = CategoryResponse(
+    id = c.id!!,
+    name = c.name,
+    slug = c.slug,
+    path = c.path,
+    parentId = c.parentId,
+    depth = c.depth,
+    displayOrder = c.displayOrder,
+    description = c.description,
+    isActive = c.status
+)
+
+private fun toTreeResponse(node: CategoryNode): CategoryTreeResponse = CategoryTreeResponse(
+    category = toResponse(node.category),
+    children = node.children.map(::toTreeResponse)
+)
