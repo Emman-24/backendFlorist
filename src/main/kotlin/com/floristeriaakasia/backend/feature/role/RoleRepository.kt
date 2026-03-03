@@ -1,6 +1,5 @@
-package com.floristeriaakasia.backend.repository
+package com.floristeriaakasia.backend.feature.role
 
-import com.floristeriaakasia.backend.model.Role
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional

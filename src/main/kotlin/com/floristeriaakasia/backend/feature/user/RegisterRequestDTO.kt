@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.model.dto
+package com.floristeriaakasia.backend.feature.user
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

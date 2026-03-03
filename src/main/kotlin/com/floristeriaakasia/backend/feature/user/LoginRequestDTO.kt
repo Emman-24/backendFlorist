@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.model.dto
+package com.floristeriaakasia.backend.feature.user
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -12,4 +12,3 @@ data class LoginRequestDTO(
     @field:Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     val password: String
 )
-

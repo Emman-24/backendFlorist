@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.config
+package com.floristeriaakasia.backend.global.config
 
 import com.cloudinary.Cloudinary
 import org.springframework.boot.actuate.health.Health

@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.config
+package com.floristeriaakasia.backend.global.config
 
 import com.zaxxer.hikari.HikariDataSource
 import org.slf4j.LoggerFactory
