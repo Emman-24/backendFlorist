@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.config
+package com.floristeriaakasia.backend.global.config
 
 import com.cloudinary.Cloudinary
 import org.springframework.beans.factory.annotation.Value

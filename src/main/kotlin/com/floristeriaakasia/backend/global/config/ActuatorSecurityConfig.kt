@@ -1,8 +1,7 @@
-package com.floristeriaakasia.backend.config
+package com.floristeriaakasia.backend.global.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity

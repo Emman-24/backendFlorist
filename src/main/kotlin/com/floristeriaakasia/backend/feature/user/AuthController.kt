@@ -1,9 +1,5 @@
-package com.floristeriaakasia.backend.controller.api
+package com.floristeriaakasia.backend.feature.user
 
-import com.floristeriaakasia.backend.model.dto.LoginRequestDTO
-import com.floristeriaakasia.backend.model.dto.RegisterRequestDTO
-
-import com.floristeriaakasia.backend.service.AuthService
 import com.floristeriaakasia.backend.util.HtmlSanitizer
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank

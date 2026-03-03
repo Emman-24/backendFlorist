@@ -1,18 +1,14 @@
-package com.floristeriaakasia.backend.service
+package com.floristeriaakasia.backend.feature.user
 
-import com.floristeriaakasia.backend.model.Role
-import com.floristeriaakasia.backend.model.User
-import com.floristeriaakasia.backend.model.dto.LoginRequestDTO
-import com.floristeriaakasia.backend.model.dto.RegisterRequestDTO
-import com.floristeriaakasia.backend.repository.RoleRepository
-import com.floristeriaakasia.backend.repository.UserRepository
-import com.floristeriaakasia.backend.security.JwtService
+import com.floristeriaakasia.backend.feature.role.Role
+import com.floristeriaakasia.backend.feature.role.RoleRepository
+import com.floristeriaakasia.backend.global.security.JwtService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Service
 class AuthService(
@@ -34,7 +30,7 @@ class AuthService(
         val user = userRepository.findByUsername(request.username)
             .orElseThrow { IllegalArgumentException("Usuario no encontrado") }
 
-        user.lastLoginAt = LocalDateTime.now()
+        user.lastLoginAt = Instant.now()
         userRepository.save(user)
 
         val accessToken = jwtService.generateToken(user)

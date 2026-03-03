@@ -1,19 +1,10 @@
-package com.floristeriaakasia.backend.controller.api
+package com.floristeriaakasia.backend.feature.category
 
-import com.floristeriaakasia.backend.controller.response.ApiResponse
-import com.floristeriaakasia.backend.model.Category
-import com.floristeriaakasia.backend.model.dto.CategoryNode
-import com.floristeriaakasia.backend.model.dto.CategoryResponse
-import com.floristeriaakasia.backend.model.dto.CategoryTreeResponse
-import com.floristeriaakasia.backend.model.dto.CreateChildCategoryRequest
-import com.floristeriaakasia.backend.model.dto.CreateRootCategoryRequest
-import com.floristeriaakasia.backend.model.dto.MoveCategoryRequest
+import com.floristeriaakasia.backend.util.ApiResponse
 
-import com.floristeriaakasia.backend.service.CategoryService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController

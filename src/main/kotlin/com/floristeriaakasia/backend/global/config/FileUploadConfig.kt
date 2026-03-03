@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.config
+package com.floristeriaakasia.backend.global.config
 
 import jakarta.servlet.MultipartConfigElement
 import org.springframework.boot.web.servlet.MultipartConfigFactory

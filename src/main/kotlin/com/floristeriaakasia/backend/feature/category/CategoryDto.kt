@@ -1,6 +1,5 @@
-package com.floristeriaakasia.backend.model.dto
+package com.floristeriaakasia.backend.feature.category
 
-import com.floristeriaakasia.backend.model.Category
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size

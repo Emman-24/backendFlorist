@@ -1,8 +1,5 @@
-package com.floristeriaakasia.backend.service
+package com.floristeriaakasia.backend.feature.category
 
-import com.floristeriaakasia.backend.model.Category
-import com.floristeriaakasia.backend.model.dto.CategoryNode
-import com.floristeriaakasia.backend.repository.CategoryRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -74,4 +71,3 @@ class CategoryService(
 
 
 }
-

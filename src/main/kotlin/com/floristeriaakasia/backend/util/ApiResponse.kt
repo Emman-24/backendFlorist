@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.controller.response
+package com.floristeriaakasia.backend.util
 
 sealed class ApiResponse<out T> {
 

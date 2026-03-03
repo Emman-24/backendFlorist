@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.model
+package com.floristeriaakasia.backend.feature.faq
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -26,7 +26,6 @@ class Faq(
     var category: String = "",
     var position: Int = 0,
     var views: Int = 0,
-    var helpfulCount: Int = 0,
     var status: Boolean = true,
 ) {
     @Id

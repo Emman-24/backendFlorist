@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.security
+package com.floristeriaakasia.backend.global.security
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
