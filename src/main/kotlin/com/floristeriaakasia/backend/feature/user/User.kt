@@ -1,8 +1,8 @@
-package com.floristeriaakasia.backend.model
+package com.floristeriaakasia.backend.feature.user
 
+import com.floristeriaakasia.backend.feature.role.Role
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -15,16 +15,17 @@ import jakarta.persistence.Table
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Entity
-@Table(name = "users",
+@Table(
+    name = "users",
     indexes = [
         Index(name = "idx_username", columnList = "username", unique = true),
         Index(name = "idx_email", columnList = "email", unique = true)
     ]
 )
-class User(
+data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
@@ -53,27 +54,24 @@ class User(
     @Column(nullable = false)
     var credentialsNonExpired: Boolean = true,
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")]
-    )
+    @ManyToMany
+    @JoinTable(name = "user_roles", joinColumns = [JoinColumn(name = "user_id")], inverseJoinColumns = [JoinColumn(name = "role_id")])
     var roles: MutableSet<Role> = mutableSetOf(),
 
     @Column(nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: Instant = Instant.now(),
 
     @Column(nullable = false)
-    var updatedAt: LocalDateTime = LocalDateTime.now(),
+    var updatedAt: Instant = Instant.now(),
 
     @Column
-    var lastLoginAt: LocalDateTime? = null
-): UserDetails {
+    var lastLoginAt: Instant? = null,
+
+    ) : UserDetails {
 
     @PreUpdate
     fun onUpdate() {
-        updatedAt = LocalDateTime.now()
+        updatedAt = Instant.now()
     }
 
     override fun getAuthorities(): Collection<GrantedAuthority?> {

@@ -1,6 +1,6 @@
-package com.floristeriaakasia.backend.security
+package com.floristeriaakasia.backend.global.security
 
-import com.floristeriaakasia.backend.repository.UserRepository
+import com.floristeriaakasia.backend.feature.user.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

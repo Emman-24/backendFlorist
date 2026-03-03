@@ -1,6 +1,5 @@
-package com.floristeriaakasia.backend.repository
+package com.floristeriaakasia.backend.feature.tag
 
-import com.floristeriaakasia.backend.model.Tag
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
