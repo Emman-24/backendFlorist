@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TagRepository : JpaRepository<Tag, Long> {
-    fun findByStatus(status: Boolean): List<Tag>
     fun findByRoute(route: String): Tag?
-    fun findByTextContainingIgnoreCaseAndStatus(text: String, status: Boolean): List<Tag>
 }

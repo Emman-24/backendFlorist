@@ -1,42 +1,41 @@
 package com.floristeriaakasia.backend.feature.faq
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Index
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.Instant
 
 @Entity
-@Table(
-    name = "faqs", indexes = [
-        Index(name = "idx_faqs_category", columnList = "category, position")
-    ]
-)
+@Table(name = "faqs")
 @EntityListeners(AuditingEntityListener::class)
-class Faq(
-    var question: String = "",
-    var answer: String = "",
-    var category: String = "",
-    var position: Int = 0,
-    var views: Int = 0,
-    var status: Boolean = true,
-) {
+data class Faq(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    val id: Long = 0,
+
+    @Column(nullable = false)
+    var question: String,
+
+    @Column(nullable = false)
+    var answer: String,
+
+    @Column
+    var position: Int = 0,
+
+    @Column
+    var views: Int = 0,
+
+    @Column
+    var status: Boolean = true,
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    var createdAt: Instant = Instant.now()
+    var createdAt: Instant = Instant.now(),
 
     @LastModifiedDate
     @Column(nullable = false)
     var updatedAt: Instant = Instant.now()
-}
+
+)
