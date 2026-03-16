@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.productDescription
+package com.floristeriaakasia.backend.feature.price
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -8,28 +8,30 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
+import java.math.BigDecimal
 import java.time.Instant
 
 @Entity
-@Table(name = "product_descriptions")
-data class ProductDescription(
-
+@Table(name = "prices")
+data class Price(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @Column(nullable = false)
-    var shortDescription: String,
+    var price: BigDecimal,
 
-    @Column(nullable = false,columnDefinition = "TEXT")
-    var description: String,
+    @Column
+    var discountPrice: BigDecimal? = null,
+
+    @Column(nullable = false)
+    var currency: String = "COP",
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    val createdAt: Instant = Instant.now(),
+    var createdAt: Instant = Instant.now(),
 
     @Column(nullable = true)
     @LastModifiedDate
-    val updatedAt: Instant = Instant.now()
-
-)
+    var updatedAt: Instant = Instant.now(),
+    )

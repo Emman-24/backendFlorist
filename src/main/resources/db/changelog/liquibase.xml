@@ -9,8 +9,11 @@
     <include file="db/changelog/changes/create-table-users.xml"/>
     <include file="db/changelog/changes/create-table-faqs.xml"/>
     <include file="db/changelog/changes/create-table-tag.xml"/>
+
+    <include file="db/changelog/changes/create-table-prices.xml"/>
     <include file="db/changelog/changes/create-table-product_descriptions.xml"/>
-    <include file="db/changelog/changes/create-table-floral_arrangements.xml"/>
+    <include file="db/changelog/changes/create-table-floralArrangement.xml"/>
+    <include file="db/changelog/changes/create-table-flowers.xml"/>
     <include file="db/changelog/changes/create-table-product_gallery.xml"/>
 
 </databaseChangeLog>

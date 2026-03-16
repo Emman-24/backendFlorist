@@ -15,4 +15,9 @@ interface CategoryRepository : JpaRepository<Category, Long> {
     @Query("SELECT c FROM Category c ORDER BY c.depth ASC, c.displayOrder ASC")
     fun findFullTree(): List<Category>
 
+    @Query("SELECT c FROM Category c WHERE c.id IN :ids AND c.status = true")
+    fun findAllByIdInAndStatusTrue(ids: Collection<Long>): List<Category>
+
+    fun id(id: Long): MutableList<Category>
+
 }

@@ -1,13 +1,14 @@
-package com.floristeriaakasia.backend.feature.product.adapter.out.persistence
+package com.floristeriaakasia.backend.feature.floralArrangment.domain
 
+import com.floristeriaakasia.backend.feature.category.Category
+import com.floristeriaakasia.backend.feature.flowers.Flowers
+import com.floristeriaakasia.backend.feature.price.Price
+import com.floristeriaakasia.backend.feature.product.adapter.out.persistence.ProductGallery
 import com.floristeriaakasia.backend.feature.productDescription.ProductDescription
 import com.floristeriaakasia.backend.feature.tag.Tag
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -22,15 +23,11 @@ import jakarta.persistence.Table
 import jakarta.persistence.Version
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.math.BigDecimal
 import java.time.Instant
 
 @Entity
 @Table(name = "floral_arrangements")
-@EntityListeners(AuditingEntityListener::class)
 data class FloralArrangement(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -38,23 +35,25 @@ data class FloralArrangement(
     @Column(nullable = false)
     var name: String,
 
+    @Column(nullable = false)
+    var seoName: String,
+
     @Column(nullable = false, unique = true)
     var slug: String,
 
-    @Column(name = "category_id", nullable = false)
-    val categoryId: Long,
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "arrangement_categories",
+        joinColumns = [JoinColumn(name = "arrangement_id")],
+        inverseJoinColumns = [JoinColumn(name = "category_id")]
+    )
+    var categories: MutableSet<Category> = mutableSetOf(),
 
-    @Column(name = "price_amount", nullable = false)
-    val priceAmount: BigDecimal,
+    @OneToOne(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    var price: Price,
 
-    @Column(name = "discount_price_amount")
-    val discountPriceAmount: BigDecimal? = null,
-
-    @Column(name = "currency", nullable = false, length = 3)
-    val currency: String = "COP",
-
-    @Column(name = "stock_status", nullable = false)
-    var stockStatus: String,
+    @Column(name = "is_available", nullable = false)
+    var isAvailable: Boolean,
 
     @Column(name = "seasonal", nullable = false)
     var seasonal: Boolean,
@@ -81,8 +80,11 @@ data class FloralArrangement(
     var description: ProductDescription? = null,
 
     @OneToMany(mappedBy = "floralArrangement", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var flowers: MutableSet<Flowers> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "floralArrangement", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("position ASC")
-    val gallery: MutableList<ProductGallery> = mutableListOf(),
+    val gallery: MutableSet<ProductGallery> = mutableSetOf(),
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -92,9 +94,4 @@ data class FloralArrangement(
     )
     var tags: MutableSet<Tag> = mutableSetOf()
 
-){
-    fun addGalleryEntity(imageEntity: ProductGallery) {
-        gallery.add(imageEntity)
-        imageEntity.floralArrangement = this
-    }
-}
+)

@@ -3,9 +3,19 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.31.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1772676700422-1" author="emman">
+    <changeSet id="1773693255880-1" author="emman">
+        <createTable tableName="arrangement_categories">
+            <column name="arrangement_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_arrangement_categories"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_arrangement_categories"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1773693255880-2" author="emman">
         <createTable tableName="arrangement_tags">
             <column name="arrangement_id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_arrangement_tags"/>
@@ -15,7 +25,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1772676700422-2" author="emman">
+    <changeSet id="1773693255880-3" author="emman">
         <createTable tableName="floral_arrangements">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_floral_arrangements"/>
@@ -23,20 +33,14 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="seo_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="slug" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="category_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="price_amount" type="DECIMAL">
-                <constraints nullable="false"/>
-            </column>
-            <column name="discount_price_amount" type="DECIMAL"/>
-            <column name="currency" type="VARCHAR(3)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="stock_status" type="VARCHAR(255)">
+            <column name="price_id" type="BIGINT"/>
+            <column name="is_available" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
             <column name="seasonal" type="BOOLEAN">
@@ -58,25 +62,40 @@
             <column name="description_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet id="1772676700422-3" author="emman">
+    <changeSet id="1773693255880-4" author="emman">
         <addUniqueConstraint columnNames="description_id" constraintName="uc_floral_arrangements_description"
                              tableName="floral_arrangements"/>
     </changeSet>
-    <changeSet id="1772676700422-4" author="emman">
+    <changeSet id="1773693255880-5" author="emman">
         <addUniqueConstraint columnNames="slug" constraintName="uc_floral_arrangements_slug"
                              tableName="floral_arrangements"/>
     </changeSet>
-    <changeSet id="1772676700422-5" author="emman">
+    <changeSet id="1773693255880-6" author="emman">
         <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="floral_arrangements"
                                  constraintName="FK_FLORAL_ARRANGEMENTS_ON_DESCRIPTION" referencedColumnNames="id"
                                  referencedTableName="product_descriptions"/>
     </changeSet>
-    <changeSet id="1772676700422-6" author="emman">
+    <changeSet id="1773693255880-7" author="emman">
+        <addForeignKeyConstraint baseColumnNames="price_id" baseTableName="floral_arrangements"
+                                 constraintName="FK_FLORAL_ARRANGEMENTS_ON_PRICE" referencedColumnNames="id"
+                                 referencedTableName="prices"/>
+    </changeSet>
+    <changeSet id="1773693255880-8" author="emman">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="arrangement_categories"
+                                 constraintName="fk_arrcat_on_category" referencedColumnNames="id"
+                                 referencedTableName="categories"/>
+    </changeSet>
+    <changeSet id="1773693255880-9" author="emman">
+        <addForeignKeyConstraint baseColumnNames="arrangement_id" baseTableName="arrangement_categories"
+                                 constraintName="fk_arrcat_on_floral_arrangement" referencedColumnNames="id"
+                                 referencedTableName="floral_arrangements"/>
+    </changeSet>
+    <changeSet id="1773693255880-10" author="emman">
         <addForeignKeyConstraint baseColumnNames="arrangement_id" baseTableName="arrangement_tags"
                                  constraintName="fk_arrtag_on_floral_arrangement" referencedColumnNames="id"
                                  referencedTableName="floral_arrangements"/>
     </changeSet>
-    <changeSet id="1772676700422-7" author="emman">
+    <changeSet id="1773693255880-11" author="emman">
         <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="arrangement_tags"
                                  constraintName="fk_arrtag_on_tag" referencedColumnNames="id"
                                  referencedTableName="tags"/>
