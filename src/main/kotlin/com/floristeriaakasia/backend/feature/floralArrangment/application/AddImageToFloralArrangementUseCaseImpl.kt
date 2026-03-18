@@ -1,11 +1,13 @@
 package com.floristeriaakasia.backend.feature.floralArrangment.application
 
 import com.floristeriaakasia.backend.feature.floralArrangment.infrastructure.SaveFloralArrangementPort
-import com.floristeriaakasia.backend.feature.product.adapter.out.persistence.ProductGallery
+import com.floristeriaakasia.backend.feature.floralArrangment.domain.ProductGallery
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.text.Normalizer
+import java.util.Locale
 
 @Service
 @Transactional
@@ -35,5 +37,7 @@ class AddImageToFloralArrangementUseCaseImpl(
         floral.addImage(newGalleryImage)
         saveFloralArrangementPort.save(floral)
     }
+
+
 }
 
