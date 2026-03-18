@@ -1,16 +1,16 @@
-package com.floristeriaakasia.backend.feature.product.adapter.out.external
+package com.floristeriaakasia.backend.feature.floralArrangment.infrastructure
 
 import com.cloudinary.Cloudinary
 import com.cloudinary.Transformation
-import com.floristeriaakasia.backend.feature.product.application.port.out.ImageStoragePort
-import com.floristeriaakasia.backend.feature.product.application.port.out.UploadedImageDto
+import com.floristeriaakasia.backend.feature.floralArrangment.application.ImageStoragePort
+import com.floristeriaakasia.backend.feature.floralArrangment.application.UploadedImageDto
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 
 @Component
 class CloudinaryImageAdapter(
     private val cloudinary: Cloudinary
-): ImageStoragePort {
+) : ImageStoragePort {
 
     override fun uploadImage(
         file: MultipartFile,
@@ -19,13 +19,13 @@ class CloudinaryImageAdapter(
         try {
             val uploadParams = mapOf(
                 "folder" to "floristeria-akasia/$folder",
-                "transformation" to listOf(
-                    mapOf("quality" to "auto", "fetch_format" to "auto")
-                ),
+                "transformation" to Transformation<Transformation<*>>()
+                    .quality("auto")
+                    .fetchFormat("auto")
+                    .dpr("auto"),
                 "eager" to listOf(
-                    mapOf("width" to 200, "height" to 200, "crop" to "fill"),
-                    mapOf("width" to 800, "height" to 800, "crop" to "limit")
-                ),
+                    Transformation<Transformation<*>>().width(300).height(400).crop("fill").gravity("auto"),
+                    Transformation<Transformation<*>>().width(900).height(1200).crop("fill").gravity("auto")),
                 "resource_type" to "image",
                 "type" to "upload"
             )

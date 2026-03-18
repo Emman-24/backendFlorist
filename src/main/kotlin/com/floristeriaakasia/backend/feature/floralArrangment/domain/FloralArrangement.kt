@@ -27,7 +27,7 @@ import java.time.Instant
 
 @Entity
 @Table(name = "floral_arrangements")
-data class FloralArrangement(
+class FloralArrangement(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -94,4 +94,26 @@ data class FloralArrangement(
     )
     var tags: MutableSet<Tag> = mutableSetOf()
 
-)
+){
+    fun addImage(image: ProductGallery) {
+        if (gallery.isEmpty()) {
+            image.isPrimary = true
+        }
+        gallery.add(image)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is FloralArrangement) return false
+        if (id != 0L && other.id != 0L) return id == other.id
+        return slug == other.slug
+    }
+
+    override fun hashCode(): Int {
+        return if (id != 0L) id.hashCode() else slug.hashCode()
+    }
+
+    override fun toString(): String {
+        return "FloralArrangement(id=$id, name='$name', slug='$slug')"
+    }
+}

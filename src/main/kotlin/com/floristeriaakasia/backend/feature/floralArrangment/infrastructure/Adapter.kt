@@ -14,6 +14,10 @@ class FloralArrangementPersistenceAdapter(
 
     override fun existsBySlug(slug: String): Boolean =
         floralArrangementRepo.existsBySlug(slug)
+
+    override fun findById(id: Long): FloralArrangement? {
+        return floralArrangementRepo.findById(id).orElse(null)
+    }
 }
 
 

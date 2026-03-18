@@ -1,6 +1,6 @@
 package com.floristeriaakasia.backend.feature.tag
 
-import com.floristeriaakasia.backend.feature.product.adapter.out.persistence.FloralArrangement
+import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangement
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
@@ -17,7 +17,7 @@ import java.time.Instant
 @Entity
 @Table(name = "tags")
 @EntityListeners(AuditingEntityListener::class)
-data class Tag(
+class Tag(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,8 +46,18 @@ data class Tag(
     @LastModifiedDate
     val updatedAt: Instant = Instant.now()
 ) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Tag) return false
+        if (id != null && other.id != null) return id == other.id
+        return text == other.text && route == other.route
+    }
 
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: (text.hashCode() * 31 + route.hashCode())
+    }
 
-
-
+    override fun toString(): String {
+        return "Tag(id=$id, text='$text', route='$route')"
+    }
 }

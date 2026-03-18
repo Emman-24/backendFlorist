@@ -5,7 +5,6 @@ import com.floristeriaakasia.backend.util.toSuccessResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -14,7 +13,6 @@ class TagController(
     private val tagService: TagService
 ) {
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     fun createTag(
         @Valid @RequestBody request: CreateTagRequest
     ): ResponseEntity<ApiResponse<TagResponse>> {
@@ -29,25 +27,25 @@ class TagController(
         return ResponseEntity.ok(response.toSuccessResponse())
     }
 
-    @PutMapping("/products/{productId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    fun assignTagsToProduct(
-        @PathVariable productId: Long,
-        @RequestBody tagIds: List<Long>
-    ): ResponseEntity<ApiResponse<Unit>> {
-        tagService.assignTags(productId, tagIds)
-        return ResponseEntity.ok(Unit.toSuccessResponse("Tags assigned to product successfully"))
-    }
-
-    @DeleteMapping("/products/{productId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    fun removeTagsFromProduct(
-        @PathVariable productId: Long,
-        @RequestBody tagIds: List<Long>
-    ): ResponseEntity<ApiResponse<Unit>> {
-        tagService.removeTags(productId, tagIds)
-        return ResponseEntity.ok(Unit.toSuccessResponse("Tags removed from product successfully"))
-    }
+//    @PutMapping("/products/{productId}")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+//    fun assignTagsToProduct(
+//        @PathVariable productId: Long,
+//        @RequestBody tagIds: List<Long>
+//    ): ResponseEntity<ApiResponse<Unit>> {
+//        tagService.assignTags(productId, tagIds)
+//        return ResponseEntity.ok(Unit.toSuccessResponse("Tags assigned to product successfully"))
+//    }
+//
+//    @DeleteMapping("/products/{productId}")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+//    fun removeTagsFromProduct(
+//        @PathVariable productId: Long,
+//        @RequestBody tagIds: List<Long>
+//    ): ResponseEntity<ApiResponse<Unit>> {
+//        tagService.removeTags(productId, tagIds)
+//        return ResponseEntity.ok(Unit.toSuccessResponse("Tags removed from product successfully"))
+//    }
 
     @GetMapping("/products/{productId}")
     fun getProductTags(

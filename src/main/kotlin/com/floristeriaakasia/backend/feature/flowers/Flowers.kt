@@ -10,7 +10,7 @@ import java.time.Instant
 @Entity
 @Table(name = "flowers")
 @EntityListeners(AuditingEntityListener::class)
-data class Flowers(
+class Flowers(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
@@ -32,4 +32,19 @@ data class Flowers(
     @Column(nullable = true)
     @LastModifiedDate
     val updatedAt: Instant = Instant.now()
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Flowers) return false
+        if (id != null && other.id != null) return id == other.id
+        return name == other.name && meaning == other.meaning
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: (name.hashCode() * 31 + meaning.hashCode())
+    }
+
+    override fun toString(): String {
+        return "Flowers(id=$id, name='$name', meaning='$meaning')"
+    }
+}
