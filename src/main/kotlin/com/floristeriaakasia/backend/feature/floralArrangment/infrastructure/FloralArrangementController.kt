@@ -52,7 +52,6 @@ class FloralArrangementController(
         CreateFloralArrangementCommand(
             name = req.name,
             seoName = req.seoName,
-            slug = req.slug,
             categoryIds = req.categoryIds,
             priceAmount = req.price,
             discountPriceAmount = req.discountPrice,

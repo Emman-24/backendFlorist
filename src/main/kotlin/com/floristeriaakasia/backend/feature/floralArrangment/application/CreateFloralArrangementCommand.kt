@@ -6,7 +6,6 @@ import java.util.Collections
 data class CreateFloralArrangementCommand(
     val name: String,
     val seoName: String,
-    val slug: String,
     val categoryIds: Set<Long>,
     val priceAmount: BigDecimal,
     val discountPriceAmount: BigDecimal? = null,
@@ -23,10 +22,6 @@ data class CreateFloralArrangementCommand(
 ){
     init {
         require(name.isNotBlank()) { "Arrangement name must not be blank" }
-        require(slug.isNotBlank()) { "Slug must not be blank" }
-        require(slug.matches(Regex("^[a-z0-9]+(?:-[a-z0-9]+)*$"))) {
-            "Slug must be lowercase alphanumeric with hyphens only"
-        }
         require(categoryIds.isNotEmpty()) { "At least one category must be provided" }
         require(priceAmount > BigDecimal.ZERO) { "Price must be greater than zero" }
         require(currency.length == 3) { "Currency must be an ISO-4217 code (e.g. COP, USD)" }

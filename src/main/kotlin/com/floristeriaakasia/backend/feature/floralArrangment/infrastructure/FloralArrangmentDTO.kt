@@ -7,7 +7,6 @@ import java.util.Collections.emptySet
 data class CreateFloralArrangementRequest(
     val name: String,
     val seoName: String,
-    val slug: String,
     val categoryIds: Set<Long>,
     val price: BigDecimal,
     val discountPrice: BigDecimal? = null,

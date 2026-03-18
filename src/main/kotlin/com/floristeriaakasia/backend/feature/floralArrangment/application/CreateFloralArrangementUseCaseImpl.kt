@@ -8,6 +8,8 @@ import com.floristeriaakasia.backend.feature.price.Price
 import com.floristeriaakasia.backend.feature.productDescription.ProductDescription
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.text.Normalizer
+import java.util.Locale
 
 @Service
 @Transactional
@@ -42,7 +44,7 @@ private fun buildArrangement(cmd: CreateFloralArrangementCommand): FloralArrange
     val arrangement = FloralArrangement(
         name = cmd.name,
         seoName = cmd.seoName,
-        slug = cmd.slug,
+        slug = generateSlug(cmd.name),
         price = price,
         isAvailable = cmd.isAvailable,
         seasonal = cmd.seasonal,
@@ -60,4 +62,11 @@ private fun buildArrangement(cmd: CreateFloralArrangementCommand): FloralArrange
     }
 
     return arrangement
+}
+
+private fun generateSlug(input: String): String {
+    return Normalizer.normalize(input.lowercase(Locale.getDefault()), Normalizer.Form.NFD)
+        .replace("\\p{InCombiningDiacriticalMarks}".toRegex(), "")
+        .replace("[^a-z0-9\\s-]".toRegex(), "")
+        .replace("\\s+".toRegex(), "-")
 }

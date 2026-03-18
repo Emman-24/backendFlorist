@@ -5,4 +5,5 @@ import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArran
 interface SaveFloralArrangementPort {
     fun save(arrangement: FloralArrangement): Long
     fun existsBySlug(slug: String): Boolean
+    fun findById(id: Long): FloralArrangement?
 }

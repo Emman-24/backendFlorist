@@ -43,8 +43,9 @@ class SecurityConfig(
         private val PUBLIC_ENDPOINTS = arrayOf(
             "/api/auth/login",
             "/api/auth/register",
-            "/api/products",
-            "/api/products/*",
+            "/api/floral-arrangement",
+            "/api/floral-arrangement/*",
+            "/api/floral-arrangement/*/image",
             "/api/categories",
             "/api/categories/*",
             "/api/categories/*/*",
