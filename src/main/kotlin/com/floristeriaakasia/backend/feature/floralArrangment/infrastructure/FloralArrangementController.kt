@@ -72,6 +72,19 @@ class FloralArrangementController(
         }
     }
 
+    @GetMapping("/slug/{slug}")
+    fun getArrangementBySlug(
+        @PathVariable slug: String
+    ): ResponseEntity<ApiResponse<FloralArrangementDetailDto>>{
+        return try {
+            val dto = getFloralArrangementsUseCase.executeBySlug(slug)
+            ResponseEntity.ok(ApiResponse.Success(data = dto))
+        }catch (e: FloralArrangementNotFoundException){
+            ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.Error(message = e.message ?: "Arrangement not found"))
+        }
+    }
+
     @PostMapping
     fun createArrangement(
         @Valid @RequestBody request: CreateFloralArrangementRequest

@@ -53,6 +53,10 @@ class FloralArrangementPersistenceAdapter(
         )
     }
 
+    override fun findBySlug(slug: String): FloralArrangement? {
+        return floralArrangementRepo.findBySlug(slug)
+    }
+
     override fun findWithCategoriesByIds(ids: List<Long>): List<FloralArrangement> {
         return floralArrangementRepo.findWithCategoriesByIds(ids)
     }

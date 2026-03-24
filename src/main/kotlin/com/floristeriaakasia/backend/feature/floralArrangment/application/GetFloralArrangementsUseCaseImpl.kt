@@ -14,6 +14,7 @@ import com.floristeriaakasia.backend.feature.floralArrangment.infrastructure.Sav
 import com.floristeriaakasia.backend.feature.floralArrangment.infrastructure.TagSummaryDto
 import com.floristeriaakasia.backend.feature.price.Price
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementNotFoundException
+import com.floristeriaakasia.backend.global.exeption.FloralArrangementSlugNotFoundException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -93,6 +94,53 @@ class GetFloralArrangementsUseCaseImpl(
         val fa = saveFloralArrangementPort.findDetails(id) ?: throw FloralArrangementNotFoundException(id)
         saveFloralArrangementPort.incrementViews(id)
 
+        return FloralArrangementDetailDto(
+            id = fa.id,
+            name = fa.name,
+            slug = fa.slug,
+            seoName = fa.seoName,
+            price = fa.price.toPriceSummaryDto(),
+            isAvailable = fa.isAvailable,
+            seasonal = fa.seasonal,
+            featured = fa.featured,
+            views = fa.views,
+            description = fa.description?.let {
+                DescriptionDto(
+                    shortDescription = it.shortDescription,
+                    description = it.description
+                )
+            },
+            gallery = fa.gallery.sortedBy {
+                it.position
+            }
+                .map { it.toImageDto() },
+            flowers = fa.flowers.map { f ->
+                FlowerDto(
+                    id = f.id,
+                    name = f.name,
+                    meaning = f.meaning
+                )
+            },
+            categories = fa.categories.map { c ->
+                CategorySummaryDto(
+                    id = c.id!!, name = c.name, slug = c.slug, path = c.path
+                )
+            },
+            tags = fa.tags.map { t ->
+                TagSummaryDto(
+                    id = t.id!!,
+                    text = t.text,
+                    route = t.route
+                )
+            },
+            createdAt = fa.createdAt,
+            updatedAt = fa.updatedAt
+        )
+    }
+
+    override fun executeBySlug(slug: String): FloralArrangementDetailDto {
+        val fa = saveFloralArrangementPort.findBySlug(slug)?: throw FloralArrangementSlugNotFoundException(slug)
+        saveFloralArrangementPort.incrementViews(fa.id)
         return FloralArrangementDetailDto(
             id = fa.id,
             name = fa.name,

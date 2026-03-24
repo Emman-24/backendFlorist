@@ -22,7 +22,7 @@ interface SaveFloralArrangementPort {
         maxPrice: BigDecimal?,
         pageable: Pageable
     ): Page<FloralArrangement>
-
+    fun findBySlug(slug: String): FloralArrangement?
     fun findWithCategoriesByIds(ids: List<Long>): List<FloralArrangement>
     fun findPrimaryImagesByArrangementIds(ids: Collection<Long>): List<ProductGallery>
     fun findWithTagsByIds(ids: List<Long>): List<FloralArrangement>
