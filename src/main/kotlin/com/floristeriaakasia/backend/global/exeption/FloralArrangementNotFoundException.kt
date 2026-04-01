@@ -7,3 +7,7 @@ class FloralArrangementNotFoundException(id: Long) : RuntimeException(
 class FloralArrangementSlugNotFoundException(slug: String) : RuntimeException(
     "Floral arrangement with slug $slug not found."
 )
+
+class FloralArrangementSeoNameNotFoundException(seoName: String) : RuntimeException(
+    "Floral arrangement with seo name $seoName not found."
+)

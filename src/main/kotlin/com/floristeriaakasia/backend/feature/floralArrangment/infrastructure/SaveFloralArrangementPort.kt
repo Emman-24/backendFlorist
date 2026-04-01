@@ -23,6 +23,7 @@ interface SaveFloralArrangementPort {
         pageable: Pageable
     ): Page<FloralArrangement>
     fun findBySlug(slug: String): FloralArrangement?
+    fun findBySeoName(seoName: String): FloralArrangement?
     fun findWithCategoriesByIds(ids: List<Long>): List<FloralArrangement>
     fun findPrimaryImagesByArrangementIds(ids: Collection<Long>): List<ProductGallery>
     fun findWithTagsByIds(ids: List<Long>): List<FloralArrangement>

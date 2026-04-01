@@ -4,7 +4,6 @@ import com.floristeriaakasia.backend.util.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -14,7 +13,6 @@ class CategoryController(
 ) {
 
     @PostMapping("/root")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     fun createRoot(
         @Valid @RequestBody request: CreateRootCategoryRequest
     ): ResponseEntity<ApiResponse<CategoryResponse>> {
@@ -24,7 +22,6 @@ class CategoryController(
     }
 
     @PostMapping("/{parentId}/children")
-    @PreAuthorize("hasAnyRole('ADMIN')")
     fun createChild(
         @PathVariable parentId: Long,
         @Valid @RequestBody request: CreateChildCategoryRequest

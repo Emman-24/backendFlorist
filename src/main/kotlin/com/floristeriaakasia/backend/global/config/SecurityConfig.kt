@@ -41,11 +41,14 @@ class SecurityConfig(
     companion object {
         // Public endpoints patterns (pre-compiled for performance)
         private val PUBLIC_ENDPOINTS = arrayOf(
+            "swagger-ui/**",
+            "/v3/api-docs/**",
             "/api/auth/login",
             "/api/auth/register",
             "/api/floral-arrangement",
             "/api/floral-arrangement/*",
             "/api/floral-arrangement/*/image",
+            "/api/floral-arrangement/seo-name/*",
             "/api/categories",
             "/api/categories/*",
             "/api/categories/*/*",

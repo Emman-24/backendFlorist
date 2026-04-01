@@ -27,7 +27,7 @@ data class Category(
     val slug: String,
 
     @Column(nullable = false, length = 3000)
-    val path: String,
+    var path: String,
 
     @Column
     val parentId: Long? = null,
@@ -54,6 +54,8 @@ data class Category(
 
 ) {
     companion object{
+        fun buildPath(parentPath: String?, nodeId: Long): String =
+            if (parentPath == null) "/$nodeId/" else "$parentPath$nodeId/"
         fun buildRootPath(id: Long): String = "/$id/"
         fun buildChildPath(parentPath: String, newId: Long): String = "${parentPath}$newId/"
         fun createRoot(name: String, slug: String, displayOrder: Int = 0): Category =

@@ -27,26 +27,6 @@ class TagController(
         return ResponseEntity.ok(response.toSuccessResponse())
     }
 
-//    @PutMapping("/products/{productId}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-//    fun assignTagsToProduct(
-//        @PathVariable productId: Long,
-//        @RequestBody tagIds: List<Long>
-//    ): ResponseEntity<ApiResponse<Unit>> {
-//        tagService.assignTags(productId, tagIds)
-//        return ResponseEntity.ok(Unit.toSuccessResponse("Tags assigned to product successfully"))
-//    }
-//
-//    @DeleteMapping("/products/{productId}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-//    fun removeTagsFromProduct(
-//        @PathVariable productId: Long,
-//        @RequestBody tagIds: List<Long>
-//    ): ResponseEntity<ApiResponse<Unit>> {
-//        tagService.removeTags(productId, tagIds)
-//        return ResponseEntity.ok(Unit.toSuccessResponse("Tags removed from product successfully"))
-//    }
-
     @GetMapping("/products/{productId}")
     fun getProductTags(
         @PathVariable productId: Long
@@ -55,4 +35,5 @@ class TagController(
         val response = tags.map { TagResponse.from(it) }
         return ResponseEntity.ok(response.toSuccessResponse())
     }
+
 }

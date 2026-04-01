@@ -57,6 +57,10 @@ class FloralArrangementPersistenceAdapter(
         return floralArrangementRepo.findBySlug(slug)
     }
 
+    override fun findBySeoName(seoName: String): FloralArrangement? {
+        return floralArrangementRepo.findBySeoName(seoName)
+    }
+
     override fun findWithCategoriesByIds(ids: List<Long>): List<FloralArrangement> {
         return floralArrangementRepo.findWithCategoriesByIds(ids)
     }

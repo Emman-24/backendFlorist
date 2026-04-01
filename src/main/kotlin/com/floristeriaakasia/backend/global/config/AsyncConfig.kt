@@ -9,26 +9,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import java.util.concurrent.Executor
 import org.slf4j.LoggerFactory
 
-/**
- * Async configuration for non-blocking operations
- * Optimizes performance for:
- * - Image uploads to Cloudinary
- * - Email notifications
- * - Analytics tracking
- * - Cache warming
- */
+
 @Configuration
 @EnableAsync
 class AsyncConfig : AsyncConfigurer {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    /**
-     * Main async executor for general tasks
-     * Core pool: 5 threads (always available)
-     * Max pool: 20 threads (scales under load)
-     * Queue: 100 tasks (prevents OOM)
-     */
     @Bean(name = ["taskExecutor"])
     override fun getAsyncExecutor(): Executor {
         val executor = ThreadPoolTaskExecutor()
@@ -42,10 +29,6 @@ class AsyncConfig : AsyncConfigurer {
         return executor
     }
 
-    /**
-     * Dedicated executor for image processing
-     * Higher core pool for Cloudinary uploads
-     */
     @Bean(name = ["imageExecutor"])
     fun imageTaskExecutor(): Executor {
         val executor = ThreadPoolTaskExecutor()
@@ -54,14 +37,11 @@ class AsyncConfig : AsyncConfigurer {
         executor.queueCapacity = 50
         executor.setThreadNamePrefix("async-image-")
         executor.setWaitForTasksToCompleteOnShutdown(true)
-        executor.setAwaitTerminationSeconds(120) // Allow time for uploads
+        executor.setAwaitTerminationSeconds(120)
         executor.initialize()
         return executor
     }
 
-    /**
-     * Lightweight executor for analytics/logging
-     */
     @Bean(name = ["analyticsExecutor"])
     fun analyticsTaskExecutor(): Executor {
         val executor = ThreadPoolTaskExecutor()
@@ -73,9 +53,6 @@ class AsyncConfig : AsyncConfigurer {
         return executor
     }
 
-    /**
-     * Global exception handler for async tasks
-     */
     override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler {
         return AsyncUncaughtExceptionHandler { throwable, method, params ->
             logger.error(

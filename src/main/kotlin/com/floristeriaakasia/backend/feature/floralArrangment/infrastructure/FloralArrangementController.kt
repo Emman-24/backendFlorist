@@ -5,6 +5,7 @@ import com.floristeriaakasia.backend.feature.floralArrangment.application.Create
 import com.floristeriaakasia.backend.feature.floralArrangment.application.CreateFloralArrangementUseCase
 import com.floristeriaakasia.backend.feature.floralArrangment.application.GetFloralArrangementsUseCase
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementNotFoundException
+import com.floristeriaakasia.backend.global.exeption.FloralArrangementSlugNotFoundException
 import com.floristeriaakasia.backend.util.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
@@ -66,7 +67,20 @@ class FloralArrangementController(
         return try {
             val dto = getFloralArrangementsUseCase.executeById(id)
             ResponseEntity.ok(ApiResponse.Success(data = dto))
-        } catch (e: FloralArrangementNotFoundException) {
+        } catch (e: FloralArrangementSlugNotFoundException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.Error(message = e.message ?: "Arrangement not found"))
+        }
+    }
+
+    @GetMapping("/seo-name/{seoName}")
+    fun getArrangementBySeoName(
+        @PathVariable seoName: String
+    ): ResponseEntity<ApiResponse<FloralArrangementDetailDto>>{
+        return try {
+            val dto = getFloralArrangementsUseCase.executeBySeoName(seoName)
+            ResponseEntity.ok(ApiResponse.Success(data = dto))
+        }catch (e: Exception){
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.Error(message = e.message ?: "Arrangement not found"))
         }

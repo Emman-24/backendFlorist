@@ -10,4 +10,5 @@ interface GetFloralArrangementsUseCase {
     fun execute(query: FloralArrangementQuery, pageable: Pageable): Page<FloralArrangementSummaryDto>
     fun executeById(id: Long): FloralArrangementDetailDto
     fun executeBySlug(slug: String): FloralArrangementDetailDto
+    fun executeBySeoName(seoName: String): FloralArrangementDetailDto
 }
