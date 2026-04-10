@@ -29,7 +29,7 @@ class RateLimitFilter : OncePerRequestFilter() {
         private const val ACQUIRE_TIMEOUT_MS = 100L
     }
 
-    // Cache of rate limiters per client IP
+
     private val limiters = CacheBuilder.newBuilder()
         .expireAfterAccess(LIMITER_EXPIRATION_MINUTES, TimeUnit.MINUTES)
         .maximumSize(LIMITER_CACHE_SIZE)
@@ -45,57 +45,46 @@ class RateLimitFilter : OncePerRequestFilter() {
         val endpoint = request.requestURI
         val method = request.method
 
-        // Determine rate limit based on endpoint
         val rate = determineRateLimit(endpoint, method)
 
-        // Create unique key: IP + rate tier (allows different limits per endpoint type)
         val clientKey = "$clientIp:${rate.toInt()}"
 
-        // Get or create rate limiter for this client
         val limiter = limiters.get(clientKey) {
             logger.debug("Creating rate limiter: client=$clientIp, rate=$rate req/s")
             RateLimiter.create(rate)
         }
 
-        // Try to acquire permit
+
         if (!limiter.tryAcquire(ACQUIRE_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             handleRateLimitExceeded(request, response, clientIp, endpoint, rate)
             return
         }
 
-        // Add rate limit headers
+
         addRateLimitHeaders(response, limiter, rate)
 
-        // Continue filter chain
+
         filterChain.doFilter(request, response)
     }
 
-    /**
-     * Determine rate limit based on endpoint and method
-     */
+
     private fun determineRateLimit(endpoint: String, method: String): Double {
         return when {
-            // Auth endpoints - strict limit (brute-force protection)
             endpoint.startsWith("/api/auth/") -> AUTH_ENDPOINT_RATE
 
-            // Image upload endpoints - bandwidth protection
             endpoint.contains("/images") || endpoint.contains("/with-images") ->
                 UPLOAD_ENDPOINT_RATE
 
-            // Admin endpoints - moderate limit
             endpoint.startsWith("/api/admin/") -> ADMIN_ENDPOINT_RATE
 
-            // Mutating operations (POST, PUT, DELETE) - moderate limit
             method in setOf("POST", "PUT", "PATCH", "DELETE") -> ADMIN_ENDPOINT_RATE
 
-            // Public read endpoints - generous limit
+
             else -> PUBLIC_ENDPOINT_RATE
         }
     }
 
-    /**
-     * Handle rate limit exceeded
-     */
+
     private fun handleRateLimitExceeded(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -133,9 +122,7 @@ class RateLimitFilter : OncePerRequestFilter() {
         response.writer.write(errorJson)
     }
 
-    /**
-     * Add rate limit headers to response
-     */
+
     private fun addRateLimitHeaders(
         response: HttpServletResponse,
         limiter: RateLimiter,
@@ -147,13 +134,11 @@ class RateLimitFilter : OncePerRequestFilter() {
         response.setHeader(RATE_LIMIT_RESET, resetTimeMs.toString())
     }
 
-    /**
-     * Extract client IP with proxy support
-     */
+
     private fun getClientIp(request: HttpServletRequest): String {
         val forwardedFor = request.getHeader("X-Forwarded-For")
         val realIp = request.getHeader("X-Real-IP")
-        val cfConnectingIp = request.getHeader("CF-Connecting-IP") // Cloudflare
+        val cfConnectingIp = request.getHeader("CF-Connecting-IP")
 
         return when {
             !cfConnectingIp.isNullOrBlank() -> cfConnectingIp.trim()
