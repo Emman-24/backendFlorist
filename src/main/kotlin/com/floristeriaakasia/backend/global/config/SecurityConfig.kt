@@ -48,12 +48,13 @@ class SecurityConfig(
             "/api/floral-arrangement",
             "/api/floral-arrangement/*",
             "/api/floral-arrangement/*/image",
-            "/api/floral-arrangement/seo-name/*",
+            "/api/floral-arrangement/slug/*",
             "/api/categories",
             "/api/categories/*",
             "/api/categories/*/*",
             "/api/tags",
             "/api/tags/*",
+            "/api/tags/*/*",
             "/api/faqs",
             "/api/faqs/*",
             "/error"
@@ -69,7 +70,6 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         logger.info("Configuring security filter chain with enhanced headers and rate limiting")
-
         http
             .csrf { it.disable() }
 

@@ -36,4 +36,12 @@ class TagController(
         return ResponseEntity.ok(response.toSuccessResponse())
     }
 
+    @PostMapping("/product/{productId}")
+    fun assignTags(
+        @PathVariable productId: Long,
+        @RequestBody tagIds: List<Long>
+    ): ResponseEntity<ApiResponse<Unit>> {
+        tagService.assignTags(productId, tagIds)
+        return ResponseEntity.ok().build()
+    }
 }

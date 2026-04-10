@@ -1,5 +1,6 @@
 package com.floristeriaakasia.backend.feature.tag
 
+import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangement
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangementRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -30,17 +31,18 @@ class TagService(
         return tagRepository.findAll()
     }
 
-//    @Transactional
-//    fun assignTags(
-//        productId: Long,
-//        tagIds: List<Long>
-//    ): FloralArrangement {
-//        val product = floralArrangmentRepository.findByIdOrNull(productId)
-//        val tags = tagRepository.findAllById(tagIds).toSet()
-//        product!!.tags.clear()
-//        product.tags.addAll(tags)
-//        return floralArrangmentRepository.save(product)
-//    }
+    @Transactional
+    fun assignTags(
+        productId: Long,
+        tagIds: List<Long>
+    ): Boolean {
+        val product = floralArrangmentRepository.findByIdOrNull(productId)
+        val tags = tagRepository.findAllById(tagIds).toSet()
+        product!!.tags.clear()
+        product.tags.addAll(tags)
+        floralArrangmentRepository.save(product)
+        return true
+    }
 //
 //    @Transactional
 //    fun removeTags(
@@ -54,7 +56,7 @@ class TagService(
 //    }
 
     @Transactional(readOnly = true)
-    fun getProductTags(productId:Long): List<Tag> {
+    fun getProductTags(productId: Long): List<Tag> {
         return floralArrangmentRepository.findByIdOrNull(productId)?.tags?.toList()
             ?: emptyList()
     }

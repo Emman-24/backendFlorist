@@ -76,11 +76,11 @@ class FloralArrangementController(
     @GetMapping("/seo-name/{seoName}")
     fun getArrangementBySeoName(
         @PathVariable seoName: String
-    ): ResponseEntity<ApiResponse<FloralArrangementDetailDto>>{
+    ): ResponseEntity<ApiResponse<FloralArrangementDetailDto>> {
         return try {
             val dto = getFloralArrangementsUseCase.executeBySeoName(seoName)
             ResponseEntity.ok(ApiResponse.Success(data = dto))
-        }catch (e: Exception){
+        } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.Error(message = e.message ?: "Arrangement not found"))
         }
@@ -89,11 +89,11 @@ class FloralArrangementController(
     @GetMapping("/slug/{slug}")
     fun getArrangementBySlug(
         @PathVariable slug: String
-    ): ResponseEntity<ApiResponse<FloralArrangementDetailDto>>{
+    ): ResponseEntity<ApiResponse<FloralArrangementDetailDto>> {
         return try {
             val dto = getFloralArrangementsUseCase.executeBySlug(slug)
             ResponseEntity.ok(ApiResponse.Success(data = dto))
-        }catch (e: FloralArrangementNotFoundException){
+        } catch (e: FloralArrangementNotFoundException) {
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.Error(message = e.message ?: "Arrangement not found"))
         }
