@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -18,69 +19,60 @@ import org.springframework.web.filter.OncePerRequestFilter
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-/**
- * High-performance JWT Authentication Filter
- *
- * Optimizations:
- * - User details caching (5 min TTL) - reduces DB calls by 95%
- * - Early path filtering - skips public endpoints
- * - Structured audit logging
- * - Comprehensive exception handling
- * - Token validation caching
- */
 @Component
 class JWTAuthenticationFilter(
     private val jwtService: JwtService,
-    private val userDetailsService: UserDetailsService
+    private val userDetailsService: UserDetailsService,
+    private val tokenBlacklist: JwtTokenBlacklist
 ) : OncePerRequestFilter() {
+
+    private val log = LoggerFactory.getLogger(javaClass)
+
 
     companion object {
         private const val BEARER_PREFIX = "Bearer "
         private const val AUTHORIZATION_HEADER = "Authorization"
 
-        // Public paths that don't require authentication
-        private val PUBLIC_PATHS = setOf(
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/auth/refresh",
+        // Paths that bypass JWT processing entirely
+        private val PUBLIC_PREFIXES = setOf(
+            "/api/auth/",
             "/actuator/health",
             "/actuator/info",
             "/swagger-ui",
             "/v3/api-docs",
             "/error"
         )
+        private val PUBLIC_GET_PREFIXES = setOf(
+            "/api/floral-arrangement",
+            "/api/categories",
+            "/api/tags",
+            "/api/faqs"
+        )
+
     }
 
-    // Cache user details to reduce database load
-    // Key: username, Value: UserDetails
     private val userDetailsCache: Cache<String, UserDetails> = Caffeine.newBuilder()
-        .maximumSize(1000)
+        .maximumSize(2_000)
         .expireAfterWrite(5, TimeUnit.MINUTES)
         .recordStats()
         .build()
 
-    /**
-     * Early filtering for public endpoints
-     * Improves performance by skipping JWT processing for public APIs
-     */
+
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
         val path = request.requestURI
+        val method = request.method
 
-        // Skip non-API paths
-        if (!path.startsWith("/api/")) {
-            return true
-        }
+        if (!path.startsWith("/api/") &&
+            !path.startsWith("/actuator/") &&
+            !path.startsWith("/swagger") &&
+            !path.startsWith("/v3/")
+        ) return true
 
-        // Check if path starts with any public path
-        return PUBLIC_PATHS.any { path.startsWith(it) } ||
-               // Allow GET requests to product catalog endpoints
-               (request.method == "GET" && (
-                   path.startsWith("/api/products") ||
-                   path.startsWith("/api/categories") ||
-                   path.startsWith("/api/subcategories") ||
-                   path.startsWith("/api/tags") ||
-                   path.startsWith("/api/faqs")
-               ))
+        if (PUBLIC_PREFIXES.any { path.startsWith(it) }) return true
+
+        if (method == "GET" && PUBLIC_GET_PREFIXES.any { path.startsWith(it) }) return true
+
+        return false
     }
 
     override fun doFilterInternal(
@@ -88,123 +80,114 @@ class JWTAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val startTime = System.currentTimeMillis()
+        val authHeader = request.getHeader(AUTHORIZATION_HEADER)
+
+        // No token supplied — proceed unauthenticated (downstream rules will block if needed)
+        if (authHeader.isNullOrBlank() || !authHeader.startsWith(BEARER_PREFIX)) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
+        val jwt = authHeader.removePrefix(BEARER_PREFIX).trim()
+
+        if (jwt.isBlank()) {
+            rejectWith(response, "Invalid token format")
+            return
+        }
 
         try {
-            val authHeader = request.getHeader(AUTHORIZATION_HEADER)
-
-            // No authorization header - proceed without authentication
-            if (authHeader.isNullOrBlank() || !authHeader.startsWith(BEARER_PREFIX)) {
-                filterChain.doFilter(request, response)
+            // Blacklist check before any DB call
+            if (tokenBlacklist.isBlacklisted(jwt)) {
+                log.warn("SEC_EVENT=BLACKLISTED_TOKEN ip={} uri={}", clientIp(request), request.requestURI)
+                rejectWith(response, "Token has been revoked")
                 return
             }
 
-            // Extract JWT token
-            val jwt = authHeader.substring(BEARER_PREFIX.length).trim()
-
-            // Validate token format
-            if (jwt.isBlank()) {
-                val clientIp = getClientIp(request)
-                logger.warn("Empty JWT token received from ip: $clientIp")
-                sendUnauthorizedError(response, "Invalid token format")
-                return
-            }
-
-            // Extract username from token
             val username = jwtService.extractUsername(jwt)
 
-            // Skip if already authenticated (shouldn't happen with stateless JWT)
+            // Skip if already authenticated in this request context
             if (SecurityContextHolder.getContext().authentication != null) {
                 filterChain.doFilter(request, response)
                 return
             }
 
-            // Load user details (with caching)
-            val userDetails = loadUserDetailsWithCache(username)
+            val userDetails = loadWithCache(username)
 
-            // Validate token
             if (!jwtService.isTokenValid(jwt, userDetails)) {
-                val clientIp = getClientIp(request)
-                logger.warn("Invalid JWT token for user: $username, ip: $clientIp")
-                sendUnauthorizedError(response, "Invalid or expired token")
+                log.warn("SEC_EVENT=INVALID_TOKEN user={} ip={}", username, clientIp(request))
+                rejectWith(response, "Invalid or expired token")
                 return
             }
 
-            // Create authentication token
+            // Guard: account still usable (catches disabled/locked/expired accounts)
+            if (!userDetails.isEnabled || !userDetails.isAccountNonLocked ||
+                !userDetails.isAccountNonExpired || !userDetails.isCredentialsNonExpired
+            ) {
+                // Evict stale cache entry so next request re-checks DB
+                userDetailsCache.invalidate(username)
+                log.warn("SEC_EVENT=ACCOUNT_SUSPENDED user={} ip={}", username, clientIp(request))
+                rejectWith(response, "Account is suspended or locked")
+                return
+            }
+
             val authToken = UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.authorities
-            )
+                userDetails, null, userDetails.authorities
+            ).also { it.details = WebAuthenticationDetailsSource().buildDetails(request) }
 
-            // Add request details
-            authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
-
-            // Set authentication in security context
             SecurityContextHolder.getContext().authentication = authToken
-
-            val duration = System.currentTimeMillis() - startTime
-            logger.debug("JWT authentication successful: user=$username, duration=${duration}ms")
-
-            // Continue filter chain
-            filterChain.doFilter(request, response)
+            log.debug("SEC_EVENT=AUTHN_OK user={} roles={}", username, userDetails.authorities)
 
         } catch (_: ExpiredJwtException) {
-            val clientIp = getClientIp(request)
-            logger.warn("Expired JWT token from ip: $clientIp")
-            sendUnauthorizedError(response, "Token expired - please login again")
-
+            log.info("SEC_EVENT=TOKEN_EXPIRED ip={}", clientIp(request))
+            rejectWith(response, "Token expired — please login again")
+            return
         } catch (_: MalformedJwtException) {
-            val clientIp = getClientIp(request)
-            logger.warn("Malformed JWT token from ip: $clientIp")
-            sendUnauthorizedError(response, "Invalid token format")
-
+            log.warn("SEC_EVENT=MALFORMED_TOKEN ip={}", clientIp(request))
+            rejectWith(response, "Malformed token")
+            return
         } catch (_: SignatureException) {
-            val clientIp = getClientIp(request)
-            logger.error("JWT signature verification failed from ip: $clientIp")
-            sendUnauthorizedError(response, "Invalid token signature")
-
+            log.error("SEC_EVENT=INVALID_SIGNATURE ip={}", clientIp(request))
+            rejectWith(response, "Token signature verification failed")
+            return
         } catch (e: Exception) {
-            val clientIp = getClientIp(request)
-            logger.error("JWT authentication error from ip: $clientIp", e)
-            sendUnauthorizedError(response, "Authentication failed")
+            log.error("SEC_EVENT=AUTHN_ERROR ip={}", clientIp(request), e)
+            rejectWith(response, "Authentication error")
+            return
         }
+
+        filterChain.doFilter(request, response)
     }
 
-    /**
-     * Load user details with caching
-     * Reduces database calls by 95% for repeated requests
-     */
-    private fun loadUserDetailsWithCache(username: String): UserDetails {
-        return userDetailsCache.get(username) { _ ->
-            logger.debug("Cache miss - loading user details from database: $username")
-            userDetailsService.loadUserByUsername(username)
-        } ?: throw IllegalStateException("Failed to load user details for: $username")
+    private fun loadWithCache(username: String): UserDetails =
+        userDetailsCache.get(username) {
+            log.debug("USER_CACHE_MISS username={}", it)
+            userDetailsService.loadUserByUsername(it)
+        } ?: throw IllegalStateException("UserDetailsService returned null for: $username")
+
+    fun evictUser(username: String) {
+        userDetailsCache.invalidate(username)
+        log.debug("USER_CACHE_EVICTED username={}", username)
     }
 
-    /**
-     * Send JSON error response
-     */
-    private fun sendUnauthorizedError(response: HttpServletResponse, message: String) {
+    private fun rejectWith(response: HttpServletResponse, message: String) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json"
         response.characterEncoding = "UTF-8"
         response.writer.write(
-            """{"success":false,"message":"$message","timestamp":"${Instant.now()}"}"""
+            """{"success":false,"code":"UNAUTHORIZED","message":"$message","timestamp":"${Instant.now()}"}"""
         )
     }
 
-    /**
-     * Extract client IP with proxy support
-     */
-    private fun getClientIp(request: HttpServletRequest): String {
-        val forwardedFor = request.getHeader("X-Forwarded-For")
+    private fun clientIp(request: HttpServletRequest): String {
+        val cfIp = request.getHeader("CF-Connecting-IP")
+        val xff = request.getHeader("X-Forwarded-For")
         val realIp = request.getHeader("X-Real-IP")
         return when {
-            !forwardedFor.isNullOrBlank() -> forwardedFor.split(",").first().trim()
-            !realIp.isNullOrBlank() -> realIp
+            !cfIp.isNullOrBlank() -> cfIp.trim()
+            !xff.isNullOrBlank() -> xff.split(",").first().trim()
+            !realIp.isNullOrBlank() -> realIp.trim()
             else -> request.remoteAddr
-        } ?: "unknown"
+        }
     }
 
 }

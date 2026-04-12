@@ -23,79 +23,88 @@ class JwtService(
     private val refreshExpiration: Long
 ) {
 
-    private val signingKey: SecretKey = Keys.hmacShaKeyFor(secretKey.toByteArray())
+    private val signingKey: SecretKey = buildKey(secretKey)
+
 
     fun generateToken(userDetails: UserDetails): String {
-        val claims: MutableMap<String, Any> = HashMap()
-        claims["roles"] = userDetails.authorities.map { it.authority }
+        val claims: Map<String, Any> = mapOf(
+            "roles" to userDetails.authorities.map { it.authority },
+            "typ" to "access"
+        )
         return buildToken(claims, userDetails.username, jwtExpiration)
     }
 
     fun generateRefreshToken(userDetails: UserDetails): String {
-        return buildToken(hashMapOf(), userDetails.username, refreshExpiration)
+        return buildToken(mapOf("typ" to "refresh"), userDetails.username, refreshExpiration)
     }
 
-
-    fun extractUsername(token: String): String {
-        return extractClaim(token) { obj: Claims? -> obj!!.subject }
-    }
-
-    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
-        val claims = extractAllClaims(token)
-        return claimsResolver(claims)
-    }
-
-
-    fun getExpirationTime(): Long {
-        return jwtExpiration
-    }
-
-    private fun buildToken(
-        claims: Map<String, Any>,
-        username: String,
-        expiration: Long
-    ): String {
-        return Jwts.builder()
-            .claims(claims)
-            .subject(username)
-            .issuedAt(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + expiration))
-            .signWith(signingKey)
-            .compact()
-    }
 
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
-        val username: String = extractUsername(token)
-        return (username == userDetails.username) && !isTokenExpired(token)
+        val claims = safeExtract(token) ?: return false
+        val username = claims.subject ?: return false
+        val typ = claims["typ"] as? String ?: return false
+        if (typ != "access") return false
+
+        return username == userDetails.username && !isExpired(claims)
     }
 
-    private fun isTokenExpired(token: String): Boolean {
-        return extractExpiration(token).before(Date())
+    fun isRefreshTokenValid(token: String, userDetails: UserDetails): Boolean {
+        val claims = safeExtract(token) ?: return false
+        val username = claims.subject ?: return false
+        val typ = claims["typ"] as? String ?: return false
+        if (typ != "refresh") return false
+        return username == userDetails.username && !isExpired(claims)
     }
 
-    private fun extractExpiration(token: String): Date {
-        return extractClaim(token) { obj: Claims? -> obj!!.expiration }
+
+    fun extractUsername(token: String): String = extractAllClaims(token).subject
+
+    fun extractRoles(token: String): List<String> =
+        safeExtract(token)?.let {
+            @Suppress("UNCHECKED_CAST")
+            it["roles"] as? List<String>
+        } ?: emptyList()
+
+    fun getExpirationTime(): Long = jwtExpiration
+
+    fun getRemainingTtl(token: String): Long {
+        val claims = safeExtract(token) ?: return 0L
+        val expMs = claims.expiration?.time ?: return 0L
+        return (expMs - System.currentTimeMillis()).coerceAtLeast(0L)
     }
 
+    private fun buildToken(claims: Map<String, Any>, subject: String, ttlMs: Long): String =
+        Jwts.builder()
+            .claims(claims)
+            .subject(subject)
+            .issuedAt(Date())
+            .expiration(Date(System.currentTimeMillis() + ttlMs))
+            .signWith(signingKey)
+            .compact()
 
-    private fun extractAllClaims(token: String): Claims {
-        return Jwts
-            .parser()
+    private fun extractAllClaims(token: String): Claims =
+        Jwts.parser()
             .verifyWith(signingKey)
+            .clockSkewSeconds(30)
             .build()
             .parseSignedClaims(token)
             .payload
-    }
 
-    fun extractRoles(token: String): List<String> {
-        return try {
-            val claims = extractAllClaims(token)
-            @Suppress("UNCHECKED_CAST")
-            claims["roles"] as? List<String> ?: emptyList()
-        } catch (_: Exception) {
-            emptyList()
+    private fun safeExtract(token: String): Claims? =
+        try { extractAllClaims(token) } catch (_: Exception) { null }
+
+    private fun isExpired(claims: Claims): Boolean =
+        claims.expiration?.before(Date()) ?: true
+
+
+    private fun buildKey(raw: String): SecretKey {
+        val bytes = raw.toByteArray(Charsets.UTF_8)
+        require(bytes.size >= 32) {
+            "security.jwt.secret-key must be at least 32 bytes (256 bits). " +
+                    "Current length: ${bytes.size} bytes. " +
+                    "Generate with: openssl rand -hex 32"
         }
+        return Keys.hmacShaKeyFor(bytes)
     }
-
 
 }

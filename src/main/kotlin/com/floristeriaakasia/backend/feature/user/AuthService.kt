@@ -3,12 +3,14 @@ package com.floristeriaakasia.backend.feature.user
 import com.floristeriaakasia.backend.feature.role.Role
 import com.floristeriaakasia.backend.feature.role.RoleRepository
 import com.floristeriaakasia.backend.global.security.JwtService
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
+
 
 @Service
 class AuthService(
@@ -18,11 +20,11 @@ class AuthService(
     private val jwtService: JwtService,
     private val authenticationManager: AuthenticationManager
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
 
+    // ── Login ─────────────────────────────────────────────────────────────
     @Transactional
-    fun login(
-        request: LoginRequestDTO
-    ): AuthResponse {
+    fun login(request: LoginRequestDTO): AuthResponse {
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(request.username, request.password)
         )
@@ -33,22 +35,12 @@ class AuthService(
         user.lastLoginAt = Instant.now()
         userRepository.save(user)
 
-        val accessToken = jwtService.generateToken(user)
-        val refreshToken = jwtService.generateRefreshToken(user)
-
-        return AuthResponse(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
-            tokenType = "Bearer",
-            expiresIn = jwtService.getExpirationTime(),
-            user = UserInfo.from(user)
-        )
+        log.info("AUTH_LOGIN_OK username={}", user.username)
+        return buildAuthResponse(user)
     }
-
 
     @Transactional
     fun register(request: RegisterRequestDTO): AuthResponse {
-
         if (userRepository.existsByUsername(request.username)) {
             throw IllegalArgumentException("El username ya existe")
         }
@@ -57,9 +49,7 @@ class AuthService(
         }
 
         val userRole = roleRepository.findByName(Role.USER).orElseGet {
-            roleRepository.save(
-                Role(name = Role.USER, description = "Usuario regular")
-            )
+            roleRepository.save(Role(name = Role.USER, description = "Usuario regular"))
         }
 
         val user = User(
@@ -71,31 +61,24 @@ class AuthService(
             roles = mutableSetOf(userRole)
         )
 
-        val savedUser = userRepository.save(user)
-
-        val accessToken = jwtService.generateToken(savedUser)
-        val refreshToken = jwtService.generateRefreshToken(savedUser)
-
-        return AuthResponse(
-            accessToken = accessToken,
-            refreshToken = refreshToken,
-            tokenType = "Bearer",
-            expiresIn = jwtService.getExpirationTime(),
-            user = UserInfo.from(savedUser)
-        )
+        val saved = userRepository.save(user)
+        log.info("AUTH_REGISTER_OK username={}", saved.username)
+        return buildAuthResponse(saved)
     }
 
     @Transactional(readOnly = true)
     fun refreshToken(refreshToken: String): AuthResponse {
         val username = jwtService.extractUsername(refreshToken)
 
-        val user = userRepository.findByUsername(username).orElseThrow { IllegalArgumentException("Usuario no encontrado") }
+        val user = userRepository.findByUsername(username)
+            .orElseThrow { IllegalArgumentException("Usuario no encontrado") }
 
-        if (!jwtService.isTokenValid(refreshToken, user)) {
+        if (!jwtService.isRefreshTokenValid(refreshToken, user)) {
             throw IllegalArgumentException("Refresh token inválido o expirado")
         }
 
         val newAccessToken = jwtService.generateToken(user)
+        log.debug("TOKEN_REFRESHED username={}", username)
 
         return AuthResponse(
             accessToken = newAccessToken,
@@ -106,6 +89,14 @@ class AuthService(
         )
     }
 
+
+    private fun buildAuthResponse(user: User) = AuthResponse(
+        accessToken = jwtService.generateToken(user),
+        refreshToken = jwtService.generateRefreshToken(user),
+        tokenType = "Bearer",
+        expiresIn = jwtService.getExpirationTime(),
+        user = UserInfo.from(user)
+    )
 }
 
 data class AuthResponse(
@@ -124,14 +115,12 @@ data class UserInfo(
     val roles: List<String>
 ) {
     companion object {
-        fun from(user: User): UserInfo {
-            return UserInfo(
-                id = user.id!!,
-                username = user.username,
-                email = user.email,
-                fullName = user.fullName,
-                roles = user.roles.map { it.name }
-            )
-        }
+        fun from(user: User) = UserInfo(
+            id = user.id!!,
+            username = user.username,
+            email = user.email,
+            fullName = user.fullName,
+            roles = user.roles.map { it.name }
+        )
     }
 }

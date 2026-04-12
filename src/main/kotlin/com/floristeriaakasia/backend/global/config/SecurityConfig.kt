@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -34,42 +35,64 @@ import java.time.Instant
 class SecurityConfig(
     private val jwtAuthFilter: JWTAuthenticationFilter,
     private val rateLimitFilter: RateLimitFilter,
-    @param:Value("\${app.cors.allowed-origins}") private val allowedOrigins: List<String>
+    @param:Value("\${app.cors.allowed-origins}") private val allowedOrigins: List<String>,
+    @Value("\${app.security.environment:production}") private val environment: String
 ) {
     private val logger = LoggerFactory.getLogger(SecurityConfig::class.java)
 
     companion object {
-        // Public endpoints patterns (pre-compiled for performance)
-        private val PUBLIC_ENDPOINTS = arrayOf(
-            "swagger-ui/**",
-            "/v3/api-docs/**",
-            "/api/auth/login",
-            "/api/auth/register",
+
+        private val PUBLIC_GET_PATTERNS = arrayOf(
             "/api/floral-arrangement",
             "/api/floral-arrangement/*",
-            "/api/floral-arrangement/*/image",
             "/api/floral-arrangement/slug/*",
+            "/api/floral-arrangement/seo-name/*",
             "/api/categories",
             "/api/categories/*",
-            "/api/categories/*/*",
+            "/api/categories/*/children",
+            "/api/categories/tree",
             "/api/tags",
             "/api/tags/*",
-            "/api/tags/*/*",
             "/api/faqs",
-            "/api/faqs/*",
+            "/api/faqs/*"
+        )
+
+        private val AUTH_PATTERNS = arrayOf(
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/refresh"
+        )
+
+        private val INFRA_PATTERNS = arrayOf(
+            "/actuator/health",
+            "/actuator/health/**",
+            "/actuator/info",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
             "/error"
         )
 
-        private val ADMIN_ENDPOINTS = arrayOf(
+        private val ADMIN_PATTERNS = arrayOf(
             "/api/admin/**",
             "/actuator/metrics",
-            "/actuator/prometheus"
+            "/actuator/prometheus",
+            "/actuator/env",
+            "/actuator/beans",
+            "/actuator/loggers/**"
         )
+
+        private val MANAGER_PATTERNS = arrayOf(
+            "/api/faqs/admin",
+            "/api/tags/product/**"
+        )
+
     }
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        logger.info("Configuring security filter chain with enhanced headers and rate limiting")
+        logger.info("Configuring security filter chain [env={}]", environment)
+
         http
             .csrf { it.disable() }
 
@@ -85,17 +108,7 @@ class SecurityConfig(
                     }
 
                     .contentSecurityPolicy { csp ->
-                        csp.policyDirectives(
-                            "default-src 'self'; " +
-                            "script-src 'self' 'unsafe-inline'; " +
-                            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-                            "font-src 'self' https://fonts.gstatic.com; " +
-                            "img-src 'self' data: https: blob:; " +
-                            "connect-src 'self' https://res.cloudinary.com; " +
-                            "frame-ancestors 'none'; " +
-                            "form-action 'self'; " +
-                            "upgrade-insecure-requests;"
-                        )
+                        csp.policyDirectives(buildCsp())
                     }
 
                     .contentTypeOptions { }
@@ -105,7 +118,8 @@ class SecurityConfig(
                     .httpStrictTransportSecurity { hsts ->
                         hsts
                             .includeSubDomains(true)
-                            .maxAgeInSeconds(31536000) // 1 year
+                            .maxAgeInSeconds(31536000)
+                            .preload(true)
                     }
 
                     .referrerPolicy { referrer ->
@@ -122,104 +136,141 @@ class SecurityConfig(
 
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers(*PUBLIC_ENDPOINTS).permitAll()
+                    .requestMatchers(*INFRA_PATTERNS).permitAll()
 
-                    .requestMatchers(*ADMIN_ENDPOINTS).hasAnyRole("ADMIN", "MANAGER")
+                    .requestMatchers(*AUTH_PATTERNS).permitAll()
+
+                    .requestMatchers(HttpMethod.GET, *PUBLIC_GET_PATTERNS).permitAll()
+
+                    .requestMatchers(*ADMIN_PATTERNS).hasRole("ADMIN")
+
+                    .requestMatchers(*MANAGER_PATTERNS).hasAnyRole("ADMIN", "MANAGER")
+
+                    .requestMatchers(HttpMethod.POST, "/api/floral-arrangement/*/image")
+
+                    .hasAnyRole("ADMIN", "MANAGER")
+
+                    .requestMatchers(HttpMethod.POST, "/api/floral-arrangement")
+
+                    .hasAnyRole("ADMIN", "MANAGER")
 
                     .anyRequest().authenticated()
             }
 
-
             .exceptionHandling { exceptions ->
                 exceptions
                     .authenticationEntryPoint { request, response, authException ->
-                        val clientIp = getClientIp(request)
-                        logger.warn(
-                            "Authentication failed: ip={}, uri={}, error={}",
-                            clientIp,
-                            request.requestURI,
-                            authException.message
-                        )
-
-                        response.status = HttpServletResponse.SC_UNAUTHORIZED
-                        response.contentType = "application/json"
-                        response.characterEncoding = "UTF-8"
-                        response.writer.write(
-                            """{"success":false,"message":"Authentication required","timestamp":"${Instant.now()}"}"""
+                        logSecurityEvent("AUTHN_FAILED", request, authException.message)
+                        writeJsonError(
+                            response,
+                            HttpServletResponse.SC_UNAUTHORIZED,
+                            "Authentication required",
+                            "UNAUTHORIZED"
                         )
                     }
                     .accessDeniedHandler { request, response, accessDeniedException ->
-                        val clientIp = getClientIp(request)
-                        val username = request.userPrincipal?.name ?: "anonymous"
-                        logger.warn(
-                            "Access denied: user={}, ip={}, uri={}, error={}",
-                            username,
-                            clientIp,
-                            request.requestURI,
-                            accessDeniedException.message
-                        )
-
-                        response.status = HttpServletResponse.SC_FORBIDDEN
-                        response.contentType = "application/json"
-                        response.characterEncoding = "UTF-8"
-                        response.writer.write(
-                            """{"success":false,"message":"Access denied - insufficient permissions","timestamp":"${Instant.now()}"}"""
+                        val user = request.userPrincipal?.name ?: "anonymous"
+                        logSecurityEvent("AUTHZ_DENIED [$user]", request, accessDeniedException.message)
+                        writeJsonError(
+                            response,
+                            HttpServletResponse.SC_FORBIDDEN,
+                            "Access denied — insufficient permissions",
+                            "FORBIDDEN"
                         )
                     }
             }
 
             .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter::class.java)
+
             .addFilterAfter(jwtAuthFilter, RateLimitFilter::class.java)
 
-        logger.info("Security filter chain configured successfully")
+        logger.info("Security filter chain ready [env={}]", environment)
+
         return http.build()
     }
 
-
-    private fun getClientIp(request: HttpServletRequest): String {
-        val forwardedFor = request.getHeader("X-Forwarded-For")
-        val realIp = request.getHeader("X-Real-IP")
-        return when {
-            !forwardedFor.isNullOrBlank() -> forwardedFor.split(",").first().trim()
-            !realIp.isNullOrBlank() -> realIp
-            else -> request.remoteAddr
-        } ?: "unknown"
-    }
-
-
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        logger.info("Configuring CORS for origins: {}", allowedOrigins)
+        val isProd = environment == "production"
+        val origins =
+            if (isProd) allowedOrigins else allowedOrigins + listOf("http://localhost:4200", "http://localhost:3000")
 
-        val configuration = CorsConfiguration().apply {
-            allowedOrigins = this@SecurityConfig.allowedOrigins
+        logger.info("CORS configured for origins: {}", origins)
 
+        val config = CorsConfiguration().apply {
+            allowedOrigins = origins
             allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
 
             allowedHeaders = listOf(
-                "Authorization",
-                "Content-Type",
-                "Accept",
-                "X-Requested-With",
-                "Cache-Control",
-                "X-CSRF-TOKEN"
+                "Authorization", "Content-Type", "Accept",
+                "X-Requested-With", "Cache-Control", "X-CSRF-TOKEN"
             )
-
             exposedHeaders = listOf(
-                "Authorization",
-                "X-Total-Count",
-                "X-RateLimit-Remaining",
-                "X-RateLimit-Reset",
+                "Authorization", "X-Total-Count",
+                "X-RateLimit-Remaining", "X-RateLimit-Reset", "X-RateLimit-Limit",
                 "Content-Disposition"
             )
-
             allowCredentials = true
-
             maxAge = 3600L
         }
 
         return UrlBasedCorsConfigurationSource().apply {
-            registerCorsConfiguration("/**", configuration)
+            registerCorsConfiguration("/**", config)
+        }
+    }
+
+    private fun buildCsp(): String {
+        val base = listOf(
+            "default-src 'self'",
+            "script-src 'self'",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "img-src 'self' data: https://res.cloudinary.com blob:",
+            "connect-src 'self' https://res.cloudinary.com",
+            "media-src 'none'",
+            "object-src 'none'",
+            "frame-src 'none'",
+            "frame-ancestors 'none'",
+            "form-action 'self'",
+            "base-uri 'self'",
+            "upgrade-insecure-requests"
+        )
+        val swaggerAddition = if (environment != "production") {
+            listOf("script-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com")
+        } else emptyList()
+
+        return (if (swaggerAddition.isEmpty()) base else base.dropLast(1) + swaggerAddition + base.last())
+            .joinToString("; ")
+    }
+
+    private fun logSecurityEvent(event: String, request: HttpServletRequest, detail: String?) {
+        val ip = extractClientIp(request)
+        logger.warn("SEC_EVENT={} ip={} uri={} detail={}", event, ip, request.requestURI, detail)
+    }
+
+    private fun writeJsonError(
+        response: HttpServletResponse,
+        status: Int,
+        message: String,
+        code: String
+    ) {
+        response.status = status
+        response.contentType = "application/json"
+        response.characterEncoding = "UTF-8"
+        response.writer.write(
+            """{"success":false,"code":"$code","message":"$message","timestamp":"${Instant.now()}"}"""
+        )
+    }
+
+    private fun extractClientIp(request: HttpServletRequest): String {
+        val xff = request.getHeader("X-Forwarded-For")
+        val realIp = request.getHeader("X-Real-IP")
+        val cfIp = request.getHeader("CF-Connecting-IP")
+        return when {
+            !cfIp.isNullOrBlank() -> cfIp.trim()
+            !xff.isNullOrBlank() -> xff.split(",").first().trim()
+            !realIp.isNullOrBlank() -> realIp.trim()
+            else -> request.remoteAddr
         }
     }
 
