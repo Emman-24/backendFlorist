@@ -35,7 +35,8 @@ import java.time.Instant
 class SecurityConfig(
     private val jwtAuthFilter: JWTAuthenticationFilter,
     private val rateLimitFilter: RateLimitFilter,
-    @param:Value("\${app.cors.allowed-origins}") private val allowedOrigins: List<String>,
+    @Value("\${app.cors.allowed-origins}")
+    private val rawAllowedOrigins: String,
     @Value("\${app.security.environment:production}") private val environment: String
 ) {
     private val logger = LoggerFactory.getLogger(SecurityConfig::class.java)
@@ -191,27 +192,45 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val isProd = environment == "production"
-        val origins =
-            if (isProd) allowedOrigins else allowedOrigins + listOf("http://localhost:4200", "http://localhost:3000")
 
-        logger.info("CORS configured for origins: {}", origins)
+        val configuredOrigins = rawAllowedOrigins
+            .split(",")
+            .map(String::trim)
+            .filter(String::isNotBlank)
+
+        val effectiveOrigins = if (environment == "production") {
+            configuredOrigins
+        } else {
+            (configuredOrigins + listOf(
+                "http://localhost:4200",
+                "http://localhost:3000",
+                "http://localhost:8080"
+            )).distinct()
+        }
+
+        logger.info("CORS effective origins: {}", effectiveOrigins)
 
         val config = CorsConfiguration().apply {
-            allowedOrigins = origins
+            allowedOrigins = effectiveOrigins
             allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
-
             allowedHeaders = listOf(
-                "Authorization", "Content-Type", "Accept",
-                "X-Requested-With", "Cache-Control", "X-CSRF-TOKEN"
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "X-Requested-With",
+                "Cache-Control",
+                "X-CSRF-TOKEN"
             )
             exposedHeaders = listOf(
-                "Authorization", "X-Total-Count",
-                "X-RateLimit-Remaining", "X-RateLimit-Reset", "X-RateLimit-Limit",
+                "Authorization",
+                "X-Total-Count",
+                "X-RateLimit-Limit",
+                "X-RateLimit-Remaining",
+                "X-RateLimit-Reset",
                 "Content-Disposition"
             )
             allowCredentials = true
-            maxAge = 3600L
+            maxAge = 3_600L
         }
 
         return UrlBasedCorsConfigurationSource().apply {
