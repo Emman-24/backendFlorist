@@ -1,0 +1,19 @@
+# robots.txt — Akasia Floristería
+# https://www.floristeriaakasia.com.co/robots.txt
+
+User-agent: *
+Allow: /api/floral-arrangement
+Allow: /api/categories
+Allow: /api/tags
+Allow: /api/faqs
+
+Disallow: /api/auth/
+Disallow: /api/admin/
+Disallow: /actuator/
+Disallow: /swagger-ui/
+Disallow: /v3/
+
+Crawl-delay: 10
+
+# ── Sitemap location (add sitemap when ready) ───────────────────────────
+# Sitemap: https://www.floristeriaakasia.com.co/sitemap.xml

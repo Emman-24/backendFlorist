@@ -28,12 +28,16 @@ class JWTAuthenticationFilter(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-
     companion object {
         private const val BEARER_PREFIX = "Bearer "
         private const val AUTHORIZATION_HEADER = "Authorization"
 
-        // Paths that bypass JWT processing entirely
+        private val STATIC_RESOURCES = setOf(
+            "/robots.txt",
+            "/favicon.ico",
+            "/sitemap.xml"
+        )
+
         private val PUBLIC_PREFIXES = setOf(
             "/api/auth/",
             "/actuator/health",
@@ -42,13 +46,13 @@ class JWTAuthenticationFilter(
             "/v3/api-docs",
             "/error"
         )
+
         private val PUBLIC_GET_PREFIXES = setOf(
             "/api/floral-arrangement",
             "/api/categories",
             "/api/tags",
             "/api/faqs"
         )
-
     }
 
     private val userDetailsCache: Cache<String, UserDetails> = Caffeine.newBuilder()
@@ -57,10 +61,10 @@ class JWTAuthenticationFilter(
         .recordStats()
         .build()
 
-
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
         val path = request.requestURI
-        val method = request.method
+
+        if (STATIC_RESOURCES.any { path == it || path.startsWith(it) }) return true
 
         if (!path.startsWith("/api/") &&
             !path.startsWith("/actuator/") &&
@@ -70,6 +74,7 @@ class JWTAuthenticationFilter(
 
         if (PUBLIC_PREFIXES.any { path.startsWith(it) }) return true
 
+        val method = request.method
         if (method == "GET" && PUBLIC_GET_PREFIXES.any { path.startsWith(it) }) return true
 
         return false
@@ -123,7 +128,6 @@ class JWTAuthenticationFilter(
             if (!userDetails.isEnabled || !userDetails.isAccountNonLocked ||
                 !userDetails.isAccountNonExpired || !userDetails.isCredentialsNonExpired
             ) {
-                // Evict stale cache entry so next request re-checks DB
                 userDetailsCache.invalidate(username)
                 log.warn("SEC_EVENT=ACCOUNT_SUSPENDED user={} ip={}", username, clientIp(request))
                 rejectWith(response, "Account is suspended or locked")

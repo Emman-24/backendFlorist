@@ -43,6 +43,13 @@ class SecurityConfig(
 
     companion object {
 
+        private val STATIC_PATTERNS = arrayOf(
+            "/robots.txt",
+            "/favicon.ico",
+            "/sitemap.xml",
+            "/sitemap*.xml",
+        )
+
         private val PUBLIC_GET_PATTERNS = arrayOf(
             "/api/floral-arrangement",
             "/api/floral-arrangement/*",
@@ -137,6 +144,9 @@ class SecurityConfig(
 
             .authorizeHttpRequests { auth ->
                 auth
+
+                    .requestMatchers(*STATIC_PATTERNS).permitAll()
+
                     .requestMatchers(*INFRA_PATTERNS).permitAll()
 
                     .requestMatchers(*AUTH_PATTERNS).permitAll()
