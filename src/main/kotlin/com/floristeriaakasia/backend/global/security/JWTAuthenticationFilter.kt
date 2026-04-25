@@ -42,6 +42,7 @@ class JWTAuthenticationFilter(
             "/api/auth/",
             "/actuator/health",
             "/actuator/info",
+            "/health",
             "/swagger-ui",
             "/v3/api-docs",
             "/error"
