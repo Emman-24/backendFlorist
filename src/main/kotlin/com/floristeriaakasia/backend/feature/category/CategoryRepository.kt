@@ -12,7 +12,7 @@ interface CategoryRepository : JpaRepository<Category, Long> {
     @Query("SELECT c FROM Category c WHERE c.path LIKE :pathPrefix ORDER BY c.depth ASC, c.displayOrder ASC")
     fun findSubtree(@Param("pathPrefix") pathPrefix: String): List<Category>
 
-    @Query("SELECT c FROM Category c ORDER BY c.depth ASC, c.displayOrder ASC")
+    @Query("SELECT c FROM Category c WHERE c.status is true ORDER BY c.depth ASC, c.displayOrder ASC")
     fun findFullTree(): List<Category>
 
     @Query("SELECT c FROM Category c WHERE c.id IN :ids AND c.status = true")
