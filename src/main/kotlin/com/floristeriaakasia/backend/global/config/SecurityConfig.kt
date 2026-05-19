@@ -72,6 +72,7 @@ class SecurityConfig(
         )
 
         private val INFRA_PATTERNS = arrayOf(
+            "/",
             "/actuator/health",
             "/actuator/health/**",
             "/actuator/info",

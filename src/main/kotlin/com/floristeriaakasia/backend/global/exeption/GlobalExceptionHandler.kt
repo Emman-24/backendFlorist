@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.multipart.MaxUploadSizeExceededException
 import org.springframework.web.servlet.NoHandlerFoundException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -311,6 +312,17 @@ class GlobalExceptionHandler {
                     code = "INTERNAL_ERROR"
                 )
             )
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFound(
+        ex: NoResourceFoundException,
+        request: HttpServletRequest
+    ): ResponseEntity<ApiResponse.Error> {
+        logger.warn("Static resource not found: uri={}", request.requestURI)
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ApiResponse.Error(message = "Resource not found.", code = "NOT_FOUND"))
     }
 
 }
