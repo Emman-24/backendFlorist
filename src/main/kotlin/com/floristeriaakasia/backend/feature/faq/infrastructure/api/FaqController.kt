@@ -1,5 +1,10 @@
-package com.floristeriaakasia.backend.feature.faq
+package com.floristeriaakasia.backend.feature.faq.infrastructure.api
 
+import com.floristeriaakasia.backend.feature.faq.CreateFaqRequest
+import com.floristeriaakasia.backend.feature.faq.FaqResponse
+import com.floristeriaakasia.backend.feature.faq.FaqService
+import com.floristeriaakasia.backend.feature.faq.UpdateFaqRequest
+import com.floristeriaakasia.backend.feature.faq.UpdateFaqStatusRequest
 import com.floristeriaakasia.backend.util.ApiResponse
 import com.floristeriaakasia.backend.util.toSuccessResponse
 import jakarta.validation.Valid

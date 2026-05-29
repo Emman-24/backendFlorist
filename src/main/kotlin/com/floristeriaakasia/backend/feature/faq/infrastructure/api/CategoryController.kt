@@ -1,10 +1,22 @@
-package com.floristeriaakasia.backend.feature.category
+package com.floristeriaakasia.backend.feature.faq.infrastructure.api
 
+import com.floristeriaakasia.backend.feature.category.Category
+import com.floristeriaakasia.backend.feature.category.CategoryNode
+import com.floristeriaakasia.backend.feature.category.CategoryResponse
+import com.floristeriaakasia.backend.feature.category.CategoryService
+import com.floristeriaakasia.backend.feature.category.CategoryTreeResponse
+import com.floristeriaakasia.backend.feature.category.CreateChildCategoryRequest
+import com.floristeriaakasia.backend.feature.category.CreateRootCategoryRequest
 import com.floristeriaakasia.backend.util.ApiResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/categories")
@@ -25,21 +37,21 @@ class CategoryController(
     fun createChild(
         @PathVariable parentId: Long,
         @Valid @RequestBody request: CreateChildCategoryRequest
-    ):ResponseEntity<ApiResponse<CategoryResponse>>{
+    ): ResponseEntity<ApiResponse<CategoryResponse>> {
         val category = categoryService.createChild(request.name,request.slug,parentId,request.displayOrder)
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(ApiResponse.Success(toResponse(category)))
     }
 
     @GetMapping("/tree")
-    fun getFullTree():ResponseEntity<ApiResponse<List<CategoryTreeResponse>>>{
+    fun getFullTree(): ResponseEntity<ApiResponse<List<CategoryTreeResponse>>> {
         val flat = categoryService.getFullTree()
         val tree = categoryService.buildTreeFromFlat(flat)
         return ResponseEntity.ok(ApiResponse.Success(tree.map(::toTreeResponse)))
     }
 
     @GetMapping
-    fun getRoots():ResponseEntity<ApiResponse<List<CategoryResponse>>>{
+    fun getRoots(): ResponseEntity<ApiResponse<List<CategoryResponse>>> {
         val categories = categoryService.getRoots()
         return ResponseEntity.ok(ApiResponse.Success(categories.map { toResponse(it) }))
     }
@@ -47,7 +59,7 @@ class CategoryController(
     @GetMapping("/{id}")
     fun getById(
         @PathVariable id: Long
-    ): ResponseEntity<ApiResponse<CategoryResponse>>{
+    ): ResponseEntity<ApiResponse<CategoryResponse>> {
         val category = categoryService.getById(id)
         return ResponseEntity.ok(ApiResponse.Success(toResponse(category)))
     }
