@@ -4,16 +4,16 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db/changelog/changes/create-table-categories.xml"/>
-    <include file="db/changelog/changes/create-table-roles.xml"/>
-    <include file="db/changelog/changes/create-table-users.xml"/>
-    <include file="db/changelog/changes/create-table-faqs.xml"/>
-    <include file="db/changelog/changes/create-table-tag.xml"/>
+    <include file="changes/create-table-categories.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-roles.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-users.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-faqs.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-tag.xml" relativeToChangelogFile="true"/>
 
-    <include file="db/changelog/changes/create-table-prices.xml"/>
-    <include file="db/changelog/changes/create-table-product_descriptions.xml"/>
-    <include file="db/changelog/changes/create-table-floralArrangement.xml"/>
-    <include file="db/changelog/changes/create-table-flowers.xml"/>
-    <include file="db/changelog/changes/create-table-product_gallery.xml"/>
+    <include file="changes/create-table-prices.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-product_descriptions.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-floralArrangement.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-flowers.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-table-product_gallery.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
