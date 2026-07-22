@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head ::head}"></head>
+<body>
+<main>
+
+    <h1>Login</h1>
+
+    <form th:action="@{/admin/login}" method="post" hx-boost="false" novalidate>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text"
+                   id="username"
+                   name="username"
+                   class="form-control"
+                   autocomplete="username"
+                   required
+                   autofocus />
+        </div>
+
+        <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   class="form-control"
+                   autocomplete="current-password"
+                   required />
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+    </form>
+
+
+</main>
+
+</body>
+</html>
