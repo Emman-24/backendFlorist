@@ -85,15 +85,7 @@ class AdminLoginController(
 
     }
 
-    @GetMapping("/dashboard")
-    fun dashboard(
-        model: Model,
-        request: HttpServletRequest
-    ): String {
-        val auth = SecurityContextHolder.getContext().authentication
-        model.addAttribute("username", auth?.name ?: "Admin")
-        return "admin/dashboard"
-    }
+
 
     @GetMapping("/logout")
     fun logout(session: HttpSession, request: HttpServletRequest): String {

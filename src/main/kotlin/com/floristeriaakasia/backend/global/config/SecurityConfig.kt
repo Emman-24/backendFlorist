@@ -48,6 +48,11 @@ class SecurityConfig(
             "/favicon.ico",
             "/sitemap.xml",
             "/sitemap*.xml",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/assets/**",
+            "/webjars/**",
         )
 
         private val PUBLIC_GET_PATTERNS = arrayOf(

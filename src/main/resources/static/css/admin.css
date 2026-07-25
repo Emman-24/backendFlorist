@@ -1,0 +1,61 @@
+:root {
+    --akasia-sidebar-width: 260px;
+    --akasia-primary: #7c5c46;
+    --akasia-surface: #f7f5f2;
+    --akasia-border: #e7e2db;
+}
+
+.admin-body {
+    background-color: var(--akasia-surface);
+}
+
+.admin-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar-static {
+    width: var(--akasia-sidebar-width);
+    background-color: #fff;
+    border-right: 1px solid var(--akasia-border);
+}
+
+@media (min-width: 992px) {
+    .admin-sidebar-static {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+    }
+}
+
+.admin-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-kpi-card {
+    border: 1px solid var(--akasia-border);
+    border-radius: .75rem;
+}
+
+.admin-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.admin-nav .nav-link {
+    color: #4a4a4a;
+    border-radius: .5rem;
+}
+
+.admin-nav .nav-link.active {
+    background-color: var(--akasia-primary);
+    color: #fff;
+}

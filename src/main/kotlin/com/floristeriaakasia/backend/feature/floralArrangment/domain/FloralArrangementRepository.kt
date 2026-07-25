@@ -14,8 +14,9 @@ import java.math.BigDecimal
 interface FloralArrangementRepository : JpaRepository<FloralArrangement, Long> {
     fun existsBySlug(slug: String): Boolean
 
-    fun findBySlug(slug: String):FloralArrangement
-    fun findBySeoName(seoName: String):FloralArrangement
+    fun findBySlug(slug: String): FloralArrangement
+    fun findBySeoName(seoName: String): FloralArrangement
+
     @Modifying
     @Query("UPDATE FloralArrangement fa SET fa.views = fa.views + 1 WHERE fa.id = :id")
     fun incrementViews(@Param("id") id: Long)
@@ -70,26 +71,34 @@ interface FloralArrangementRepository : JpaRepository<FloralArrangement, Long> {
         pageable: Pageable
     ): Page<FloralArrangement>
 
-    @Query("""
+    @Query(
+        """
         SELECT fa FROM FloralArrangement fa
         JOIN FETCH fa.categories
         WHERE fa.id IN :ids
-    """)
+    """
+    )
     fun findWithCategoriesByIds(@Param("ids") ids: Collection<Long>): List<FloralArrangement>
 
-    @Query("""
+    @Query(
+        """
         SELECT fa FROM FloralArrangement fa
         JOIN FETCH fa.tags
         WHERE fa.id IN :ids
-    """)
+    """
+    )
     fun findWithTagsByIds(@Param("ids") ids: Collection<Long>): List<FloralArrangement>
 
-    @Query("""
+    @Query(
+        """
         SELECT g FROM ProductGallery g
         WHERE g.floralArrangement.id IN :ids
           AND g.isPrimary = true
-    """)
+    """
+    )
     fun findPrimaryImagesByArrangementIds(
         @Param("ids") ids: Collection<Long>
     ): List<ProductGallery>
+
+    fun countByIsAvailable(isAvailable: Boolean): Long
 }

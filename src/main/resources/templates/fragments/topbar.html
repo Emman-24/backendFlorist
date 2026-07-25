@@ -1,0 +1,25 @@
+<header th:fragment="topbar"
+        class="admin-topbar d-flex align-items-center justify-content-between border-bottom bg-white px-3 py-2 sticky-top">
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary d-lg-none" type="button"
+                data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+            <i class="bi bi-list fs-5"></i>
+        </button>
+        <h1 class="h5 mb-0 text-capitalize" th:text="${activePage} ?: 'Dashboard'">Dashboard</h1>
+    </div>
+
+    <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle d-flex align-items-center gap-2" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle fs-5"></i>
+            <span th:text="${username}">Admin</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <form th:action="@{/admin/logout-form}" method="post" class="px-3 py-1">
+                    <button type="submit" class="dropdown-item p-0 border-0 bg-transparent text-danger">Sign out</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</header>

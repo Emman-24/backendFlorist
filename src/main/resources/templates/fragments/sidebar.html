@@ -1,0 +1,75 @@
+<ul th:fragment="sidebarNav" class="nav nav-pills flex-column admin-nav mb-auto px-2 py-3"
+    aria-label="Primary navigation">
+    <li class="nav-item">
+        <a th:href="@{/admin/dashboard}" class="nav-link d-flex align-items-center gap-2"
+           th:classappend="${activePage == 'dashboard'} ? 'active' : ''">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </li>
+    <li class="nav-item">
+        <a th:href="@{/admin/arrangements}" class="nav-link d-flex align-items-center gap-2"
+           th:classappend="${activePage == 'arrangements'} ? 'active' : ''">
+            <i class="bi bi-flower3"></i> Arrangements
+        </a>
+    </li>
+    <li class="nav-item">
+        <a th:href="@{/admin/categories}" class="nav-link d-flex align-items-center gap-2"
+           th:classappend="${activePage == 'categories'} ? 'active' : ''">
+            <i class="bi bi-diagram-3"></i> Categories
+        </a>
+    </li>
+    <li class="nav-item">
+        <a th:href="@{/admin/tags}" class="nav-link d-flex align-items-center gap-2"
+           th:classappend="${activePage == 'tags'} ? 'active' : ''">
+            <i class="bi bi-tags"></i> Tags
+        </a>
+    </li>
+    <li class="nav-item">
+        <a th:href="@{/admin/faqs}" class="nav-link d-flex align-items-center gap-2"
+           th:classappend="${activePage == 'faqs'} ? 'active' : ''">
+            <i class="bi bi-question-circle"></i> FAQs
+        </a>
+    </li>
+</ul>
+
+<!-- Desktop: plain static column, no offcanvas behavior at all -->
+<aside th:fragment="sidebarDesktop" class="admin-sidebar-static d-none d-lg-flex flex-column">
+    <div class="d-flex align-items-center gap-2 px-3 py-3 border-bottom">
+        <i class="bi bi-flower1 fs-5"></i>
+        <span class="fw-semibold">Akasia Admin</span>
+    </div>
+
+    <ul th:replace="~{fragments/sidebar :: sidebarNav}"></ul>
+
+    <div class="border-top px-3 py-3 mt-auto">
+        <form th:action="@{/admin/logout-form}" method="post">
+            <button type="submit" class="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-box-arrow-right"></i> Sign out
+            </button>
+        </form>
+    </div>
+</aside>
+
+<!-- Mobile: a real Bootstrap offcanvas drawer. Only reachable via the hamburger
+     button in the topbar (which is itself d-lg-none), so at desktop widths it
+     simply never gets triggered — no breakpoint CSS trickery needed. -->
+<div th:fragment="sidebarMobile" class="offcanvas offcanvas-start" style="--bs-offcanvas-width: 280px;"
+     tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title d-flex align-items-center gap-2" id="sidebarOffcanvasLabel">
+            <i class="bi bi-flower1"></i> Akasia Admin
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column p-0">
+        <ul th:replace="~{fragments/sidebar :: sidebarNav}"></ul>
+
+        <div class="border-top px-3 py-3 mt-auto">
+            <form th:action="@{/admin/logout-form}" method="post">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-box-arrow-right"></i> Sign out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
