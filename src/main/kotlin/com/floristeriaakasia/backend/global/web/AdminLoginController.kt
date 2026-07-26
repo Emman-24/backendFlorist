@@ -2,14 +2,9 @@ package com.floristeriaakasia.backend.global.web
 
 import com.floristeriaakasia.backend.util.HtmlSanitizer
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import org.slf4j.LoggerFactory
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.security.authentication.DisabledException
-import org.springframework.security.authentication.LockedException
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.*
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.context.SecurityContextImpl
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
@@ -19,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 @Controller
 @RequestMapping("/admin")
@@ -43,10 +39,9 @@ class AdminLoginController(
         @ModelAttribute("username") username: String,
         @ModelAttribute("password") password: String,
         request: HttpServletRequest,
-        response: HttpServletResponse,
         session: HttpSession,
-        model: Model
-    ) {
+        redirectAttributes: RedirectAttributes
+    ): String {
         val safeUsername = HtmlSanitizer.sanitizeUsername(username.trim()) ?: ""
 
         return try {
@@ -62,33 +57,38 @@ class AdminLoginController(
             )
             log.info("ADMIN_WEB_LOGIN_OK username={} ip={}", safeUsername, clientIp(request))
 
-            response.sendRedirect("/admin/dashboard")
+            "redirect:/admin/dashboard"
 
         } catch (_: BadCredentialsException) {
             log.warn("ADMIN_WEB_LOGIN_FAILED username={} ip={}", safeUsername, clientIp(request))
-            model.addAttribute("error", "Invalid username or password")
-            response.sendRedirect("/admin/login")
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid username or password")
+            "redirect:/admin/login"
         } catch (_: DisabledException) {
             log.warn("ADMIN_WEB_LOGIN_FAIL username={} ip={} reason=ACCOUNT_DISABLED", safeUsername, clientIp(request))
-            model.addAttribute("errorMessage", "Your account has been disabled. Contact support.")
-            response.sendRedirect("/admin/login")
+            redirectAttributes.addFlashAttribute("errorMessage", "Your account has been disabled. Contact support.")
+            "redirect:/admin/login"
         } catch (_: LockedException) {
             log.warn("ADMIN_WEB_LOGIN_FAIL username={} ip={} reason=ACCOUNT_LOCKED", safeUsername, clientIp(request))
-            model.addAttribute("errorMessage", "Your account is locked. Contact support.")
-            response.sendRedirect("/admin/login")
+            redirectAttributes.addFlashAttribute("errorMessage", "Your account is locked. Contact support.")
+            "redirect:/admin/login"
         } catch (ex: Exception) {
             log.error("ADMIN_WEB_LOGIN_ERROR username={} ip={}", safeUsername, clientIp(request), ex)
-            model.addAttribute("errorMessage", "Authentication service unavailable. Please try again.")
-            response.sendRedirect("/admin/login")
+            redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "Authentication service unavailable. Please try again."
+            )
+            "redirect:/admin/login"
         }
 
 
     }
 
 
-
     @GetMapping("/logout")
-    fun logout(session: HttpSession, request: HttpServletRequest): String {
+    fun logout(
+        session: HttpSession,
+        request: HttpServletRequest
+    ): String {
         val username = SecurityContextHolder.getContext().authentication?.name ?: "unknown"
         SecurityContextHolder.clearContext()
         session.invalidate()

@@ -5,6 +5,7 @@
 <main>
 
     <h1>Login</h1>
+    <div th:replace="~{fragments/flash-messages :: flashMessages}"></div>
 
     <form th:action="@{/admin/login}" method="post" hx-boost="false" novalidate>
         <div class="mb-3">
