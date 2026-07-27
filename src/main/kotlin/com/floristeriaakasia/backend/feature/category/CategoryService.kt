@@ -17,9 +17,6 @@ class CategoryService(
 
     fun getFullTree() = repository.findFullTree()
 
-
-
-
     @Transactional
     fun createRoot(
         name: String,
@@ -68,6 +65,53 @@ class CategoryService(
         return roots.sortedBy { it.category.displayOrder }
     }
 
+    @Transactional
+    fun update(
+        id: Long,
+        name: String,
+        slug: String,
+        displayOrder: Int,
+        description: String?
+    ):Category {
+        val existing = getById(id)
+        return repository.save(existing.copy(name = name, slug = slug, displayOrder = displayOrder, description = description))
+    }
 
+    @Transactional
+    fun setStatus(
+        id: Long,
+        status: Boolean
+    ): Category {
+        val existing = getById(id)
+        return repository.save(existing.copy(status = status))
+    }
+
+    @Transactional
+    fun move(id: Long, newParentId: Long?): Category {
+
+        val category = getById(id)
+        require(category.parentId != newParentId) { "Category is already under this parent" }
+
+        val newParent = newParentId?.let { getById(it) }
+        if (newParent != null) {
+            require(newParent.id != category.id && !newParent.isDescendantOf(category)) {
+                "Cannot move a category under its own descendant"
+            }
+        }
+
+        val oldPath = category.path
+        val newDepth = (newParent?.depth ?: -1) + 1
+        val newPath = if (newParent != null) category.buildMovedPath(newParent.path) else Category.buildRootPath(category.id!!)
+
+        val movedCategory = repository.save(category.copy(parentId = newParentId, depth = newDepth, path = newPath))
+
+        val depthDelta = newDepth - category.depth
+        val descendants = repository.findSubtree(category.descendantPathPattern())
+            .filterNot { it.id == category.id }
+            .map { it.copy(path = newPath + it.path.removePrefix(oldPath), depth = it.depth + depthDelta) }
+
+        repository.saveAll(descendants)
+        return movedCategory
+    }
 
 }

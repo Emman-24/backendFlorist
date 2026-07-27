@@ -51,6 +51,14 @@ data class CategoryResponse(
 )
 
 data class MoveCategoryRequest(
-    /** Null = move to root level */
     val newParentId: Long?
 )
+
+data class UpdateCategoryRequest(
+    @field:NotBlank @field:Size(max = 150) val name: String,
+    @field:NotBlank @field:Size(max = 180) @field:Pattern(regexp = "^[a-z0-9-]+$") val slug: String,
+    val displayOrder: Int = 0,
+    val description: String? = null
+)
+
+data class UpdateCategoryStatusRequest(val status: Boolean)

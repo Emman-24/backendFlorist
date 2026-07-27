@@ -43,7 +43,6 @@ class AdminWebSecurityConfig {
             .formLogin { form ->
                 form
                     .loginPage("/admin/login")
-                    .loginProcessingUrl("/admin/login-form-fallback")
                     .defaultSuccessUrl("/admin/dashboard", true)
                     .failureUrl("/admin/login?error")
                     .permitAll()

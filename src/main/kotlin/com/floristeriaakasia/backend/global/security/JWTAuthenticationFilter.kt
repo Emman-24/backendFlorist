@@ -39,7 +39,7 @@ class JWTAuthenticationFilter(
         )
 
         private val PUBLIC_PREFIXES = setOf(
-            "/api/auth/",
+            "/api/auth/login",
             "/actuator/health",
             "/actuator/info",
             "/health",

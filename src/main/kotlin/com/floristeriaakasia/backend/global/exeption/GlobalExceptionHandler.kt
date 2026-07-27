@@ -325,4 +325,14 @@ class GlobalExceptionHandler {
             .body(ApiResponse.Error(message = "Resource not found.", code = "NOT_FOUND"))
     }
 
+    @ExceptionHandler(FlowerNotFoundException::class)
+    fun handleFlowerNotFound(
+        ex: FlowerNotFoundException,
+        request: HttpServletRequest
+    ): ResponseEntity<ApiResponse.Error> {
+        logger.warn("Flower not found: uri={}, message={}", request.requestURI, ex.message)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ApiResponse.Error(message = ex.message ?: "Flower not found", code = "FLOWER_NOT_FOUND"))
+    }
+
 }
