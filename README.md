@@ -1,4 +1,4 @@
-# 🌸 Akasia Floristería — Backend API
+# Floristería — Backend API
 
 <p align="center">
   <img src="https://img.shields.io/badge/Kotlin-1.9.25-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white"/>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  Production-grade REST API for <strong>Akasia Floristería</strong> — a Colombian flower shop platform.<br/>
+  Production-grade REST API for <strong>Akasia Floristería</strong><br/>
   Built with Hexagonal Architecture, JWT security, rate limiting, and Cloudinary-powered image management.
 </p>
 
@@ -643,7 +643,3 @@ Software Engineer — Akasia Floristería
 📧 emmanuel240158@gmail.com
 
 ---
-
-<p align="center">
-  Built with ❤️ in Colombia 🇨🇴
-</p>
