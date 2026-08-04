@@ -4,6 +4,8 @@ import com.floristeriaakasia.backend.config.IntegrationTestBase
 import com.floristeriaakasia.backend.util.ApiResponse
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.web.client.getForEntity
+import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -32,10 +34,9 @@ class FaqControllerTest : IntegrationTestBase() {
             position = 0,
             status   = true
         )
-        val response = testRestTemplate.postForEntity(
+        val response = testRestTemplate.postForEntity<String>(
             "${getBaseUrl()}/api/faqs",
-            HttpEntity(request),
-            String::class.java
+            HttpEntity(request)
         )
         assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
@@ -43,9 +44,8 @@ class FaqControllerTest : IntegrationTestBase() {
 
     @Test
     fun `GET api-faqs-id returns 404 for non-existent FAQ`() {
-        val response = testRestTemplate.getForEntity(
-            "${getBaseUrl()}/api/faqs/99999",
-            String::class.java
+        val response = testRestTemplate.getForEntity<String>(
+            "${getBaseUrl()}/api/faqs/99999"
         )
         assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
