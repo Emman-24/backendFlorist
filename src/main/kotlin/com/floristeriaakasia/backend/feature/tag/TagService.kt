@@ -1,6 +1,5 @@
 package com.floristeriaakasia.backend.feature.tag
 
-import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangement
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangementRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -43,17 +42,6 @@ class TagService(
         floralArrangmentRepository.save(product)
         return true
     }
-//
-//    @Transactional
-//    fun removeTags(
-//        productId: Long,
-//        tagIds: List<Long>
-//    ): FloralArrangement {
-//        val product = floralArrangmentRepository.findByIdOrNull(productId)
-//        val tagsRemove = tagRepository.findAllById(tagIds).toSet()
-//        product!!.tags.removeAll(tagsRemove)
-//        return floralArrangmentRepository.save(product)
-//    }
 
     @Transactional(readOnly = true)
     fun getProductTags(productId: Long): List<Tag> {

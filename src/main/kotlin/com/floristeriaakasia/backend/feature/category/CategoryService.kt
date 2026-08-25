@@ -72,9 +72,16 @@ class CategoryService(
         slug: String,
         displayOrder: Int,
         description: String?
-    ):Category {
+    ): Category {
         val existing = getById(id)
-        return repository.save(existing.copy(name = name, slug = slug, displayOrder = displayOrder, description = description))
+        return repository.save(
+            existing.copy(
+                name = name,
+                slug = slug,
+                displayOrder = displayOrder,
+                description = description
+            )
+        )
     }
 
     @Transactional
@@ -101,7 +108,8 @@ class CategoryService(
 
         val oldPath = category.path
         val newDepth = (newParent?.depth ?: -1) + 1
-        val newPath = if (newParent != null) category.buildMovedPath(newParent.path) else Category.buildRootPath(category.id!!)
+        val newPath =
+            if (newParent != null) category.buildMovedPath(newParent.path) else Category.buildRootPath(category.id!!)
 
         val movedCategory = repository.save(category.copy(parentId = newParentId, depth = newDepth, path = newPath))
 
