@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus
 
 class FaqControllerTest : IntegrationTestBase() {
 
-
     @Test
     fun `GET api-faqs returns 200 with empty list when no faqs exist`() {
         val response = testRestTemplate.exchange(

@@ -14,8 +14,8 @@ import java.math.BigDecimal
 interface FloralArrangementRepository : JpaRepository<FloralArrangement, Long> {
     fun existsBySlug(slug: String): Boolean
 
-    fun findBySlug(slug: String): FloralArrangement
-    fun findBySeoName(seoName: String): FloralArrangement
+    fun findBySlug(slug: String): FloralArrangement?
+    fun findBySeoName(seoName: String): FloralArrangement?
 
     @Modifying
     @Query("UPDATE FloralArrangement fa SET fa.views = fa.views + 1 WHERE fa.id = :id")

@@ -1,6 +1,7 @@
 package com.floristeriaakasia.backend.feature.tag
 
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangementRepository
+import com.floristeriaakasia.backend.global.exeption.FloralArrangementNotFoundException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,12 +14,14 @@ class TagService(
 
     @Transactional
     fun createTag(request: CreateTagRequest): Tag {
-        tagRepository.findByRoute(request.route)?.let {
-            throw IllegalArgumentException("Tag with route '${request.route}' already exists")
+        val normalizedRoute = request.route.trim().lowercase()
+        val normalizedText = request.text.trim()
+        tagRepository.findByRoute(normalizedRoute)?.let {
+            throw IllegalArgumentException("Tag with route '${normalizedRoute}' already exists")
         }
         val tag = Tag(
-            text = request.text.trim(),
-            route = request.route.trim().lowercase(),
+            text = normalizedText,
+            route = normalizedRoute,
             description = "",
             status = request.status
         )
@@ -35,9 +38,9 @@ class TagService(
         productId: Long,
         tagIds: List<Long>
     ): Boolean {
-        val product = floralArrangmentRepository.findByIdOrNull(productId)
+        val product = floralArrangmentRepository.findByIdOrNull(productId) ?: throw FloralArrangementNotFoundException(productId)
         val tags = tagRepository.findAllById(tagIds).toSet()
-        product!!.tags.clear()
+        product.tags.clear()
         product.tags.addAll(tags)
         floralArrangmentRepository.save(product)
         return true
