@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.faq
+package com.floristeriaakasia.backend.feature.faq.infrastructure.api
 
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min

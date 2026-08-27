@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.category
+package com.floristeriaakasia.backend.feature.category.infrastructure.api
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

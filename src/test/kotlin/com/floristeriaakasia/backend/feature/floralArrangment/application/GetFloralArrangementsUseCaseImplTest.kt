@@ -1,13 +1,13 @@
 package com.floristeriaakasia.backend.feature.floralArrangment.application
 
-import com.floristeriaakasia.backend.feature.category.Category
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.Category
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangement
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.ProductGallery
 import com.floristeriaakasia.backend.feature.floralArrangment.infrastructure.*
 import com.floristeriaakasia.backend.feature.flowers.Flowers
 import com.floristeriaakasia.backend.feature.price.Price
 import com.floristeriaakasia.backend.feature.productDescription.ProductDescription
-import com.floristeriaakasia.backend.feature.tag.Tag
+import com.floristeriaakasia.backend.feature.tag.infrastructure.api.Tag
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementNotFoundException
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementSeoNameNotFoundException
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementSlugNotFoundException

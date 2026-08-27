@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.tag
+package com.floristeriaakasia.backend.feature.tag.infrastructure.api
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern

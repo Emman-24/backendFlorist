@@ -1,6 +1,8 @@
 package com.floristeriaakasia.backend.feature.faq
 
 import com.floristeriaakasia.backend.config.RepositoryTestBase
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.Faq
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.FaqRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

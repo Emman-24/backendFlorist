@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.category
+package com.floristeriaakasia.backend.feature.category.infrastructure.api
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern

@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.faq
+package com.floristeriaakasia.backend.feature.faq.infrastructure.api
 
 import com.floristeriaakasia.backend.global.exeption.FaqNotFoundException
 import org.springframework.data.domain.Sort

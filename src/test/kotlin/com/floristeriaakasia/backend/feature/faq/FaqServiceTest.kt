@@ -1,5 +1,10 @@
 package com.floristeriaakasia.backend.feature.faq
 
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.CreateFaqRequest
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.Faq
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.FaqRepository
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.FaqService
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.UpdateFaqRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

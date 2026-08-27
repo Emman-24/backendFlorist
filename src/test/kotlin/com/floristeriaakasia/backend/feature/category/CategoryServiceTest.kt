@@ -1,5 +1,8 @@
 package com.floristeriaakasia.backend.feature.category
 
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.Category
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryRepository
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

@@ -1,9 +1,9 @@
 package com.floristeriaakasia.backend.feature.dashboard.application
 
-import com.floristeriaakasia.backend.feature.category.CategoryRepository
-import com.floristeriaakasia.backend.feature.faq.FaqRepository
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryRepository
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.FaqRepository
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangementRepository
-import com.floristeriaakasia.backend.feature.tag.TagRepository
+import com.floristeriaakasia.backend.feature.tag.infrastructure.api.TagRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

@@ -1,6 +1,6 @@
 package com.floristeriaakasia.backend.feature.floralArrangment.application
 
-import com.floristeriaakasia.backend.feature.category.LoadCategoryPort
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.LoadCategoryPort
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangement
 import com.floristeriaakasia.backend.feature.floralArrangment.infrastructure.SaveFloralArrangementPort
 import com.floristeriaakasia.backend.feature.flowers.Flowers

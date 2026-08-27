@@ -1,6 +1,8 @@
 package com.floristeriaakasia.backend.feature.category
 
 import com.floristeriaakasia.backend.config.RepositoryTestBase
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.Category
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

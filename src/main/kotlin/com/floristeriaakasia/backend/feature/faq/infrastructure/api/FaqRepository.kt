@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.faq
+package com.floristeriaakasia.backend.feature.faq.infrastructure.api
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository

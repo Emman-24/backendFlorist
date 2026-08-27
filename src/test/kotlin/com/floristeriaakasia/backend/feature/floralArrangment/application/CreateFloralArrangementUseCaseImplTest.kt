@@ -1,7 +1,7 @@
 package com.floristeriaakasia.backend.feature.floralArrangment.application
 
-import com.floristeriaakasia.backend.feature.category.Category
-import com.floristeriaakasia.backend.feature.category.LoadCategoryPort
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.Category
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.LoadCategoryPort
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangement
 import com.floristeriaakasia.backend.feature.floralArrangment.infrastructure.SaveFloralArrangementPort
 import org.junit.jupiter.api.Assertions.*

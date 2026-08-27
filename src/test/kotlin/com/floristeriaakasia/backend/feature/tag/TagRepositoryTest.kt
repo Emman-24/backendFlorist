@@ -1,6 +1,8 @@
 package com.floristeriaakasia.backend.feature.tag
 
 import com.floristeriaakasia.backend.config.RepositoryTestBase
+import com.floristeriaakasia.backend.feature.tag.infrastructure.api.Tag
+import com.floristeriaakasia.backend.feature.tag.infrastructure.api.TagRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

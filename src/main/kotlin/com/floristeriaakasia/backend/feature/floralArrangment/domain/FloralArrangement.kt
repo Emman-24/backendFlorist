@@ -1,10 +1,10 @@
 package com.floristeriaakasia.backend.feature.floralArrangment.domain
 
-import com.floristeriaakasia.backend.feature.category.Category
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.Category
 import com.floristeriaakasia.backend.feature.flowers.Flowers
 import com.floristeriaakasia.backend.feature.price.Price
 import com.floristeriaakasia.backend.feature.productDescription.ProductDescription
-import com.floristeriaakasia.backend.feature.tag.Tag
+import com.floristeriaakasia.backend.feature.tag.infrastructure.api.Tag
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate

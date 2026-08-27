@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.tag
+package com.floristeriaakasia.backend.feature.tag.infrastructure.api
 
 import com.floristeriaakasia.backend.feature.floralArrangment.domain.FloralArrangementRepository
 import com.floristeriaakasia.backend.global.exeption.FloralArrangementNotFoundException

@@ -1,6 +1,8 @@
 package com.floristeriaakasia.backend.feature.faq
 
 import com.floristeriaakasia.backend.config.IntegrationTestBase
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.CreateFaqRequest
+import com.floristeriaakasia.backend.feature.faq.infrastructure.api.FaqResponse
 import com.floristeriaakasia.backend.util.ApiResponse
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -29,9 +31,9 @@ class FaqControllerTest : IntegrationTestBase() {
     fun `POST api-faqs returns 401 when called without authentication`() {
         val request = CreateFaqRequest(
             question = "What are your opening hours?",
-            answer   = "We are open Monday to Saturday from 9am to 7pm.",
+            answer = "We are open Monday to Saturday from 9am to 7pm.",
             position = 0,
-            status   = true
+            status = true
         )
         val response = testRestTemplate.postForEntity<String>(
             "${getBaseUrl()}/api/faqs",

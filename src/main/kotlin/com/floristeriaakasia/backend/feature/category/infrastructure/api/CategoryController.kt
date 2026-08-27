@@ -1,4 +1,4 @@
-package com.floristeriaakasia.backend.feature.category
+package com.floristeriaakasia.backend.feature.category.infrastructure.api
 
 import com.floristeriaakasia.backend.util.ApiResponse
 import jakarta.validation.Valid
