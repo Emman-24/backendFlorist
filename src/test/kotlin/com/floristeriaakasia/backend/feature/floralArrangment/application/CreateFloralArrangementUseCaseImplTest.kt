@@ -62,7 +62,7 @@ class CreateFloralArrangementUseCaseImplTest {
 
     @Test
     fun `execute should create and save floral arrangement successfully and return generated id`() {
-        val category1 = Category(id = 1L, name = "Romántico", slug = "romantico", path = "/1/", depth = 0)
+        val category1 = Category(id = 1L, name = "Romántico", slug = "romántico", path = "/1/", depth = 0)
         val category2 = Category(id = 2L, name = "Aniversario", slug = "aniversario", path = "/2/", depth = 0)
 
         `when`(loadCategoryPort.loadAllByIds(setOf(1L, 2L))).thenReturn(listOf(category1, category2))

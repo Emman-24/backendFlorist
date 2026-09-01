@@ -120,18 +120,19 @@ class CategoryServiceTest {
         val name = "Flores"
         val slug = "flores"
         val displayOrder = 1
+        val description = "Flores de temporada"
 
         Mockito.`when`(categoryRepository.save(Mockito.any())).thenAnswer { invocation ->
             val entity = invocation.getArgument<Category>(0)
             if (entity.id == null) {
-                entity.copy(id = 10L)
-            } else {
-                entity
+                entity.id = 10L
             }
+            entity
         }
 
         // Act
-        val result = categoryService.createRoot(name = name, slug = slug, displayOrder = displayOrder)
+        val result =
+            categoryService.createRoot(name = name, slug = slug, displayOrder = displayOrder, description = description)
 
         // Assert
         assertEquals(10L, result.id)
@@ -153,14 +154,15 @@ class CategoryServiceTest {
         val childName = "Rosas"
         val childSlug = "rosas"
         val displayOrder = 2
+        val description = "Flores de temporada"
+
 
         Mockito.`when`(categoryRepository.save(Mockito.any())).thenAnswer { invocation ->
             val entity = invocation.getArgument<Category>(0)
             if (entity.id == null) {
-                entity.copy(id = 15L)
-            } else {
-                entity
+                entity.id = 15L
             }
+            entity
         }
 
         // Act
@@ -168,7 +170,8 @@ class CategoryServiceTest {
             name = childName,
             slug = childSlug,
             parentId = 5L,
-            displayOrder = displayOrder
+            displayOrder = displayOrder,
+            description = description
         )
 
         // Assert
@@ -188,7 +191,12 @@ class CategoryServiceTest {
 
         // Act & Assert
         assertFailsWith<IllegalArgumentException> {
-            categoryService.createChild(name = "Orquídeas", slug = "orquideas", parentId = 99L)
+            categoryService.createChild(
+                name = "Orquídeas",
+                slug = "orquideas",
+                parentId = 99L,
+                description = "Example of description"
+            )
         }
         Mockito.verify(categoryRepository, Mockito.never()).save(Mockito.any())
     }
@@ -198,9 +206,18 @@ class CategoryServiceTest {
         // Arrange
         val root1 = buildCategory(id = 1L, name = "Root 1", path = "/1/", parentId = null, depth = 0, displayOrder = 2)
         val root2 = buildCategory(id = 2L, name = "Root 2", path = "/2/", parentId = null, depth = 0, displayOrder = 1)
-        val child1 = buildCategory(id = 3L, name = "Child 1-1", path = "/1/3/", parentId = 1L, depth = 1, displayOrder = 1)
-        val child2 = buildCategory(id = 4L, name = "Child 1-2", path = "/1/4/", parentId = 1L, depth = 1, displayOrder = 2)
-        val grandChild = buildCategory(id = 5L, name = "Grandchild 1-1-1", path = "/1/3/5/", parentId = 3L, depth = 2, displayOrder = 1)
+        val child1 =
+            buildCategory(id = 3L, name = "Child 1-1", path = "/1/3/", parentId = 1L, depth = 1, displayOrder = 1)
+        val child2 =
+            buildCategory(id = 4L, name = "Child 1-2", path = "/1/4/", parentId = 1L, depth = 1, displayOrder = 2)
+        val grandChild = buildCategory(
+            id = 5L,
+            name = "Grandchild 1-1-1",
+            path = "/1/3/5/",
+            parentId = 3L,
+            depth = 2,
+            displayOrder = 1
+        )
 
         val categories = listOf(root1, root2, child1, child2, grandChild)
 
@@ -233,7 +250,8 @@ class CategoryServiceTest {
     @Test
     fun `update should update existing category properties`() {
         // Arrange
-        val existing = buildCategory(id = 1L, name = "Old Name", slug = "old-slug", displayOrder = 0, description = "Old")
+        val existing =
+            buildCategory(id = 1L, name = "Old Name", slug = "old-slug", displayOrder = 0, description = "Old")
         Mockito.`when`(categoryRepository.findById(1L)).thenReturn(Optional.of(existing))
         Mockito.`when`(categoryRepository.save(Mockito.any())).thenAnswer { it.getArgument(0) as Category }
 

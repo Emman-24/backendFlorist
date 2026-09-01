@@ -15,64 +15,64 @@ import java.time.Instant
 @Entity
 @Table(name = "categories")
 @EntityListeners(AuditingEntityListener::class)
-data class Category(
+class Category(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
     @Column(nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(nullable = false, unique = true)
-    val slug: String,
+    var slug: String,
 
     @Column(nullable = false, length = 3000)
     var path: String,
 
     @Column
-    val parentId: Long? = null,
+    var parentId: Long? = null,
 
     @Column(nullable = false)
-    val depth: Int,
+    var depth: Int,
 
     @Column(nullable = false)
-    val displayOrder: Int = 0,
+    var displayOrder: Int = 0,
 
     @Column
-    val description: String? = null,
+    var description: String? = null,
 
     @Column(nullable = false)
-    val status: Boolean = true,
+    var status: Boolean = true,
 
     @Column(nullable = false, updatable = false)
     @CreatedDate
-    val createdAt: Instant = Instant.now(),
+    var createdAt: Instant = Instant.now(),
 
     @Column(nullable = true)
     @LastModifiedDate
-    val updatedAt: Instant = Instant.now()
+    var updatedAt: Instant = Instant.now()
 
 ) {
-    companion object{
-        fun buildPath(parentPath: String?, nodeId: Long): String =
-            if (parentPath == null) "/$nodeId/" else "$parentPath$nodeId/"
+    companion object {
         fun buildRootPath(id: Long): String = "/$id/"
         fun buildChildPath(parentPath: String, newId: Long): String = "${parentPath}$newId/"
-        fun createRoot(name: String, slug: String, displayOrder: Int = 0): Category =
+        fun createRoot(name: String, slug: String, displayOrder: Int = 0, description: String): Category =
             Category(
                 name = name,
                 slug = slug,
                 path = "",
                 parentId = null,
                 depth = 0,
-                displayOrder = displayOrder
+                displayOrder = displayOrder,
+                description = description
             )
 
         fun createChild(
             name: String,
             slug: String,
             parent: Category,
-            displayOrder: Int = 0
+            displayOrder: Int = 0,
+            description: String
         ): Category {
             require(parent.id != null) { "Parent must be persisted before creating children" }
             return Category(
@@ -81,7 +81,8 @@ data class Category(
                 path = "",
                 parentId = parent.id,
                 depth = parent.depth + 1,
-                displayOrder = displayOrder
+                displayOrder = displayOrder,
+                description = description
             )
         }
     }
@@ -94,12 +95,15 @@ data class Category(
             .filter { it.isNotBlank() && it != selfId }
             .map { it.toLong() }
     }
-    fun isDescendantOf(potentialAncestor: Category): Boolean = potentialAncestor.id?.let { path.contains("/${it}/") } ?: false
-    fun isRoot(): Boolean = parentId == null
+
+    fun isDescendantOf(potentialAncestor: Category): Boolean =
+        potentialAncestor.id?.let { path.contains("/${it}/") } ?: false
+
     fun buildMovedPath(newParentPath: String): String {
         require(id != null) { "Cannot build path for unpersisted category" }
         return "$newParentPath$id/"
     }
+
     fun isPathValid(): Boolean {
         if (!path.startsWith("/") || !path.endsWith("/")) return false
         val segments = path.trim('/').split('/')

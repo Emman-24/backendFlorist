@@ -21,12 +21,13 @@ class CategoryService(
     fun createRoot(
         name: String,
         slug: String,
-        displayOrder: Int = 0
+        displayOrder: Int = 0,
+        description: String
     ): Category {
-        val category = Category.createRoot(name, slug, displayOrder)
+        val category = Category.createRoot(name, slug, displayOrder, description)
         val saved = repository.save(category)
-        val withPath = saved.copy(path = Category.buildRootPath(saved.id!!))
-        return repository.save(withPath)
+        saved.path = Category.buildRootPath(saved.id!!)
+        return repository.save(saved)
     }
 
     @Transactional
@@ -34,18 +35,20 @@ class CategoryService(
         name: String,
         slug: String,
         parentId: Long,
-        displayOrder: Int = 0
+        displayOrder: Int = 0,
+        description: String
     ): Category {
-        val parent = getById(parentId)
-        val category = Category.createChild(
+        val parent: Category = getById(parentId)
+        val category: Category = Category.createChild(
             name = name,
             slug = slug,
             parent = parent,
-            displayOrder = displayOrder
+            displayOrder = displayOrder,
+            description = description
         )
-        val saved = repository.save(category)
-        val withPath = saved.copy(path = Category.buildChildPath(parent.path, saved.id!!))
-        return repository.save(withPath)
+        val saved: Category = repository.save(category)
+        saved.path = Category.buildChildPath(parent.path, saved.id!!)
+        return repository.save(saved)
     }
 
     fun buildTreeFromFlat(
@@ -74,14 +77,11 @@ class CategoryService(
         description: String?
     ): Category {
         val existing = getById(id)
-        return repository.save(
-            existing.copy(
-                name = name,
-                slug = slug,
-                displayOrder = displayOrder,
-                description = description
-            )
-        )
+        existing.name = name
+        existing.slug = slug
+        existing.displayOrder = displayOrder
+        existing.description = description
+        return repository.save(existing)
     }
 
     @Transactional
@@ -90,7 +90,8 @@ class CategoryService(
         status: Boolean
     ): Category {
         val existing = getById(id)
-        return repository.save(existing.copy(status = status))
+        existing.status = status
+        return repository.save(existing)
     }
 
     @Transactional
@@ -107,16 +108,24 @@ class CategoryService(
         }
 
         val oldPath = category.path
+        val oldDepth = category.depth
         val newDepth = (newParent?.depth ?: -1) + 1
         val newPath =
             if (newParent != null) category.buildMovedPath(newParent.path) else Category.buildRootPath(category.id!!)
 
-        val movedCategory = repository.save(category.copy(parentId = newParentId, depth = newDepth, path = newPath))
+        category.parentId = newParentId
+        category.depth = newDepth
+        category.path = newPath
+        val movedCategory = repository.save(category)
 
-        val depthDelta = newDepth - category.depth
-        val descendants = repository.findSubtree(category.descendantPathPattern())
+        val depthDelta = newDepth - oldDepth
+        val descendants = repository.findSubtree("$oldPath%")
             .filterNot { it.id == category.id }
-            .map { it.copy(path = newPath + it.path.removePrefix(oldPath), depth = it.depth + depthDelta) }
+            .map {
+                it.path = newPath + it.path.removePrefix(oldPath)
+                it.depth += depthDelta
+                it
+            }
 
         repository.saveAll(descendants)
         return movedCategory

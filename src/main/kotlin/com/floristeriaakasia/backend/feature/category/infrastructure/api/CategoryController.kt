@@ -23,22 +23,31 @@ class CategoryController(
     @PostMapping("/root")
     @PreAuthorize("hasRole('ADMIN')")
     fun createRoot(
-        @Valid @RequestBody request: CreateRootCategoryRequest
-    ): ResponseEntity<ApiResponse<CategoryResponse>> {
-        val category = categoryService.createRoot(request.name, request.slug, request.displayOrder)
+        @Valid @RequestBody request: CreateCategoryRequest
+    ): ResponseEntity.BodyBuilder {
+        categoryService.createRoot(
+            name = request.name,
+            slug = request.slug,
+            displayOrder = request.displayOrder,
+            description = request.description
+        )
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.Success(toResponse(category)))
     }
 
     @PostMapping("/{parentId}/children")
     @PreAuthorize("hasRole('ADMIN')")
     fun createChild(
         @PathVariable parentId: Long,
-        @Valid @RequestBody request: CreateChildCategoryRequest
-    ): ResponseEntity<ApiResponse<CategoryResponse>> {
-        val category = categoryService.createChild(request.name, request.slug, parentId, request.displayOrder)
+        @Valid @RequestBody request: CreateCategoryRequest
+    ): ResponseEntity.BodyBuilder {
+        categoryService.createChild(
+            name = request.name,
+            slug = request.slug,
+            parentId = parentId,
+            displayOrder = request.displayOrder,
+            description = request.description
+        )
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ApiResponse.Success(toResponse(category)))
     }
 
     @GetMapping("/tree")

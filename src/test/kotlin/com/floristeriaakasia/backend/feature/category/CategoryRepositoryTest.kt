@@ -142,7 +142,8 @@ class CategoryRepositoryTest : RepositoryTestBase() {
                 status = status
             )
         )
-        return categoryRepository.saveAndFlush(saved.copy(path = Category.buildRootPath(saved.id!!)))
+        saved.path = Category.buildRootPath(saved.id!!)
+        return categoryRepository.saveAndFlush(saved)
     }
 
     private fun saveChild(
@@ -164,8 +165,7 @@ class CategoryRepositoryTest : RepositoryTestBase() {
                 status = status
             )
         )
-        return categoryRepository.saveAndFlush(
-            saved.copy(path = Category.buildChildPath(parent.path, saved.id!!))
-        )
+        saved.path = Category.buildChildPath(parent.path, saved.id!!)
+        return categoryRepository.saveAndFlush(saved)
     }
 }

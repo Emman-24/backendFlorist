@@ -47,11 +47,9 @@ class FaqController(
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     fun create(
         @Valid @RequestBody request: CreateFaqRequest
-    ): ResponseEntity<ApiResponse<FaqResponse>> {
-        val created = faqService.create(request)
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(created.toSuccessResponse("FAQ created successfully"))
+    ): ResponseEntity.BodyBuilder {
+        faqService.create(request)
+        return ResponseEntity.status(HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")

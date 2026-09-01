@@ -1,16 +1,6 @@
 package com.floristeriaakasia.backend.feature.category
 
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.Category
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryController
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryNode
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryResponse
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryService
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CategoryTreeResponse
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CreateChildCategoryRequest
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.CreateRootCategoryRequest
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.MoveCategoryRequest
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.UpdateCategoryRequest
-import com.floristeriaakasia.backend.feature.category.infrastructure.api.UpdateCategoryStatusRequest
+import com.floristeriaakasia.backend.feature.category.infrastructure.api.*
 import com.floristeriaakasia.backend.util.ApiResponse
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -21,6 +11,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 
 @ExtendWith(MockitoExtension::class)
 class CategoryControllerTest {
@@ -62,10 +53,11 @@ class CategoryControllerTest {
     @Test
     fun createRoot() {
         // Arrange
-        val request = CreateRootCategoryRequest(
+        val request = CreateCategoryRequest(
             name = "Flores",
             slug = "flores",
-            displayOrder = 1
+            displayOrder = 1,
+            description = "Example of description"
         )
         val createdCategory = buildCategory(
             id = 1L,
@@ -78,39 +70,28 @@ class CategoryControllerTest {
             description = null,
             status = true
         )
-        Mockito.`when`(categoryService.createRoot("Flores", "flores", 1))
+        Mockito.`when`(categoryService.createRoot("Flores", "flores", 1, description = "Example of description"))
             .thenReturn(createdCategory)
 
         // Act
-        val response = categoryController.createRoot(request)
+        val responseBuilder = categoryController.createRoot(request)
+        val response: ResponseEntity<Void> = responseBuilder.build()
 
         // Assert
         assertEquals(HttpStatus.CREATED, response.statusCode)
-        assertNotNull(response.body)
-        assertTrue(response.body is ApiResponse.Success)
-        val successBody = response.body as ApiResponse.Success<CategoryResponse>
-        val data = successBody.data
-        assertEquals(1L, data.id)
-        assertEquals("Flores", data.name)
-        assertEquals("flores", data.slug)
-        assertEquals("/1/", data.path)
-        assertNull(data.parentId)
-        assertEquals(0, data.depth)
-        assertEquals(1, data.displayOrder)
-        assertNull(data.description)
-        assertTrue(data.isActive)
 
-        Mockito.verify(categoryService).createRoot("Flores", "flores", 1)
+        Mockito.verify(categoryService).createRoot("Flores", "flores", 1, description = "Example of description")
     }
 
     @Test
     fun createChild() {
         // Arrange
         val parentId = 1L
-        val request = CreateChildCategoryRequest(
+        val request = CreateCategoryRequest(
             name = "Rosas",
             slug = "rosas",
-            displayOrder = 2
+            displayOrder = 2,
+            description = "Example of description"
         )
         val createdChild = buildCategory(
             id = 2L,
@@ -123,29 +104,27 @@ class CategoryControllerTest {
             description = null,
             status = true
         )
-        Mockito.`when`(categoryService.createChild("Rosas", "rosas", parentId, 2))
+        Mockito.`when`(
+            categoryService.createChild(
+                "Rosas",
+                "rosas",
+                parentId,
+                2,
+                description = "Example of description"
+            )
+        )
             .thenReturn(createdChild)
 
         // Act
-        val response = categoryController.createChild(parentId, request)
+        val responseBuilder = categoryController.createChild(parentId, request)
+        val response: ResponseEntity<ApiResponse<Void>> = responseBuilder.build()
 
         // Assert
         assertEquals(HttpStatus.CREATED, response.statusCode)
-        assertNotNull(response.body)
-        assertTrue(response.body is ApiResponse.Success)
-        val successBody = response.body as ApiResponse.Success<CategoryResponse>
-        val data = successBody.data
-        assertEquals(2L, data.id)
-        assertEquals("Rosas", data.name)
-        assertEquals("rosas", data.slug)
-        assertEquals("/1/2/", data.path)
-        assertEquals(parentId, data.parentId)
-        assertEquals(1, data.depth)
-        assertEquals(2, data.displayOrder)
-        assertNull(data.description)
-        assertTrue(data.isActive)
+        assertTrue(response.body == null)
 
-        Mockito.verify(categoryService).createChild("Rosas", "rosas", parentId, 2)
+        Mockito.verify(categoryService)
+            .createChild("Rosas", "rosas", parentId, 2, description = "Example of description")
     }
 
     @Test
@@ -259,7 +238,15 @@ class CategoryControllerTest {
             displayOrder = 5,
             description = "Flores de temporada y exoticas"
         )
-        Mockito.`when`(categoryService.update(1L, "Flores Exoticas", "flores-exoticas", 5, "Flores de temporada y exoticas"))
+        Mockito.`when`(
+            categoryService.update(
+                1L,
+                "Flores Exoticas",
+                "flores-exoticas",
+                5,
+                "Flores de temporada y exoticas"
+            )
+        )
             .thenReturn(updatedCategory)
 
         // Act
@@ -277,7 +264,8 @@ class CategoryControllerTest {
         assertEquals(5, data.displayOrder)
         assertEquals("Flores de temporada y exoticas", data.description)
 
-        Mockito.verify(categoryService).update(1L, "Flores Exoticas", "flores-exoticas", 5, "Flores de temporada y exoticas")
+        Mockito.verify(categoryService)
+            .update(1L, "Flores Exoticas", "flores-exoticas", 5, "Flores de temporada y exoticas")
     }
 
     @Test
